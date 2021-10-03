@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 import './App.css'
+import Nav from './components/Nav'
+import Home from './components/Home'
+import Contact from './components/Contact'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 const App = () => {
   const [msg, setMsg] = useState()
@@ -11,14 +15,21 @@ const App = () => {
   }
 
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <button onClick={handleClick}>
-          Hello world
-        </button>
-        <p>{msg}</p>
-      </header>
-    </div>
+    <Router>
+      <div className='App'>
+        <header className='App-header'>
+          <Nav />
+          <Switch>
+            <Route path='/' exact component={Home} />
+            <Route path='/Contact' exact component={Contact} />
+          </Switch>
+          <button onClick={handleClick}>
+            Hello world
+          </button>
+          <p>{msg}</p>
+        </header>
+      </div>
+    </Router>
   )
 }
 
