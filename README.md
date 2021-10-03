@@ -12,7 +12,7 @@ rem : install le plugin visual studio ´rest client´
 1. ´npm start´
 1. ´npm run watch´
 
-SI erreur de merde avec react faire caµ
+SI erreur de merde avec react faire ca:<br><\br>
 `
 +There seems to be an issue with the new release 4.0.2 of create-react-app [Reference].
 You can use the previous, 4.0.1, by doing the following.
