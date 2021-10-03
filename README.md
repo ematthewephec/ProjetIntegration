@@ -1,7 +1,8 @@
 # ProjetIntegration
 
 ## commande utilisé
-rem : install le plugin visual studio ´rest client´
+
+
 1. `npm init`
 1. `npm install express dotenv`
 1. `node server.js`
@@ -11,9 +12,16 @@ rem : install le plugin visual studio ´rest client´
 ## lancer le server
 1. `npm start`
 1. `npm run watch`
+1. `npm run client` :  (ERREUR 1) si jamais
+1. `npm run build`
+
+
+## plugin visual studio
+1. `rest client`
+1. `standardjs`
 
 ```
-SI erreur de merde avec react faire ca:<br>
+- ERREUR 1 :
 
 +There seems to be an issue with the new release 4.0.2 of create-react-app [Reference].<br>
 You can use the previous, 4.0.1, by doing the following.<br>
