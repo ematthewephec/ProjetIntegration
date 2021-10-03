@@ -12,12 +12,12 @@ rem : install le plugin visual studio ´rest client´
 1. ´npm start´
 1. ´npm run watch´
 
-SI erreur de merde avec react faire ca:<br><\br>
+SI erreur de merde avec react faire ca:<br>
 `
-+There seems to be an issue with the new release 4.0.2 of create-react-app [Reference].
-You can use the previous, 4.0.1, by doing the following.
++There seems to be an issue with the new release 4.0.2 of create-react-app [Reference].<br>
+You can use the previous, 4.0.1, by doing the following.<br>
 
-Edit package.json and change the "react-scripts" value to "4.0.1".
-Run npm install.
-Run npm start.
+Edit package.json and change the "react-scripts" value to "4.0.1".<br>
+Run npm install.<br>
+Run npm start.<br>
 `
