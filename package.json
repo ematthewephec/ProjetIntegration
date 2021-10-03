@@ -1,0 +1,28 @@
+{
+  "name": "intergrationcode",
+  "version": "1.0.0",
+  "description": "node et react projet d'intergration",
+  "main": "server.js",
+  "scripts": {
+    "start" : "node server.js",
+    "watch": "nodemon server.js",
+    "client": "cd client && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ematthewephec/ProjetIntegration.git"
+  },
+  "author": "louis-francois-mattheux-gabrielle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ematthewephec/ProjetIntegration/issues"
+  },
+  "homepage": "https://github.com/ematthewephec/ProjetIntegration#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}
