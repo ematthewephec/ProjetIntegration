@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import { Link } from 'react-router-dom'
 
 export default function Nav () {
   return (
@@ -25,8 +24,12 @@ export default function Nav () {
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             Ressource PC
           </Typography>
-          <Link to='/'>Home</Link>
-          <Link to='/Contact'>Contact</Link>
+          <Button color='inherit' href='/'>
+            Home
+          </Button>
+          <Button color='inherit' href='/Contact'>
+            contact
+          </Button>
           <Button color='inherit'>Login</Button>
         </Toolbar>
       </AppBar>
