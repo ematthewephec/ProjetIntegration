@@ -1,5 +1,7 @@
 const express = require('express')
 const path = require('path')
+const mysql = require('mysql')
+
 require('dotenv').config()
 
 const PORT = process.env.PORT || 5000
@@ -21,4 +23,11 @@ app.get('/*', (_, res) => {
 })
 app.listen(PORT, () => {
   console.log(`le serveur est lancé sur le port : ${PORT}`)
+})
+
+const db = mysql.createConnection({
+  user: 'root',
+  host: 'localhost',
+  password: 'Tintin',
+  database: 'checkcomputer'
 })
