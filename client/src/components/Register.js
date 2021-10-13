@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import Axios from 'axios'
 
 function Copyright (props) {
   return (
@@ -29,16 +30,23 @@ function Copyright (props) {
 const theme = createTheme()
 
 export default function SignUp () {
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    // const data = new FormData(event.currentTarget)
-    // eslint-disable-next-line no-console
-    console.log({
-      // email: data.get('email'),
-      // password: data.get('password')
+  const [usernames, setUsername] = React.useState('')
+  const [passwords, setPassword] = React.useState('')
+  const [emails, seteMail] = React.useState('')
+  const [noms, setNom] = React.useState('')
+  const [prenoms, setprenom] = React.useState('')
+
+  const register = () => {
+    Axios.post('http://localhost:6868/Register', {
+      username: usernames,
+      password: passwords,
+      email: emails,
+      nom: noms,
+      prenom: prenoms
+    }).then((response) => {
+      console.log(response)
     })
   }
-
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
@@ -57,7 +65,7 @@ export default function SignUp () {
           <Typography component='h1' variant='h5'>
             Sign up
           </Typography>
-          <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component='form' noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -68,6 +76,7 @@ export default function SignUp () {
                   id='firstName'
                   label='First Name'
                   autoFocus
+                  onChange={(e) => { setprenom(e.target.value) }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -78,6 +87,7 @@ export default function SignUp () {
                   label='Last Name'
                   name='lastName'
                   autoComplete='lname'
+                  onChange={(e) => { setNom(e.target.value) }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -88,6 +98,18 @@ export default function SignUp () {
                   label='Email Address'
                   name='email'
                   autoComplete='email'
+                  onChange={(e) => { seteMail(e.target.value) }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id='username'
+                  label='Username'
+                  name='Username'
+                  autoComplete='Username'
+                  onChange={(e) => { setUsername(e.target.value) }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -99,6 +121,7 @@ export default function SignUp () {
                   type='password'
                   id='password'
                   autoComplete='new-password'
+                  onChange={(e) => { setPassword(e.target.value) }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -109,17 +132,17 @@ export default function SignUp () {
               </Grid>
             </Grid>
             <Button
-              type='submit'
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
+              onClick={register}
             >
               Sign Up
             </Button>
             <Grid container justifyContent='flex-end'>
               <Grid item>
-                <Link href='#' variant='body2'>
-                  Already have an account? Sign in
+                <Link href='/Login' variant='body2'>
+                  Login
                 </Link>
               </Grid>
             </Grid>

@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import Axios from 'axios'
 
 function Copyright (props) {
   return (
@@ -29,16 +30,23 @@ function Copyright (props) {
 const theme = createTheme()
 
 export default function SignIn () {
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    // const data = new FormData(event.currentTarget)
-    // eslint-disable-next-line no-console
-    console.log({
-      // email: data.get('email'),
-      // password: data.get('password')
+  const [usernames, setUsername] = React.useState('')
+  const [passwords, setPassword] = React.useState('')
+  const [loginStatus, setLoginStatus] = React.useState('')
+
+  const login = () => {
+    Axios.post('http://localhost:6868/Login', {
+      username: usernames,
+      password: passwords
+    }).then((response) => {
+      if (response.data.message) {
+        setLoginStatus(response.data.message)
+      } else {
+        setLoginStatus(response.data[0].username)
+      }
+      console.log(response.data)
     })
   }
-
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
@@ -57,16 +65,17 @@ export default function SignIn () {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component='form' noValidate sx={{ mt: 1 }}>
             <TextField
               margin='normal'
               required
               fullWidth
-              id='email'
-              label='Email Address'
-              name='email'
-              autoComplete='email'
+              id='username'
+              label='username'
+              name='username'
+              autoComplete='username'
               autoFocus
+              onChange={(e) => { setUsername(e.target.value) }}
             />
             <TextField
               margin='normal'
@@ -77,13 +86,14 @@ export default function SignIn () {
               type='password'
               id='password'
               autoComplete='current-password'
+              onChange={(e) => { setPassword(e.target.value) }}
             />
             <FormControlLabel
               control={<Checkbox value='remember' color='primary' />}
               label='Remember me'
             />
             <Button
-              type='submit'
+              onClick={login}
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
@@ -92,16 +102,19 @@ export default function SignIn () {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href='#' variant='body2'>
-                  Forgot password?
+                <Link href='/Register' variant='body2'>
+                  Register
                 </Link>
               </Grid>
               <Grid item>
-                <Link href='#' variant='body2'>
-                  Don't have an account? Sign Up
+                <Link href='/' variant='body2'>
+                  Home
                 </Link>
               </Grid>
             </Grid>
+            <div>
+              <h1>{loginStatus}</h1>
+            </div>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
