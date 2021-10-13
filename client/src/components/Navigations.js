@@ -129,7 +129,12 @@ const Navigations = () => {
               <Button color='inherit' href='/Contact'>
                 contact
               </Button>
-              <Button color='inherit'>Login</Button>
+              <Button color='inherit' href='/Login'>
+                Login
+              </Button>
+              <Button color='inherit' href='/Register'>
+                Register
+              </Button>
             </Toolbar>
           </AppBar>
           <Drawer variant='permanent' open={open}>
