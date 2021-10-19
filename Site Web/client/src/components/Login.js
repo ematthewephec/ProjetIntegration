@@ -35,7 +35,7 @@ export default function SignIn () {
   const [loginStatus, setLoginStatus] = React.useState('')
 
   const login = () => {
-    Axios.post('http://localhost:6868/Login', {
+    Axios.post('http://localhost:5000/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
@@ -47,6 +47,14 @@ export default function SignIn () {
       console.log(response.data)
     })
   }
+
+  React.useEffect(() => {
+    Axios.get('http://localhost:5000/Login').then((response) => {
+      if (response.data.loggedIn === true) {
+        setLoginStatus(response.data.user[0].username)
+      }
+    })
+  }, [])
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
