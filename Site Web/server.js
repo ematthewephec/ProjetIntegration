@@ -7,6 +7,7 @@ const saltRounds = 10
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
+const jwt = require('jsonwebtoken')
 
 require('dotenv').config()
 
@@ -66,6 +67,24 @@ app.post('/Register', (req, res) => {
     )
   })
 })
+const verifyJWT = (req, res, next) => {
+  const token = req.header('x-access-token')
+  if (!token) {
+    res.send('on a besoin d un token')
+  } else {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        res.json({ auth: false, message: 'vous n avez pas reussi a vous auth' })
+      } else {
+        req.userId = decoded.id
+        next()
+      }
+    })
+  }
+}
+app.get('/isUserAuth', verifyJWT, (req, res) => {
+  res.send('tu est authentifié')
+})
 
 app.get('/Login', (req, res) => {
   if (req.session.user) {
@@ -87,15 +106,18 @@ app.post('/Login', (req, res) => {
       if (result.length > 0) {
         bcrypt.compare(password, result[0].password, (_error, response) => {
           if (response) {
+            const id = result[0].id
+            const token = jwt.sign({ id }, process.env.TOKEN_SECRET, {
+              expiresIn: 300
+            })
             req.session.user = result
-            console.log(req.session.user)
-            res.send(result)
+            res.json({ auth: true, token: token, result: result })
           } else {
-            res.send({ message: 'mauvais username ou password' })
+            res.json({ auth: false, message: 'mauvais password et username combinaison' })
           }
         })
       } else {
-        res.send({ message: 'User inconnue' })
+        res.json({ auth: false, message: 'pas de user connu' })
       }
     }
   )
