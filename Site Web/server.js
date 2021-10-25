@@ -1,14 +1,13 @@
 const express = require('express')
 const path = require('path')
-const mysql = require('mysql2')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
+const pool = require('./helpers/database')
 const saltRounds = 10
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const jwt = require('jsonwebtoken')
-
 require('dotenv').config()
 
 const PORT = process.env.PORT || 5000
@@ -58,7 +57,7 @@ app.post('/Register', (req, res) => {
     if (_err) {
       console.log(_err)
     }
-    db.query(
+    pool.query(
       'INSERT INTO users (username, password, email, nom, prenom) VALUE (?,?,?,?,?)',
       [username, hash, email, nom, prenom],
       (err, result) => {
@@ -96,7 +95,7 @@ app.get('/Login', (req, res) => {
 app.post('/Login', (req, res) => {
   const username = req.body.username
   const password = req.body.password
-  db.query(
+  pool.query(
     'SELECT * FROM users Where username = ?;',
     username,
     (err, result) => {
@@ -121,10 +120,4 @@ app.post('/Login', (req, res) => {
       }
     }
   )
-})
-const db = mysql.createConnection({
-  user: process.env.USER,
-  host: process.env.HOST,
-  password: process.env.PASSWORDDB,
-  database: process.env.DATABASE
 })
