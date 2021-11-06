@@ -1,10 +1,13 @@
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import ttk
+import serial.tools.list_ports
 
 class App():
   def __init__(self):
     self.tk = Tk()
+    self.icon = ImageTk.PhotoImage(file="photos/icon.png")
+    self.tk.iconphoto(False, self.icon)
     self.tk.title("Check Computers")
     self.tk.geometry("1350x750")
     self.tk.resizable(0, 0)
@@ -31,7 +34,6 @@ class App():
     self.stockage = {'taille': "1Tb", 'restant': "300Gb"}
     self.network = {'download': 1000, 'upload': 1000, 'latence': 700}
     self.ecran = True
-    self.running = False
 
     self.test_ecran()
     self.system_info()
@@ -39,7 +41,6 @@ class App():
     self.ram_info()
     self.batterie_info()
     self.temperature_info()
-    self.boutton_start()
     self.stockage_info()
     self.network_info()
     self.tk.mainloop()
@@ -131,24 +132,31 @@ class App():
     system_stats.place(x=555, y=240)
 
   def connexion_ecran(self):
-    ecran_widget = Label(self.tk, image=self.widget_small, borderwidth=0, highlightthickness=0)
+    ecran_widget = Label(self.tk, image=self.widget_long, borderwidth=0, highlightthickness=0)
     ecran_widget.place(x=30, y=550)
     ecran_infos = Label(self.tk, text="Ecran",foreground="#3d78f7", font=("Berlin Sans fb demi", 25),
                       background="#31395e")
     ecran_infos.place(x=50, y=570)
     if(not self.ecran):
-      ecran_status = Label(self.tk, text="Déconnecté", foreground="#f70909",font=("Berlin Sans fb demi", 20),
+      ecran_status = Label(self.tk, text="Déconnecté", foreground="#f70909",font=("Berlin Sans fb demi", 30),
                            background="#31395e")
-      ecran_status.place(x=75,y=615)
+      ecran_status.place(x=150,y=615)
     elif(self.ecran):
-      ecran_status = Label(self.tk, text="Connecté", foreground="#3df709",font=("Berlin Sans fb demi", 20),
+      ecran_status = Label(self.tk, text="Connecté", foreground="#3df709",font=("Berlin Sans fb demi", 30),
                            background="#31395e")
-      ecran_status.place(x=80,y=615)
+      ecran_status.place(x=170,y=615)
 
   def test_ecran(self):
-    self.ecran = not self.ecran
+    myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+    if len(myports) > 0:
+      if "VID:PID=2341:0043" in myports[0][2]:
+        self.ecran = True
+      else:
+        self.ecran = False
+    else:
+      self.ecran = False
     self.connexion_ecran()
-    self.tk.after(10000, self.test_ecran)
+    self.tk.after(5000, self.test_ecran)
 
   def stockage_info(self):
     stockage_widget = Label(self.tk, image=self.widget_long, borderwidth=0, highlightthickness=0)
@@ -187,27 +195,3 @@ class App():
     latency_value = Label(self.tk, text=str(self.network['latence']) + "ms", font=("Berlin Sans fb demi", 12),
                          background="#31395e")
     latency_value.place(x=1245, y=632)
-
-  def boutton_start(self):
-    bouton_widget = Label(self.tk, image=self.widget_small, borderwidth=0, highlightthickness=0)
-    bouton_widget.place(x=260, y=550)
-    if(not self.running):
-      bouton_titre = Label(self.tk, text="Running",foreground="#f70909", font=("Berlin Sans fb demi", 25),
-                        background="#31395e")
-      bouton_titre.place(x=280, y=570)
-    elif(self.running):
-      bouton_titre = Label(self.tk, text="Running",foreground="#3df709", font=("Berlin Sans fb demi", 25),
-                        background="#31395e")
-      bouton_titre.place(x=280, y=570)
-    btn_start = Button(self.tk,
-                  command=self.toggle_start,
-                  image=self.start,
-                  borderwidth=0,
-                  highlightthickness=0,
-                  background="#31395e",
-                  activebackground="#31395e")
-    btn_start.place(x=340, y=620)
-
-  def toggle_start(self):
-    self.running = not self.running
-    self.boutton_start()
