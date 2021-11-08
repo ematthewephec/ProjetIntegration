@@ -3,35 +3,33 @@ import psutil
 import platform
 import cpuinfo
 import GPUtil
-from tabulate import tabulate
 from datetime import datetime
-from multiprocessing import Process as mproc
 from threading import *
 import mariadb as mdb
 import sys
 import time
 from pyspectator.processor import Cpu # temperature
-from dbconnection import main as dbconnect
+import dbconnection as dbc
 import math
 # import wmi
 
 ### LOGIN TO MYSQL DATABASE###
-"""try:
-    mydb = mdb.connect(
-        host="localhost",
-        user="root",
-        password="Jh@ndar.506",
-        port=3307,
-        database="python_data"
+try:
+    my_db = mdb.connect(
+        host=dbc.host,
+        user=dbc.user,
+        password=dbc.password,
+        port=dbc.port,
+        database=dbc.database
     )
 except mdb.Error as e:
     print(f"Error connecting to MariaDB Platform: {e}")
     sys.exit(1)
 
-mycursor = mydb.cursor()"""
-
-my_db = dbconnect()
 db_cursor = my_db.cursor()
+
+u_name = "Jacques"
+now_date = datetime.today()
 
 IS_RUNNING = True
 computer_data = {}
@@ -67,15 +65,13 @@ def cpu_test():
        time.sleep(2)
 
 
-def cpu_test_multiproc(cpu_percent):
-    u_name = "test_user"
-    now_date = datetime.today()
-    sql = "INSERT INTO cpu_test (user_id, test_date, cpu_percent) VALUES (%s, %s, %s)"
-    values = (u_name, now_date, cpu_percent)
+def cpu_test_to_db():
+    time.sleep(5)
+    sql = "INSERT INTO cpu_test (userID, test_date, cpu_percent) VALUES (%s, %s, %s)"
+    values = (u_name, now_date, computer_data['cpu_percent'])
     # turn into list
-    # mycursor.execute(sql, values)
-    # mydb.commit()
-    time.sleep(1)
+    db_cursor.execute(sql, values)
+    my_db.commit()
 
 
 def convert_time(seconds):
@@ -99,7 +95,15 @@ def battery_test():
         print("Battery left : ", convert_time(battery.secsleft))"""
         time.sleep(60)
 
-def user_info_test():
+def battery_test_to_db():
+    time.sleep(5)
+    sql = "INSERT INTO battery_test (userID, test_date, battery_percent) VALUES (%s, %s, %s)"
+    values = (u_name, now_date, computer_data['battery'])
+    # turn into list
+    db_cursor.execute(sql, values)
+    my_db.commit()
+
+def basic_info_test():
     while IS_RUNNING:
         """print('--------------------------')
         print('------- info Test ---------')
@@ -118,6 +122,13 @@ def user_info_test():
         # print(f"the processor is : {lol1.brand_raw}")
         time.sleep(300)
 
+def basic_info_test_to_db():
+    time.sleep(5)
+    sql = "INSERT INTO basic_info_test (userID, test_date, user_name, processor, cpu_type) VALUES (%s, %s, %s, %s, %s)"
+    values = (u_name, now_date, computer_data['user'], computer_data['processor'], computer_data['cpu_type'])
+    #turn into list
+    db_cursor.execute(sql, values)
+    my_db.commit()
 
 def ram_test():
     while IS_RUNNING:
@@ -133,7 +144,7 @@ def ram_test():
         print(f" Used: {get_size(svmem.used)}")
         print(f" Percentage: {get_size(svmem.percent)} %")"""
         computer_data['virtual_ram']['total'] = get_size(svmem.total)
-        computer_data['virtual_ram']['percent'] = get_size(svmem.percent)
+        computer_data['virtual_ram']['percent'] = svmem.percent
 
         swap = psutil.swap_memory()
         """print('\nSwap Partition: ')
@@ -142,9 +153,20 @@ def ram_test():
         print(f" Used: {get_size(swap.used)}")
         print(f" Percentage: {get_size(swap.percent)} %")"""
         computer_data['swap_ram']['total'] = get_size(swap.total)
-        computer_data['swap_ram']['percent'] = get_size(swap.percent)
+        computer_data['swap_ram']['percent'] = swap.percent
 
         time.sleep(5)
+
+def ram_test_to_db():
+    time.sleep(5)
+    sql = "INSERT INTO ram_test (userID, test_date, total_virtual, percent_virtual, total_swap, percent_swap) VALUES \
+                  (%s, %s, %s, %s, %s, %s)"
+    values = (u_name, now_date, computer_data['virtual_ram']['total'],
+              computer_data['virtual_ram']['percent'], computer_data['swap_ram']['total'],
+              computer_data['swap_ram']['percent'])
+    # turn into list
+    db_cursor.execute(sql, values)
+    my_db.commit()
 
 def storage_test():
     while IS_RUNNING:
@@ -170,6 +192,19 @@ def storage_test():
         computer_data['storage_disk']['used'] = get_size(total_storage_used)
 
         time.sleep(90)
+
+def storage_test_to_db():
+    time.sleep(5)
+    sql = "INSERT INTO storage_test (userID, test_date, total_storage, used_storage) VALUES (%s, %s, %s, %s)"
+    values = (u_name, now_date, computer_data['storage_disk']['total'],
+              computer_data['storage_disk']['used'])
+    # turn into list
+    db_cursor.execute(sql, values)
+    my_db.commit()
+
+#TO DO
+def gpu_test():
+    pass
 
 #TO DO
 def network_info_test():
@@ -221,6 +256,8 @@ def display_data():
         print('Waiting for data...')
         time.sleep(15)
 
+        send_data_to_db()
+
         print('=====OVERVIEW=====')
         print(f'Time: {datetime.today()}')
         print(f"User: {computer_data['user']}")
@@ -242,7 +279,60 @@ def display_data():
         #print(f"Network Upload Speed: {computer_data['speedtest']['upload']} Mbits/s")
         #print(f"Network Ping: {computer_data['speedtest']['ping']} ms")
 
-def main():
+
+def check_cpu_table():
+    db_cursor.execute("SHOW TABLES LIKE 'cpu_test';")
+    test = db_cursor.fetchall()
+    #print(test)
+    if len(test) == 0:
+        #print('Does not exist')
+        db_cursor.execute("CREATE TABLE cpu_test (userID VARCHAR(60), test_date VARCHAR(60), cpu_percent INT)")
+
+
+def check_ram_table():
+    db_cursor.execute("SHOW TABLES LIKE 'ram_test';")
+    test = db_cursor.fetchall()
+    #print(test)
+    if len(test) == 0:
+        #print('Does not exist')
+        db_cursor.execute("CREATE TABLE ram_test (userID VARCHAR(60), test_date VARCHAR(60), \
+        total_virtual VARCHAR(12), percent_virtual VARCHAR(12), total_swap VARCHAR(12), percent_swap VARCHAR(12))")
+
+def check_basic_info_table():
+    db_cursor.execute("SHOW TABLES LIKE 'basic_info_test';")
+    test = db_cursor.fetchall()
+    #print(test)
+    if len(test) == 0:
+        #print('Does not exist')
+        db_cursor.execute("CREATE TABLE basic_info_test (userID VARCHAR(60), test_date VARCHAR(60), \
+        user_name VARCHAR(60), processor VARCHAR(60), cpu_type VARCHAR(60))")
+
+def check_battery_table():
+    db_cursor.execute("SHOW TABLES LIKE 'battery_test';")
+    test = db_cursor.fetchall()
+    # print(test)
+    if len(test) == 0:
+        # print('Does not exist')
+        db_cursor.execute("CREATE TABLE battery_test (userID VARCHAR(60), test_date VARCHAR(60), \
+            battery_percent VARCHAR(10))")
+
+def check_storage_table():
+    db_cursor.execute("SHOW TABLES LIKE 'storage_test';")
+    test = db_cursor.fetchall()
+    # print(test)
+    if len(test) == 0:
+        # print('Does not exist')
+        db_cursor.execute("CREATE TABLE storage_test (userID VARCHAR(60), test_date VARCHAR(60), \
+            total_storage VARCHAR(20), used_storage VARCHAR(20))")
+
+def load_db():
+    check_basic_info_table()
+    check_cpu_table()
+    check_ram_table()
+    check_battery_table()
+    check_storage_table()
+
+def run_tests():
     IS_RUNNING = True
     ### configure daemons
     # speed_test() TODO DEBUG
@@ -255,7 +345,7 @@ def main():
     # temperature_test() TODO
     # display_data() OK
 
-    user_info_thread = Thread(target=user_info_test, daemon=True)
+    basic_info_thread = Thread(target=basic_info_test, daemon=True)
     battery_thread = Thread(target=battery_test, daemon=True)
     cpu_thread = Thread(target=cpu_test, daemon=True)
     ram_thread = Thread(target=ram_test, daemon=True)
@@ -268,7 +358,7 @@ def main():
 
     ### initialize daemons
     ### once tkinter button is linked, we can toggle start and stop
-    user_info_thread.start()
+    basic_info_thread.start()
     battery_thread.start()
     cpu_thread.start()
     ram_thread.start()
@@ -278,13 +368,24 @@ def main():
     #network_thread.start()
     #temperature_thread.start()
     display_thread.start()
-    
+
     while IS_RUNNING:
         pass
         # insert event listener here to check if App button stops tests
-        if(BUTTON_TOGGLE):
+        if BUTTON_TOGGLE:
             IS_RUNNING = False
 
+def send_data_to_db():
+    basic_info_test_to_db()
+    cpu_test_to_db()
+    battery_test_to_db()
+    ram_test_to_db()
+    storage_test_to_db()
+
 if __name__ == "__main__":
-    main()
+    load_db()
+    run_tests()
+
+
+
 
