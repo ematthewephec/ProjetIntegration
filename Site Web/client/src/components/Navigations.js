@@ -40,7 +40,7 @@ import Thermostat from './content/Thermostat'
 // import Deposits from './Deposits'
 // import Orders from './Orders'
 
-const drawerWidth = 240
+const drawerWidth = 240 // ce qu'il faut changer pour la page contact
 const mdTheme = createTheme()
 
 const AppBar = styled(MuiAppBar, {
@@ -121,7 +121,7 @@ const Navigations = () => {
                 edge='start'
                 color='inherit'
                 aria-label='open drawer'
-                onClick={toggleDrawer}
+                // onClick={toggleDrawer}
                 sx={{
                   marginRight: '36px',
                   ...(open && { display: 'none' })
@@ -152,107 +152,109 @@ const Navigations = () => {
               </Button>
             </Toolbar>
           </AppBar>
-          <Drawer variant='permanent' open={open}>
-            <Toolbar
+          {window.location.pathname !== '/Contact' &&
+            <Drawer variant='permanent' open={open}>
+              <Toolbar
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  px: [1]
+                }}
+              >
+                <IconButton onClick={toggleDrawer}>
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Toolbar>
+              <Divider />
+              <List>
+                <ListSubheader inset>Pc Ressource</ListSubheader>
+                <ListItem button onClick={() => { setSelected('Dashboard') }}>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Dashboard' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Data') }}>
+                  <ListItemIcon>
+                    <DataSaverOffIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Data' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Reports') }}>
+                  <ListItemIcon>
+                    <BarChartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Reports' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('BatteryChargingFull') }}>
+                  <ListItemIcon>
+                    <BatteryChargingFullIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='BatteryChargingFull' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('DeviceThermostat') }}>
+                  <ListItemIcon>
+                    <DeviceThermostatIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='DeviceThermostat' />
+                </ListItem>
+              </List>
+              <Divider />
+              <List>
+                <ListSubheader inset>Network</ListSubheader>
+                <ListItem button onClick={() => { setSelected('NetworkCheckIcon') }}>
+                  <ListItemIcon>
+                    <NetworkCheckIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='NetworkCheckIcon' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Router') }}>
+                  <ListItemIcon>
+                    <RouterIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Router' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Port') }}>
+                  <ListItemIcon>
+                    <AccountTreeIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Port' />
+                </ListItem>
+              </List>
+            </Drawer>}
+          {window.location.pathname !== '/Contact' &&
+            <Box
+              component='main'
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                px: [1]
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? theme.palette.grey[100]
+                    : theme.palette.grey[900],
+                flexGrow: 1,
+                height: '100vh',
+                overflow: 'auto'
               }}
             >
-              <IconButton onClick={toggleDrawer}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Toolbar>
-            <Divider />
-            <List>
-              <ListSubheader inset>Pc Ressource</ListSubheader>
-              <ListItem button onClick={() => { setSelected('Dashboard') }}>
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary='Dashboard' />
-              </ListItem>
-              <ListItem button onClick={() => { setSelected('Data') }}>
-                <ListItemIcon>
-                  <DataSaverOffIcon />
-                </ListItemIcon>
-                <ListItemText primary='Data' />
-              </ListItem>
-              <ListItem button onClick={() => { setSelected('Reports') }}>
-                <ListItemIcon>
-                  <BarChartIcon />
-                </ListItemIcon>
-                <ListItemText primary='Reports' />
-              </ListItem>
-              <ListItem button onClick={() => { setSelected('BatteryChargingFull') }}>
-                <ListItemIcon>
-                  <BatteryChargingFullIcon />
-                </ListItemIcon>
-                <ListItemText primary='BatteryChargingFull' />
-              </ListItem>
-              <ListItem button onClick={() => { setSelected('DeviceThermostat') }}>
-                <ListItemIcon>
-                  <DeviceThermostatIcon />
-                </ListItemIcon>
-                <ListItemText primary='DeviceThermostat' />
-              </ListItem>
-            </List>
-            <Divider />
-            <List>
-              <ListSubheader inset>Network</ListSubheader>
-              <ListItem button onClick={() => { setSelected('NetworkCheckIcon') }}>
-                <ListItemIcon>
-                  <NetworkCheckIcon />
-                </ListItemIcon>
-                <ListItemText primary='NetworkCheckIcon' />
-              </ListItem>
-              <ListItem button onClick={() => { setSelected('Router') }}>
-                <ListItemIcon>
-                  <RouterIcon />
-                </ListItemIcon>
-                <ListItemText primary='Router' />
-              </ListItem>
-              <ListItem button onClick={() => { setSelected('Port') }}>
-                <ListItemIcon>
-                  <AccountTreeIcon />
-                </ListItemIcon>
-                <ListItemText primary='Port' />
-              </ListItem>
-            </List>
-          </Drawer>
-          <Box
-            component='main'
-            sx={{
-              backgroundColor: (theme) =>
-                theme.palette.mode === 'light'
-                  ? theme.palette.grey[100]
-                  : theme.palette.grey[900],
-              flexGrow: 1,
-              height: '100vh',
-              overflow: 'auto'
-            }}
-          >
-            <Toolbar />
-            {select === 'Dashboard' &&
-              <Dashboard />}
-            {select === 'Data' &&
-              <Data />}
-            {select === 'Reports' &&
-              <Reports />}
-            {select === 'BatteryChargingFull' &&
-              <Baterry />}
-            {select === 'Router' &&
-              <Routers />}
-            {select === 'DeviceThermostat' &&
-              <Thermostat />}
-            {select === 'Port' &&
-              <Port />}
-            {select === 'NetworkCheckIcon' &&
-              <Network />}
-            <Copyright sx={{ pt: 4 }} />
-          </Box>
+              <Toolbar />
+              {select === 'Dashboard' &&
+                <Dashboard />}
+              {select === 'Data' &&
+                <Data />}
+              {select === 'Reports' &&
+                <Reports />}
+              {select === 'BatteryChargingFull' &&
+                <Baterry />}
+              {select === 'Router' &&
+                <Routers />}
+              {select === 'DeviceThermostat' &&
+                <Thermostat />}
+              {select === 'Port' &&
+                <Port />}
+              {select === 'NetworkCheckIcon' &&
+                <Network />}
+              <Copyright sx={{ pt: 4 }} />
+            </Box>}
         </Box>
       </ThemeProvider>
     </div>
