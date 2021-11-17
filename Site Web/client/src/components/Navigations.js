@@ -4,7 +4,6 @@ import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Button from '@mui/material/Button'
 import { List } from '@mui/material'
-import { ressourcePc, analyseNet } from './itemBar'
 import MuiDrawer from '@mui/material/Drawer'
 import MuiAppBar from '@mui/material/AppBar'
 // import Dashboard from './components/Navbar'
@@ -16,17 +15,32 @@ import MenuIcon from '@mui/icons-material/Menu'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
+import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull'
+import BarChartIcon from '@mui/icons-material/BarChart'
+import DataSaverOffIcon from '@mui/icons-material/DataSaverOff'
+import ListSubheader from '@mui/material/ListSubheader'
+import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat'
+import NetworkCheckIcon from '@mui/icons-material/NetworkCheck'
+import RouterIcon from '@mui/icons-material/Router'
+import AccountTreeIcon from '@mui/icons-material/AccountTree'
+import Dashboard from './content/Dashboard'
+import Routers from './content/Routers'
+import Baterry from './content/Battery'
+import Data from './content/Data'
+import Network from './content/Network'
+import Port from './content/Port'
+import Reports from './content/Reports'
+import Thermostat from './content/Thermostat'
+
 // import Chart from './Charts'
 // import Deposits from './Deposits'
 // import Orders from './Orders'
-import GPU from '../picture/GPU.PNG'
-import GPUgaph from '../picture/GPU graph.PNG'
-import RAMcpu from '../picture/RAM CPU.PNG'
 
-const drawerWidth = 240
+const drawerWidth = 240 // ce qu'il faut changer pour la page contact
 const mdTheme = createTheme()
 
 const AppBar = styled(MuiAppBar, {
@@ -72,6 +86,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }
   })
 )
+
 function Copyright (props) {
   return (
     <Typography variant='body2' color='text.secondary' align='center' {...props}>
@@ -87,10 +102,10 @@ function Copyright (props) {
 
 const Navigations = () => {
   const [open, setOpen] = React.useState(true)
+  const [select, setSelected] = React.useState('Dashboard')
   const toggleDrawer = () => {
     setOpen(!open)
   }
-
   return (
     <div>
       <ThemeProvider theme={mdTheme}>
@@ -106,7 +121,7 @@ const Navigations = () => {
                 edge='start'
                 color='inherit'
                 aria-label='open drawer'
-                onClick={toggleDrawer}
+                // onClick={toggleDrawer}
                 sx={{
                   marginRight: '36px',
                   ...(open && { display: 'none' })
@@ -137,75 +152,109 @@ const Navigations = () => {
               </Button>
             </Toolbar>
           </AppBar>
-          <Drawer variant='permanent' open={open}>
-            <Toolbar
+          {window.location.pathname !== '/Contact' &&
+            <Drawer variant='permanent' open={open}>
+              <Toolbar
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  px: [1]
+                }}
+              >
+                <IconButton onClick={toggleDrawer}>
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Toolbar>
+              <Divider />
+              <List>
+                <ListSubheader inset>Pc Ressource</ListSubheader>
+                <ListItem button onClick={() => { setSelected('Dashboard') }}>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Dashboard' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Data') }}>
+                  <ListItemIcon>
+                    <DataSaverOffIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Data' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Reports') }}>
+                  <ListItemIcon>
+                    <BarChartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Reports' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('BatteryChargingFull') }}>
+                  <ListItemIcon>
+                    <BatteryChargingFullIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='BatteryChargingFull' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('DeviceThermostat') }}>
+                  <ListItemIcon>
+                    <DeviceThermostatIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='DeviceThermostat' />
+                </ListItem>
+              </List>
+              <Divider />
+              <List>
+                <ListSubheader inset>Network</ListSubheader>
+                <ListItem button onClick={() => { setSelected('NetworkCheckIcon') }}>
+                  <ListItemIcon>
+                    <NetworkCheckIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='NetworkCheckIcon' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Router') }}>
+                  <ListItemIcon>
+                    <RouterIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Router' />
+                </ListItem>
+                <ListItem button onClick={() => { setSelected('Port') }}>
+                  <ListItemIcon>
+                    <AccountTreeIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Port' />
+                </ListItem>
+              </List>
+            </Drawer>}
+          {window.location.pathname !== '/Contact' &&
+            <Box
+              component='main'
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                px: [1]
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? theme.palette.grey[100]
+                    : theme.palette.grey[900],
+                flexGrow: 1,
+                height: '100vh',
+                overflow: 'auto'
               }}
             >
-              <IconButton onClick={toggleDrawer}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Toolbar>
-            <Divider />
-            <List>{ressourcePc}</List>
-            <Divider />
-            <List>{analyseNet}</List>
-          </Drawer>
-          <Box
-            component='main'
-            sx={{
-              backgroundColor: (theme) =>
-                theme.palette.mode === 'light'
-                  ? theme.palette.grey[100]
-                  : theme.palette.grey[900],
-              flexGrow: 1,
-              height: '100vh',
-              overflow: 'auto'
-            }}
-          >
-            <Toolbar />
-            <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
-              <Grid container spacing={3}>
-                {/* Chart */}
-                <Grid item xs={12} md={8} lg={9}>
-                  <Paper
-                    sx={{
-                      p: 2,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      height: 240
-                    }}
-                  >
-                    <img src={GPU} />
-                  </Paper>
-                </Grid>
-                {/* Recent Deposits */}
-                <Grid item xs={12} md={4} lg={3}>
-                  <Paper
-                    sx={{
-                      p: 2,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      height: 240
-                    }}
-                  >
-                    <img src={RAMcpu} />
-                  </Paper>
-                </Grid>
-                {/* Recent Orders */}
-                <Grid item xs={12}>
-                  <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                    <img src={GPUgaph} />
-                  </Paper>
-                </Grid>
-              </Grid>
+              <Toolbar />
+              {select === 'Dashboard' &&
+                <Dashboard />}
+              {select === 'Data' &&
+                <Data />}
+              {select === 'Reports' &&
+                <Reports />}
+              {select === 'BatteryChargingFull' &&
+                <Baterry />}
+              {select === 'Router' &&
+                <Routers />}
+              {select === 'DeviceThermostat' &&
+                <Thermostat />}
+              {select === 'Port' &&
+                <Port />}
+              {select === 'NetworkCheckIcon' &&
+                <Network />}
               <Copyright sx={{ pt: 4 }} />
-            </Container>
-          </Box>
+            </Box>}
         </Box>
       </ThemeProvider>
     </div>
