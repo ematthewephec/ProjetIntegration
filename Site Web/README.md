@@ -1,9 +1,5 @@
 # ProjetIntegration
 
-## Commande première utilisation
-1. `npm install` (ca devrais creer un nodemodule )
-1. `cd client && npm install` (ca devrais creer un nodemodule dans client)
-1. `cd . && npm run build` (ca devrais creer un build dans client)
 
 ## commande utilisé
 1. `npm init`

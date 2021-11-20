@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import Axios from 'axios'
+import Alert from '@mui/material/Alert'
+import Snackbar from '@mui/material/Snackbar'
 
 function Copyright (props) {
   return (
@@ -32,21 +34,40 @@ const theme = createTheme()
 export default function SignIn () {
   const [usernames, setUsername] = React.useState('')
   const [passwords, setPassword] = React.useState('')
-  const [loginStatus, setLoginStatus] = React.useState('')
+  const [loginStatus, setLoginStatus] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setOpen(false)
+  }
 
   const login = () => {
-    Axios.post('http://localhost:6868/Login', {
+    Axios.post('http://localhost:5000/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
-      if (response.data.message) {
-        setLoginStatus(response.data.message)
+      if (!response.data.auth) {
+        setLoginStatus(false)
       } else {
-        setLoginStatus(response.data[0].username)
+        localStorage.setItem('token', response.data.token)
+        setLoginStatus(true)
       }
-      console.log(response.data)
+    })
+    setOpen(true)
+  }
+  const userAuthenticated = () => {
+    Axios.get('http://localhost:5000/isUserAuth', {
+      hearders: {
+        'x-access-token': localStorage.getItem('token')
+      }
+    }).then((response) => {
+      console.log(response)
     })
   }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
@@ -113,7 +134,14 @@ export default function SignIn () {
               </Grid>
             </Grid>
             <div>
-              <h1>{loginStatus}</h1>
+              <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity='success' sx={{ width: '100%' }}>
+                  <p>{loginStatus}</p>
+                </Alert>
+              </Snackbar>
+              {loginStatus && (
+                <button onClick={userAuthenticated}>check if auuth </button>
+              )}
             </div>
           </Box>
         </Box>

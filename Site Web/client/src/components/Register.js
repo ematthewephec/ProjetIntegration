@@ -36,8 +36,9 @@ export default function SignUp () {
   const [noms, setNom] = React.useState('')
   const [prenoms, setprenom] = React.useState('')
 
+  Axios.defaults.withCredentials = true
   const register = () => {
-    Axios.post('http://localhost:6868/Register', {
+    Axios.post('http://localhost:5000/Register', {
       username: usernames,
       password: passwords,
       email: emails,
