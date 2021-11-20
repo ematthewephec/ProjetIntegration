@@ -1,8 +1,7 @@
 # ProjetIntegration
 
-## commande utilisé
-lol
 
+## commande utilisé
 1. `npm init`
 1. `npm install express dotenv`
 1. `node server.js`
