@@ -1,6 +1,6 @@
 import React from 'react'
 // import Nav from './components/Nav'
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
+import { styled, createTheme, ThemeProvider} from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Button from '@mui/material/Button'
 import { List } from '@mui/material'
@@ -40,7 +40,7 @@ import Thermostat from './content/Thermostat'
 // import Deposits from './Deposits'
 // import Orders from './Orders'
 
-const drawerWidth = 240 // ce qu'il faut changer pour la page contact
+let drawerWidth = 240 // ce qu'il faut changer pour la page contact
 const mdTheme = createTheme()
 
 const AppBar = styled(MuiAppBar, {
@@ -101,6 +101,9 @@ function Copyright (props) {
 }
 
 const Navigations = () => {
+  const pos = (window.location.href.includes("Contact") ? 'relative' : 'absolute');
+  window.location.href.includes("Contact") ? drawerWidth = 0 : drawerWidth = 240;
+  const title = ((window.location.pathname === "/") || (window.location.pathname === "/Home") ? "ressources pc" : "");
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
   const toggleDrawer = () => {
@@ -111,7 +114,7 @@ const Navigations = () => {
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position='absolute' open={open}>
+          <AppBar position={pos} open={open} >
             <Toolbar
               sx={{
                 pr: '24px' // keep right padding when drawer closed
@@ -136,7 +139,7 @@ const Navigations = () => {
                 noWrap
                 sx={{ flexGrow: 1 }}
               >
-                ressources pc
+                {title}
               </Typography>
               <Button color='inherit' href='/'>
                 Home
