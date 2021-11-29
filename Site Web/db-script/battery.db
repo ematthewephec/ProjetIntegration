@@ -1,0 +1,7 @@
+CREATE TABLE battery(
+id INT NOT NULL AUTO_INCREMENT,
+idPc INT NOT NULL,
+test_date VARCHAR(60) NOT NULL,
+battery_percent VARCHAR(10) NOT NULL,
+PRIMARY KEY ( id ),
+FOREIGN KEY(idPc) REFERENCES pcs(idPc));
