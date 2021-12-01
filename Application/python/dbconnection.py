@@ -87,40 +87,39 @@ def check_storage_table():
 
 
 ### FUNCTIONS TO SEND DATA ###
-def info_test_to_db(id, idPc, current_date, user_name, processor, cpu_type, os_version):
-    sql = "INSERT INTO info(id, idPc, test_date, user_name, processor, cpu_type, os_version) \
-    VALUES (%s, %s, %s, %s, %s, %s, %s)"
+def info_test_to_db(idPc, current_date, user_name, processor, cpu_type, os_version):
+    sql = "INSERT INTO info(idPc, test_date, user_name, processor, cpu_type, os_version) \
+    VALUES (%s, %s, %s, %s, %s, %s)"
     values = (id, idPc, current_date, user_name, processor, cpu_type, os_version)
     db_cursor.execute(sql, values)
     my_db.commit()
 
 
-def battery_test_to_db(id, idPc, current_date, percent):
-    sql = "INSERT INTO battery (id, idPc, test_date, battery_percent) VALUES (%s, %s, %s, %s)"
-    values = (id, idPc, current_date, percent)
+def battery_test_to_db(idPc, current_date, percent):
+    sql = "INSERT INTO battery (idPc, test_date, battery_percent) VALUES (%s, %s, %s)"
+    values = (idPc, current_date, percent)
     db_cursor.execute(sql, values)
     my_db.commit()
 
 
-def cpu_test_to_db(id, idPc, current_date, percent):
-    sql = "INSERT INTO cpu (id, idPc, test_date, cpu_percent) VALUES (%s, %s, %s, %s)"
-    values = (id, idPc, current_date, percent)
+def cpu_test_to_db(idPc, current_date, percent):
+    sql = "INSERT INTO cpu (idPc, test_date, cpu_percent) VALUES (%s, %s, %s)"
+    values = (idPc, current_date, percent)
     db_cursor.execute(sql, values)
     my_db.commit()
 
 
-def ram_test_to_db(id, idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap):
-    sql = "INSERT INTO ram (id, idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap) VALUES \
-                  (%s, %s, %s, %s, %s, %s, %s)"
-    values = (id, idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap)
+def ram_test_to_db(idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap):
+    sql = "INSERT INTO ram (idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap) VALUES \
+                  (%s, %s, %s, %s, %s, %s)"
+    values = (idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap)
     db_cursor.execute(sql, values)
     my_db.commit()
 
 
-def storage_test_to_db(id, idPc, current_date, total_storage, used_storage):
-    time.sleep(5)
-    sql = "INSERT INTO storage(id, idPc, test_date, total_storage, used_storage) VALUES (%s, %s, %s, %s, %s)"
-    values = (id, idPc, current_date, total_storage, used_storage)
+def storage_test_to_db(idPc, current_date, total_storage, used_storage):
+    sql = "INSERT INTO storage(idPc, test_date, total_storage, used_storage) VALUES (%s, %s, %s, %s)"
+    values = (idPc, current_date, total_storage, used_storage)
     # turn into list
     db_cursor.execute(sql, values)
     my_db.commit()

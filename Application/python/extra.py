@@ -207,11 +207,11 @@ def display_data():
 def send_data():
     while IS_RUNNING:
         time.sleep(12)
-        dbc.info_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['info'])
-        dbc.battery_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['battery'])
-        dbc.cpu_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['cpu'])
-        dbc.ram_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['ram'])
-        dbc.storage_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['storage'])
+        dbc.info_test_to_db(IDPC, CURRENT_DATE, **computer_data['info'])
+        dbc.battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
+        dbc.cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
+        dbc.ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
+        dbc.storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
         print('Data successfully sent!')
 
 def run_tests():
@@ -261,7 +261,7 @@ def run_tests():
 
 if __name__ == "__main__":
     dbc.load_db()
-    run_tests()
+    #run_tests()
 
 
 
