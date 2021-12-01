@@ -6,17 +6,18 @@ import GPUtil
 from datetime import datetime
 from threading import *
 import time
-from pyspectator.processor import Cpu # temperature
+# from pyspectator.processor import Cpu # temperature
 import dbconnection as dbc
 import math
 import os
+#import dotenv
 from dotenv import load_dotenv as env
 
 IS_RUNNING = True
 computer_data = {}
 BUTTON_TOGGLE = False
 
-USERID = int(os.environ.get("USERID"))
+IDPC = int(os.environ.get("IDPC"))
 CURRENT_DATE = datetime.now()
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
@@ -33,7 +34,7 @@ def convert_time(seconds):
     return "%d:%02d:%02d" % (hours, minutes, seconds)
 
 ### TESTS ###
-def basic_info_test():
+def info_test():
     computer_data['info'] = {}
     while IS_RUNNING:
         """print('--------------------------')
@@ -41,11 +42,12 @@ def basic_info_test():
         print('--------------------------')"""
         user = psutil.users()
         # print(f"user is : {user[0].name}")
-        computer_data['info']['user'] = user[0].name
+        computer_data['info']['user_name'] = user[0].name
         # print(f"User: {user[0].name}")
         computer_data['info']['processor'] = platform.processor()
         # print(f"the processor is : {platform.processor()}")
         computer_data['info']['cpu_type'] = cpuinfo.get_cpu_info()['brand_raw']
+        computer_data['info']['os_version'] = platform.platform()
         # print(f"CPU is : {cpu}")
         # test1 = platform.machine()
         # print(test1)
@@ -61,7 +63,6 @@ def battery_test():
             print('--------------------------')"""
         battery = psutil.sensors_battery()
         computer_data['battery']['percent'] = battery.percent
-        time.sleep(0.5)
 
 def cpu_test():
     computer_data['cpu'] = {}
@@ -74,7 +75,6 @@ def cpu_test():
                 # print("FINI")
                 break
         computer_data['cpu']['percent'] = cpu
-        time.sleep(0.5)
 
 def ram_test():
     computer_data['ram'] = {}
@@ -87,8 +87,10 @@ def ram_test():
         print(f" Available: {get_size(svmem.available)}")
         print(f" Used: {get_size(svmem.used)}")
         print(f" Percentage: {get_size(svmem.percent)} %")"""
-        computer_data['ram']['vram_total'] = get_size(svmem.total)
-        computer_data['ram']['vram_percent'] = svmem.percent
+        computer_data['ram']['total_virtual'] = get_size(svmem.total)
+        #computer_data['ram']['used_virtual'] = get_size(svmem.used)
+        #computer_data['ram']['available_virtual'] = get_size(svmem.available)
+        computer_data['ram']['percent_virtual'] = svmem.percent
 
         swap = psutil.swap_memory()
         """print('\nSwap Partition: ')
@@ -96,12 +98,13 @@ def ram_test():
         print(f" Free: {get_size(swap.free)}")
         print(f" Used: {get_size(swap.used)}")
         print(f" Percentage: {get_size(swap.percent)} %")"""
-        computer_data['ram']['swap_total'] = get_size(swap.total)
-        computer_data['ram']['swap_percent'] = swap.percent
-        time.sleep(0.5)
+        computer_data['ram']['total_swap'] = get_size(swap.total)
+        #computer_data['ram']['used_swap'] = get_size(swap.used)
+        #computer_data['ram']['available_swap'] = get_size(swap.available)
+        computer_data['ram']['percent_swap'] = swap.percent
 
 def storage_test():
-    computer_data['storage_disk'] = {}
+    computer_data['storage'] = {}
     while IS_RUNNING:
         partitions = psutil.disk_partitions()
         # disk_nums, total storage, total used
@@ -120,8 +123,8 @@ def storage_test():
             total_storage_size += partition_usage.total
             total_storage_used += partition_usage.used
 
-        computer_data['storage_disk']['total_storage'] = get_size(total_storage_size)
-        computer_data['storage_disk']['used_storage'] = get_size(total_storage_used)
+        computer_data['storage']['total_storage'] = get_size(total_storage_size)
+        computer_data['storage']['used_storage'] = get_size(total_storage_used)
 
         time.sleep(60)
 
@@ -188,9 +191,9 @@ def display_data():
         print(f"Battery Percentage: {computer_data['battery']['percent']}%")
         print(f"CPU Percentage: {computer_data['cpu']['percent']}%")
         print("\n")
-        print(f"Number of Disk Partitions: {computer_data['storage_disk']['number']}")
-        print(f"Total Storage Space: {computer_data['storage_disk']['total_storage']}")
-        print(f"Used Storage Space: {computer_data['storage_disk']['used_storage']}")
+        print(f"Number of Disk Partitions: {computer_data['storage']['number']}")
+        print(f"Total Storage Space: {computer_data['storage']['total_storage']}")
+        print(f"Used Storage Space: {computer_data['storage']['used_storage']}")
         print("\n")
         print(f"RAM - Total Virtual Memory: {computer_data['ram']['vram_total']}")
         print(f"RAM - Virtual Memory Percentage: {computer_data['ram']['vram_percent']}%")
@@ -204,11 +207,11 @@ def display_data():
 def send_data():
     while IS_RUNNING:
         time.sleep(12)
-        dbc.basic_info_test_to_db(USERID, CURRENT_DATE, **computer_data['info'])
-        dbc.battery_test_to_db(USERID, CURRENT_DATE, **computer_data['battery'])
-        dbc.cpu_test_to_db(USERID, CURRENT_DATE, **computer_data['cpu'])
-        dbc.ram_test_to_db(USERID, CURRENT_DATE, **computer_data['ram'])
-        dbc.storage_test_to_db(USERID, CURRENT_DATE, **computer_data['storage_disk'])
+        dbc.info_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['info'])
+        dbc.battery_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['battery'])
+        dbc.cpu_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['cpu'])
+        dbc.ram_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['ram'])
+        dbc.storage_test_to_db(None, IDPC, CURRENT_DATE, **computer_data['storage'])
         print('Data successfully sent!')
 
 def run_tests():
@@ -224,7 +227,7 @@ def run_tests():
     # temperature_test() TODO
     # display_data() OK
 
-    basic_info_thread = Thread(target=basic_info_test, daemon=True)
+    info_thread = Thread(target=info_test, daemon=True)
     battery_thread = Thread(target=battery_test, daemon=True)
     cpu_thread = Thread(target=cpu_test, daemon=True)
     ram_thread = Thread(target=ram_test, daemon=True)
@@ -238,7 +241,7 @@ def run_tests():
 
     ### initialize daemons
     ### once tkinter button is linked, we can toggle start and stop
-    basic_info_thread.start()
+    info_thread.start()
     battery_thread.start()
     cpu_thread.start()
     ram_thread.start()
