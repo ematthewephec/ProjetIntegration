@@ -1,0 +1,30 @@
+CREATE TABLE pcs(
+idPc INT NOT NULL AUTO_INCREMENT,
+idUser INT NOT NULL,
+idRam INT,
+idGpu INT,
+idInfo INT,
+idSpeed INT,
+idBattery INT,
+idAutre INT,
+PRIMARY KEY ( idPc )),
+FOREIGN KEY(idUser) REFERENCES users(idUser),
+FOREIGN KEY(idRam) REFERENCES ram(id),
+FOREIGN KEY(idGpu) REFERENCES gpu(id),
+FOREIGN KEY(idInfo) REFERENCES info(id),
+FOREIGN KEY(idSpeed) REFERENCES speed(id),
+FOREIGN KEY(idAutre) REFERENCES autre(id),
+FOREIGN KEY(idBattery) REFERENCES battery(id);
+
+CREATE TABLE pcs(
+idPc INT NOT NULL AUTO_INCREMENT,
+PRIMARY KEY ( idPc )),
+
+
+
+
+CREATE TABLE pcs(
+idPc INT NOT NULL AUTO_INCREMENT,
+idUser INT NOT NULL,
+PRIMARY KEY ( idPc ),
+FOREIGN KEY(idUser) REFERENCES users(idUser));

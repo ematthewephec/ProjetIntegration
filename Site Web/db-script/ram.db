@@ -1,0 +1,8 @@
+CREATE TABLE ram(
+id INT NOT NULL AUTO_INCREMENT,
+idPc INT NOT NULL,
+test_date VARCHAR(60),
+total_virtual VARCHAR(12),
+percent_virtual VARCHAR(12),
+total_swap VARCHAR(12),
+PRIMARY KEY ( id ));

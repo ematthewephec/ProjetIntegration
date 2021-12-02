@@ -1,0 +1,8 @@
+CREATE TABLE storage(
+id INT NOT NULL AUTO_INCREMENT,
+idPc INT NOT NULL,
+test_date VARCHAR(60) NOT NULL,
+total_storage VARCHAR(20) NOT NULL, 
+used_storage VARCHAR(20) NOT NULL,
+PRIMARY KEY ( id ),
+FOREIGN KEY(idPc) REFERENCES pcs(idPc));
