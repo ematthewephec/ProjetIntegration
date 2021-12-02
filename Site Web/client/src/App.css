@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+#captcha {
+  margin: 0 auto;
+  width: 304px;
+  margin-bottom: 2%;
+}
+
+#form_title {
+  margin-bottom: 0;
+}
