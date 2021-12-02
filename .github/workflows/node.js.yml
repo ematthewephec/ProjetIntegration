@@ -27,7 +27,9 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm i
-    - run: npm run inst
+    - run: cd client
+    - run: npm i
     - run: npm run build
+      working-directory: ./Projetintegration
     #- run: npm run build
     # - run: npm test
