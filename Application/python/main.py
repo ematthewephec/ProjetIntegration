@@ -1,13 +1,13 @@
-import speedtest
+# import speedtest
 import psutil
 import platform
 import os
 import time
-from pyspectator.processor import Cpu
-import wmi
-import clr
-import cpuinfo
-from temp.PyTherm.pytherm import start
+# from pyspectator.processor import Cpu
+# import wmi
+# import clr
+# import cpuinfo
+# from temp.PyTherm.pytherm import start
 import GPUtil
 import sys
 from tabulate import tabulate
@@ -162,13 +162,14 @@ def gpu():
 
 
 def main():
-    system_info()
-    boot_time()
-    cpu()
-    memory()
-    disk()
-    network()
+    #system_info()
+    #boot_time()
+    #cpu()
+    #memory()
+    #disk()
+    #network()
     gpu()
 
 
-main()
+if __name__ == "__main__":
+    main()
