@@ -28,6 +28,7 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: cd client
+    - run: pwd
     - run: npm install
     - run: cd ..
     - run: pwd
