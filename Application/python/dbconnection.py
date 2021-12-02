@@ -15,7 +15,6 @@ try:
         user=os.environ.get("USER"),
         password=os.environ.get("PASSWORDDB"),
         database=os.environ.get("DATABASE"),
-
     )
 except mdb.Error as e:
     print(f"Error connecting to MariaDB Platform: {e}")
@@ -88,37 +87,33 @@ def check_storage_table():
 
 ### FUNCTIONS TO SEND DATA ###
 def info_test_to_db(idPc, current_date, user_name, processor, cpu_type, os_version):
-    sql = "INSERT INTO info(idPc, test_date, user_name, processor, cpu_type, os_version) \
-    VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (id, idPc, current_date, user_name, processor, cpu_type, os_version)
+    sql = "INSERT INTO info (idPc, test_date, user_name, processor, cpu_type, os_version) \
+    VALUES (%s, %s, %s, %s, %s, %s);"
+    values = (idPc, current_date, user_name, processor, cpu_type, os_version)
     db_cursor.execute(sql, values)
     my_db.commit()
-
 
 def battery_test_to_db(idPc, current_date, percent):
-    sql = "INSERT INTO battery (idPc, test_date, battery_percent) VALUES (%s, %s, %s)"
+    sql = "INSERT INTO battery (idPc, test_date, battery_percent) VALUES (%s, %s, %s);"
     values = (idPc, current_date, percent)
     db_cursor.execute(sql, values)
     my_db.commit()
-
 
 def cpu_test_to_db(idPc, current_date, percent):
-    sql = "INSERT INTO cpu (idPc, test_date, cpu_percent) VALUES (%s, %s, %s)"
+    sql = "INSERT INTO cpu (idPc, test_date, cpu_percent) VALUES (%s, %s, %s);"
     values = (idPc, current_date, percent)
     db_cursor.execute(sql, values)
     my_db.commit()
 
-
 def ram_test_to_db(idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap):
-    sql = "INSERT INTO ram (idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap) VALUES \
-                  (%s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO ram (idPc, test_date, total_virtual, percent_virtual, total_swap, percent_swap) VALUES (%s, %s, %s, %s, %s, %s);"
     values = (idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap)
     db_cursor.execute(sql, values)
     my_db.commit()
 
-
 def storage_test_to_db(idPc, current_date, total_storage, used_storage):
-    sql = "INSERT INTO storage(idPc, test_date, total_storage, used_storage) VALUES (%s, %s, %s, %s)"
+    time.sleep(5)
+    sql = "INSERT INTO storage(idPc, test_date, total_storage, used_storage) VALUES (%s, %s, %s, %s);"
     values = (idPc, current_date, total_storage, used_storage)
     # turn into list
     db_cursor.execute(sql, values)
@@ -130,6 +125,8 @@ def storage_test_to_db(idPc, current_date, total_storage, used_storage):
 def load_db():
     check_user_table()
     check_pcs_table()
+    #print(os.environ.get("USERNAME"))
+    check_user(os.environ.get("USERNAME"))
     check_info_table()
     check_cpu_table()
     check_ram_table()
@@ -139,23 +136,23 @@ def load_db():
 
 ### CHECK IF USER AND PC EXISTS ###
 
-def check_user(username):
-    db_cursor.execute(f"SELECT id from Users WHERE username == {username};")
+def check_user(user_name):
+    db_cursor.execute(f"SELECT id from Users WHERE username = '{user_name}';")
     test = db_cursor.fetchall()
-    # print(test)
+    #print(test)
     if len(test) == 0:
         print('Does not exist')
     else:
-        check_pc(username, int(os.environ.get("IDPC")))
+        check_pc(test[0], int(os.environ.get("IDPC")))
 
 
 def check_pc(idUser, idPC):
-    db_cursor.execute(f"SELECT * from pcs WHERE idPc == {idPC};")
+    db_cursor.execute(f"SELECT * from pcs WHERE idPc = {idPC};")
     test = db_cursor.fetchall()
     # print(test)
     if len(test) == 0:
-        db_cursor.execute(f"INSERT INTO pcs(idPc, idUser) VALUES (null, {idUser}")
-
+        db_cursor.execute(f"INSERT INTO pcs(idUser) VALUES ({idUser});")
+0
 
 if __name__ == '__main__':
     pass

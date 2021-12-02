@@ -261,7 +261,7 @@ def run_tests():
 
 if __name__ == "__main__":
     dbc.load_db()
-    #run_tests()
+    run_tests()
 
 
 
