@@ -46,3 +46,7 @@
 #form_title {
   margin-bottom: 0;
 }
+
+#logo {
+  border-bottom: black solid 3px;
+}
