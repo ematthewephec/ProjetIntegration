@@ -7,8 +7,21 @@
     "start": "node server.js",
     "watch": "nodemon server.js",
     "client": "cd client && npm start",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "test": "jest"
   },
+  "keywords": [
+    "js",
+    "javascript",
+    "testing",
+    "jest",
+    "unit",
+    "tests",
+    "integration",
+    "tests",
+    "e2e",
+    "tests"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ematthewephec/ProjetIntegration.git"
@@ -39,6 +52,7 @@
     "react-google-recaptcha": "^2.1.0"
   },
   "devDependencies": {
+    "jest": "^27.4.3",
     "nodemon": "^2.0.13"
   }
 }
