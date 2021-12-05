@@ -101,11 +101,12 @@ function Copyright (props) {
 }
 
 const Navigations = () => {
-  const pos = (window.location.href.includes("Contact") ? 'relative' : 'absolute');
-  window.location.href.includes("Contact") ? drawerWidth = 0 : drawerWidth = 240;
-  const title = ((window.location.pathname === "/") || (window.location.pathname === "/Home") ? "ressources pc" : "");
+  const [wind, setwind] = React.useState(window.location.pathname === '/')
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
+  const pos = (!wind ? 'relative' : 'absolute');
+  !wind ? drawerWidth = 0 : drawerWidth = 240;
+  const title = ((window.location.pathname === "/") || (window.location.pathname === "/Home") ? "ressources pc" : "");
   const toggleDrawer = () => {
     setOpen(!open)
   }
@@ -114,7 +115,7 @@ const Navigations = () => {
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position={pos} open={open} >
+          <AppBar position={pos} open={open}>
             <Toolbar
               sx={{
                 pr: '24px' // keep right padding when drawer closed
@@ -141,11 +142,14 @@ const Navigations = () => {
               >
                 {title}
               </Typography>
-              <Button color='inherit' href='/'>
+              <Button color='inherit' href='/' onClick={() => { setwind(true) }}>
                 Home
               </Button>
-              <Button color='inherit' href='/Contact'>
+              <Button color='inherit' href='/Contact' onClick={() => { setwind(false) }}>
                 contact
+              </Button>
+              <Button color='inherit' href='/Shop' onClick={() => { setwind(false) }}>
+                Shop
               </Button>
               <Button color='inherit' href='/Login'>
                 Login
@@ -155,7 +159,7 @@ const Navigations = () => {
               </Button>
             </Toolbar>
           </AppBar>
-          {window.location.pathname !== '/Contact' &&
+          {wind &&
             <Drawer variant='permanent' open={open}>
               <Toolbar
                 sx={{
@@ -226,7 +230,7 @@ const Navigations = () => {
                 </ListItem>
               </List>
             </Drawer>}
-          {window.location.pathname !== '/Contact' &&
+          {wind &&
             <Box
               component='main'
               sx={{

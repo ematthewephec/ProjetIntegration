@@ -6,6 +6,7 @@ import Contact from './components/Contact'
 import Apropos from './components/Apropos'
 import Login from './components/Login'
 import Register from './components/Register'
+import Shop from './components/shop'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 // import Dashboard from './components/Navbar'
 import Navigations from './components/Navigations'
@@ -22,6 +23,10 @@ const App = () => {
             <Navigations />
             <Contact/>
             <Apropos/>
+          </Route>
+          <Route path='/Shop' exact component={Shop}>
+            <Navigations />
+            <Shop />
           </Route>
           <Route path='/Login' exact component={Login}>
             <Login />
