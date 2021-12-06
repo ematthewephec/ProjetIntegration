@@ -28,40 +28,38 @@ function Copyright (props) {
 
 const tiers = [
   {
-    title: 'Free',
-    price: '0',
+    title: 'Premium',
+    price: '10',
     description: [
-      '10 users included',
-      '2 GB of storage',
-      'Help center access',
-      'Email support'
+      'Access of the website',
+      'Email support',
+      '5% of the profits go to an association'
     ],
-    buttonText: 'Sign up for free',
+    buttonText: 'Buy and Signed',
     buttonVariant: 'outlined'
   },
   {
     title: 'Pro',
     subheader: 'Most popular',
-    price: '15',
+    price: '60',
     description: [
-      '20 users included',
-      '10 GB of storage',
-      'Help center access',
-      'Priority email support'
+      'Access of the website',
+      'Screen Checkpcs',
+      'Email support',
+      '5% to an association'
     ],
-    buttonText: 'Get started',
+    buttonText: 'Buy and Signed',
     buttonVariant: 'contained'
   },
   {
-    title: 'Enterprise',
-    price: '30',
+    title: 'Trial',
+    price: '0',
     description: [
-      '50 users included',
-      '30 GB of storage',
-      'Help center access',
-      'Phone & email support'
+      'Try for 10 days',
+      'Access of the website',
+      'Email support'
     ],
-    buttonText: 'Contact us',
+    buttonText: 'try and Signed',
     buttonVariant: 'outlined'
   }
 ]
@@ -105,7 +103,7 @@ function Shop () {
           color='text.primary'
           gutterBottom
         >
-          Pricing
+          Choisissez votre offre
         </Typography>
         <Typography variant='h5' align='center' color='text.secondary' component='p'>
           Quickly build an effective pricing table for your potential customers with
@@ -151,10 +149,10 @@ function Shop () {
                     }}
                   >
                     <Typography component='h2' variant='h3' color='text.primary'>
-                      ${tier.price}
+                      {tier.price}
                     </Typography>
-                    <Typography variant='h6' color='text.secondary'>
-                      /mo
+                    <Typography variant='h4' color='text.secondary'>
+                      €
                     </Typography>
                   </Box>
                   <ul>

@@ -53,6 +53,7 @@ export default function SignIn () {
         setLoginStatus(false)
       } else {
         localStorage.setItem('token', response.data.token)
+        console.log('lol')
         setLoginStatus(true)
       }
     })
@@ -129,20 +130,14 @@ export default function SignIn () {
               </Grid>
               <Grid item>
                 <Link href='/' variant='body2'>
-                  Home
+                  Homese
                 </Link>
               </Grid>
             </Grid>
-            <div>
-              <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity='success' sx={{ width: '100%' }}>
-                  <p>{loginStatus}</p>
-                </Alert>
-              </Snackbar>
-              {loginStatus && (
-                <button onClick={userAuthenticated}>check if auuth </button>
-              )}
-            </div>
+            <button onClick={userAuthenticated}>check if auuth </button>
+            {loginStatus && (
+              <button onClick={userAuthenticated}>check if auuth </button>
+            )}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

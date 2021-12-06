@@ -1,7 +1,6 @@
 import React from 'react'
 import './App.css'
 // import Nav from './components/Nav'
-import Home from './components/Home'
 import Contact from './components/Contact'
 import Apropos from './components/Apropos'
 import Login from './components/Login'
@@ -16,17 +15,17 @@ const App = () => {
     <Router>
       <div className='App'>
         <Switch>
-          <Route path='/' exact component={Home}>
-            <Navigations test="relative" />
-          </Route>
-          <Route path='/Contact' exact component={Contact}>
+          <Route path='/' exact component={Navigations}>
             <Navigations />
-            <Contact/>
-            <Apropos/>
-          </Route>
-          <Route path='/Shop' exact component={Shop}>
-            <Navigations />
+            <Apropos />
             <Shop />
+          </Route>
+          <Route path='/App' exact component={Navigations}>
+            <Navigations />
+          </Route>
+          <Route path='/Contact' exact component={Navigations}>
+            <Navigations />
+            <Contact />
           </Route>
           <Route path='/Login' exact component={Login}>
             <Login />

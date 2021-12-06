@@ -1,6 +1,6 @@
 import React from 'react'
 // import Nav from './components/Nav'
-import { styled, createTheme, ThemeProvider} from '@mui/material/styles'
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Button from '@mui/material/Button'
 import { List } from '@mui/material'
@@ -101,12 +101,11 @@ function Copyright (props) {
 }
 
 const Navigations = () => {
-  const [wind, setwind] = React.useState(window.location.pathname === '/')
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
-  const pos = (!wind ? 'relative' : 'absolute');
-  !wind ? drawerWidth = 0 : drawerWidth = 240;
-  const title = ((window.location.pathname === "/") || (window.location.pathname === "/Home") ? "ressources pc" : "");
+  const pos = (window.location.pathname !== '/App' ? 'relative' : 'absolute')
+  window.location.pathname !== '/App' ? drawerWidth = 0 : drawerWidth = 240
+  const title = 'Checkpcs'
   const toggleDrawer = () => {
     setOpen(!open)
   }
@@ -133,6 +132,9 @@ const Navigations = () => {
               >
                 <MenuIcon />
               </IconButton>
+              <Button color='inherit' href='/'>
+                Home
+              </Button>
               <Typography
                 component='h1'
                 variant='h6'
@@ -142,14 +144,11 @@ const Navigations = () => {
               >
                 {title}
               </Typography>
-              <Button color='inherit' href='/' onClick={() => { setwind(true) }}>
-                Home
-              </Button>
-              <Button color='inherit' href='/Contact' onClick={() => { setwind(false) }}>
+              <Button color='inherit' href='/Contact'>
                 contact
               </Button>
-              <Button color='inherit' href='/Shop' onClick={() => { setwind(false) }}>
-                Shop
+              <Button color='inherit' href='/App'>
+                App
               </Button>
               <Button color='inherit' href='/Login'>
                 Login
@@ -159,7 +158,7 @@ const Navigations = () => {
               </Button>
             </Toolbar>
           </AppBar>
-          {wind &&
+          {window.location.pathname === '/App' &&
             <Drawer variant='permanent' open={open}>
               <Toolbar
                 sx={{
@@ -230,7 +229,7 @@ const Navigations = () => {
                 </ListItem>
               </List>
             </Drawer>}
-          {wind &&
+          {window.location.pathname === '/App' &&
             <Box
               component='main'
               sx={{
