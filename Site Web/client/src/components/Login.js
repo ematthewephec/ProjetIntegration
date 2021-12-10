@@ -34,8 +34,10 @@ export default function SignIn () {
   const [passwords, setPassword] = React.useState('')
   const [loginStatus, setLoginStatus] = React.useState(false)
   Axios.defaults.withCredentials = true
+  const [tokenSave, settokenSave] = React.useState('')
+
   const login = () => {
-    Axios.post('http://localhost:5000/user/Login', {
+    Axios.post('http://localhost:5000/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
@@ -44,21 +46,24 @@ export default function SignIn () {
         setLoginStatus(false)
       } else {
         console.log(response.data.token)
-        localStorage.setItem('token', response.data.token)
+        window.localStorage.setItem('token', response.data.token)
+        settokenSave(response.data.token)
         setLoginStatus(true)
       }
     })
   }
+
   const userAuthenticated = () => {
-    Axios.get('http://localhost:5000/user/isUserAuth', {
-      hearders: {
-        'x-access-token': localStorage.getItem('token')
+    Axios.get('http://localhost:5000/isUserAuth', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
       }
     }).then((response) => {
+      console.log(response.data)
       console.log(response)
+      console.log(tokenSave)
     })
   }
-
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
@@ -77,7 +82,7 @@ export default function SignIn () {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 1 }}>
+          <Box noValidate sx={{ mt: 1 }}>
             <TextField
               margin='normal'
               required
@@ -124,10 +129,10 @@ export default function SignIn () {
                 </Link>
               </Grid>
             </Grid>
-            {loginStatus && (
-              <button onClick={userAuthenticated}>check if auuth </button>
-            )}
           </Box>
+          {loginStatus && (
+            <button onClick={userAuthenticated}>check if auuth </button>
+          )}
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
