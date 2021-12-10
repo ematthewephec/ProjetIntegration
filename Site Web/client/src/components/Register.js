@@ -38,7 +38,7 @@ export default function SignUp () {
 
   Axios.defaults.withCredentials = true
   const register = () => {
-    Axios.post('http://localhost:5000/Register', {
+    Axios.post('http://localhost:5000/user/Register', {
       username: usernames,
       password: passwords,
       email: emails,

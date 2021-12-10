@@ -1,13 +1,10 @@
 const express = require('express')
 const path = require('path')
 const cors = require('cors')
-const bcrypt = require('bcrypt')
-const pool = require('./helpers/database')
-const saltRounds = 10
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const jwt = require('jsonwebtoken')
+const userRouter = require('./routes/user')
 const nodemailer = require('nodemailer')
 const fetch = require('node-fetch')
 require('dotenv').config()
@@ -18,7 +15,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://localhost:5000'],
+  origin: ['http://localhost:3000'],
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -35,7 +32,7 @@ app.use(session({
 }))
 
 app.use(express.static('client/build'))
-/*
+
 exports.validateEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
@@ -80,94 +77,13 @@ app.post('/api/mail', async (req, res) => {
     res.send('error')
   }
 })
-*/
+
 app.get('/*', (_, res) => {
   res.sendFile(path.join(__dirname, './client/build/index.html'))
 })
+
+app.use('/user', userRouter)
+
 app.listen(PORT, () => {
   console.log(`le serveur est lancé sur le port : ${PORT}`)
-})
-
-app.post('/Register', (req, res) => {
-  const username = req.body.username
-  const password = req.body.password
-  const email = req.body.email
-  const nom = req.body.nom
-  const prenom = req.body.prenom
-  bcrypt.hash(password, saltRounds, (_err, hash) => {
-    if (_err) {
-      console.log(_err)
-    }
-    pool.query(
-      'INSERT INTO users (username, password, email, nom, prenom, role) VALUE (?,?,?,?,?,?)',
-      [username, hash, email, nom, prenom, 'client'],
-      (err, result) => {
-        console.log(err)
-      }
-    )
-  })
-})
-const verifyJWT = (req, res, next) => {
-  const token = req.header('x-access-token')
-  if (!token) {
-    res.send('on a besoin d un token')
-  } else {
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
-      if (err) {
-        res.json({ auth: false, message: 'vous n avez pas reussi a vous auth' })
-      } else {
-        req.userId = decoded.id
-        next()
-      }
-    })
-  }
-}
-app.get('/isUserAuth', verifyJWT, (req, res) => {
-  res.send('tu est authentifié')
-  console.log('lol')
-})
-
-app.get('/Login', (req, res) => {
-  console.log('yeseez')
-  if (req.session.user) {
-    res.send({ loggedIn: true, user: req.session.user })
-    console.log('kdzi')
-  } else {
-    res.send({ loggedIn: false })
-    console.log('ki')
-  }
-})
-app.post('/Login', (req, res) => {
-  const username = req.body.username
-  const password = req.body.password
-  console.log('quoi')
-  pool.query(
-    'SELECT * FROM users Where username = ?;',
-    username,
-    (err, result) => {
-      if (err) {
-        res.send({ err: err })
-      }
-      if (result.length > 0) {
-        console.log('ca marcje')
-        bcrypt.compare(password, result[0].password, (_error, response) => {
-          if (response) {
-            const id = result[0].id
-            const token = jwt.sign({ id }, process.env.TOKEN_SECRET, {
-              expiresIn: 300
-            })
-            req.session.user = result
-            res.json({ auth: true, token: token, result: result })
-            console.log(result)
-          } else {
-            res.json({ auth: false, message: 'mauvais password et username combinaison' })
-            console.log('mauvais password et username combinaison')
-          }
-        })
-      } else {
-        res.json({ auth: false, message: 'pas de user connu' })
-        console.log('pas de user connu')
-      }
-    }
-  )
 })

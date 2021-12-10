@@ -16,7 +16,7 @@ function Apropos () {
       }}
     >
       <Box sx={{ gridArea: 'header', margin: '3%' }}>
-        <h1>Notre projet checkpcs (trouver un titre)</h1>
+        <h1>Notre projet checkpcs</h1>
       </Box>
       <Box sx={{ gridArea: 'main', marginLeft: '25%', textAlign: 'left', marginBottom: '6%' }}>
         <p>
