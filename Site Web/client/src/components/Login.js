@@ -13,8 +13,6 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import Axios from 'axios'
-import Alert from '@mui/material/Alert'
-import Snackbar from '@mui/material/Snackbar'
 
 function Copyright (props) {
   return (
@@ -35,31 +33,24 @@ export default function SignIn () {
   const [usernames, setUsername] = React.useState('')
   const [passwords, setPassword] = React.useState('')
   const [loginStatus, setLoginStatus] = React.useState(false)
-  const [open, setOpen] = React.useState(false)
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setOpen(false)
-  }
-
+  Axios.defaults.withCredentials = true
   const login = () => {
-    Axios.post('http://localhost:5000/Login', {
+    Axios.post('http://localhost:5000/user/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
+      console.log(response)
       if (!response.data.auth) {
         setLoginStatus(false)
       } else {
+        console.log(response.data.token)
         localStorage.setItem('token', response.data.token)
         setLoginStatus(true)
       }
     })
-    setOpen(true)
   }
   const userAuthenticated = () => {
-    Axios.get('http://localhost:5000/isUserAuth', {
+    Axios.get('http://localhost:5000/user/isUserAuth', {
       hearders: {
         'x-access-token': localStorage.getItem('token')
       }
@@ -129,20 +120,13 @@ export default function SignIn () {
               </Grid>
               <Grid item>
                 <Link href='/' variant='body2'>
-                  Home
+                  Homese
                 </Link>
               </Grid>
             </Grid>
-            <div>
-              <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity='success' sx={{ width: '100%' }}>
-                  <p>{loginStatus}</p>
-                </Alert>
-              </Snackbar>
-              {loginStatus && (
-                <button onClick={userAuthenticated}>check if auuth </button>
-              )}
-            </div>
+            {loginStatus && (
+              <button onClick={userAuthenticated}>check if auuth </button>
+            )}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

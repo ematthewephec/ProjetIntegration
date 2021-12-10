@@ -1,1 +1,7 @@
-GET http://localhost:5000/api/aaa
+GET http://localhost:5000/api/teste
+
+###
+
+GET http://localhost:5000/user/Login
+
+

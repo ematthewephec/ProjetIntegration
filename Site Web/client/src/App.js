@@ -1,11 +1,11 @@
 import React from 'react'
 import './App.css'
 // import Nav from './components/Nav'
-import Home from './components/Home'
 import Contact from './components/Contact'
 import Apropos from './components/Apropos'
 import Login from './components/Login'
 import Register from './components/Register'
+import Shop from './components/shop'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 // import Dashboard from './components/Navbar'
 import Navigations from './components/Navigations'
@@ -15,13 +15,17 @@ const App = () => {
     <Router>
       <div className='App'>
         <Switch>
-          <Route path='/' exact component={Home}>
-            <Navigations test="relative" />
-          </Route>
-          <Route path='/Contact' exact component={Contact}>
+          <Route path='/' exact component={Navigations}>
             <Navigations />
-            <Contact/>
-            <Apropos/>
+            <Apropos />
+            <Shop />
+          </Route>
+          <Route path='/App' exact component={Navigations}>
+            <Navigations />
+          </Route>
+          <Route path='/Contact' exact component={Navigations}>
+            <Navigations />
+            <Contact />
           </Route>
           <Route path='/Login' exact component={Login}>
             <Login />

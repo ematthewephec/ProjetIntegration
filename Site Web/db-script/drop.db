@@ -1,4 +1,5 @@
-DROP TABLE info;
+DROP TABLE produit;
+DROP TABLE commande;
 DROP TABLE storage;
 DROP TABLE ram;
 DROP TABLE cpu;
