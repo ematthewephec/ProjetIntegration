@@ -19,7 +19,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://checkpcs.com/api'],
+  origin: ['https://checkpcs.com/api'],
   methods: ['GET', 'POST'],
   credentials: true
 }))
