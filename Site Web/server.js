@@ -15,7 +15,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: ['https://checkpcs.com'],
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -30,8 +30,6 @@ app.use(session({
     expires: 60 * 60 * 24
   }
 }))
-
-app.use(express.static('client/build'))
 
 exports.validateEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
