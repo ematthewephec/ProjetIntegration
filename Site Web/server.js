@@ -19,7 +19,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://146.59.158.115/'],
+  origin: ['http://checkpcs.com/api'],
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -59,7 +59,7 @@ app.post('/api/Register', async function (req, res) {
 
     const encryptedPassword = await bcrypt.hash(password, saltRounds)
 
-    const sqlQuery = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
+    const sqlQuery = 'INSERT INTO Users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
     const result = await pool.query(sqlQuery, [username, encryptedPassword, email, nom, prenom, 'client'])
 
     res.status(200).json({ userId: result.insertId })

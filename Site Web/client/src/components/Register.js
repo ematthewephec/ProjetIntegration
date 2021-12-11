@@ -36,7 +36,7 @@ export default function SignUp () {
 
   Axios.defaults.withCredentials = true
   const register = () => {
-    Axios.post(process.env.API_URL + '/Register', {
+    Axios.post('http://checkpcs.com/api/Register', {
       username: usernames,
       password: passwords,
       email: emails,

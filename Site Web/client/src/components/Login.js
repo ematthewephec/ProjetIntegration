@@ -32,9 +32,10 @@ export default function SignIn () {
   const [passwords, setPassword] = React.useState('')
   const [loginStatus, setLoginStatus] = React.useState(false)
   Axios.defaults.withCredentials = true
-
+  const BASE_URL = process.env.REACT_APP_API_URL
+  console.log(BASE_URL)
   const login = () => {
-    Axios.post(process.env.API_URL + '/Login', {
+    Axios.post('http://checkpcs.com/api/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
