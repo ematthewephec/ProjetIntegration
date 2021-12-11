@@ -36,7 +36,6 @@ import Port from './content/Port'
 import Reports from './content/Reports'
 import Thermostat from './content/Thermostat'
 import Axios from 'axios'
-import { Redirect } from 'react-router'
 
 // import Chart from './Charts'
 // import Deposits from './Deposits'

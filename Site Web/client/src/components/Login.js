@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
 import TextField from '@mui/material/TextField'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
 import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
@@ -47,6 +45,7 @@ export default function SignIn () {
         console.log(response.data.token)
         window.localStorage.setItem('token', response.data.token)
         setLoginStatus(true)
+        window.location.href = '/'
       }
     })
   }
@@ -103,10 +102,6 @@ export default function SignIn () {
               autoComplete='current-password'
               onChange={(e) => { setPassword(e.target.value) }}
             />
-            <FormControlLabel
-              control={<Checkbox value='remember' color='primary' />}
-              label='Remember me'
-            />
             <Button
               onClick={login}
               fullWidth
@@ -117,13 +112,13 @@ export default function SignIn () {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href='/Register' variant='body2'>
-                  Register
+                <Link variant='body2'>
+                  Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href='/' variant='body2'>
-                  Homese
+                <Link href='/Register' variant='body2'>
+                  Don't have an account? Sign Up
                 </Link>
               </Grid>
             </Grid>
