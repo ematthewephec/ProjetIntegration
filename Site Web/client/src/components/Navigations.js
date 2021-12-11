@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import Nav from './components/Nav'
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -35,6 +35,7 @@ import Network from './content/Network'
 import Port from './content/Port'
 import Reports from './content/Reports'
 import Thermostat from './content/Thermostat'
+import Axios from 'axios'
 
 // import Chart from './Charts'
 // import Deposits from './Deposits'
@@ -109,6 +110,47 @@ const Navigations = () => {
   const toggleDrawer = () => {
     setOpen(!open)
   }
+  // FONCTION ROLE : ne pas Axios.defaults.withCredentials = true
+  Axios.defaults.withCredentials = true
+  const [role, setRole] = React.useState('')
+  const [role2, setRole2] = React.useState('')
+  useEffect(() => {
+    Axios.get('http://localhost:5000/Login').then((response) => {
+      console.log(response.data)
+      if (response.data.loggedIn === true) {
+        setRole(response.data.user[0].role)
+      } else {
+        setRole('visitor')
+      }
+    })
+  })
+  useEffect(() => {
+    Axios.get('http://localhost:5000/isUserAuth', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      console.log(response)
+      if (response.data.auth === false) {
+        setRole2('visitor')
+      } else if (response.data.user.isAdmin === false) {
+        setRole2('client')
+      } else {
+        setRole2('Admin')
+      }
+    })
+  })
+  const logout = () => {
+    Axios.get('http://localhost:5000/Logout', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      window.localStorage.clear()
+      setRole2('visitor')
+      window.location.href = '/Login'
+    })
+  }
   return (
     <div>
       <ThemeProvider theme={mdTheme}>
@@ -150,12 +192,18 @@ const Navigations = () => {
               <Button color='inherit' href='/App'>
                 App
               </Button>
-              <Button color='inherit' href='/Login'>
-                Login
-              </Button>
-              <Button color='inherit' href='/Register'>
-                Register
-              </Button>
+              {role2 !== 'visitor' &&
+                <Button color='inherit' onClick={logout}>
+                  Logout
+                </Button>}
+              {role2 === 'visitor' &&
+                <Button color='inherit' href='/Login'>
+                  Login
+                </Button>}
+              {role2 === 'visitor' &&
+                <Button color='inherit' href='/Register'>
+                  Register
+                </Button>}
             </Toolbar>
           </AppBar>
           {window.location.pathname === '/App' &&

@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
 import TextField from '@mui/material/TextField'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
 import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
@@ -34,8 +32,9 @@ export default function SignIn () {
   const [passwords, setPassword] = React.useState('')
   const [loginStatus, setLoginStatus] = React.useState(false)
   Axios.defaults.withCredentials = true
+
   const login = () => {
-    Axios.post('http://localhost:5000/user/Login', {
+    Axios.post('http://localhost:5000/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
@@ -44,21 +43,24 @@ export default function SignIn () {
         setLoginStatus(false)
       } else {
         console.log(response.data.token)
-        localStorage.setItem('token', response.data.token)
+        window.localStorage.setItem('token', response.data.token)
         setLoginStatus(true)
+        window.location.href = '/'
       }
     })
   }
+  /*
   const userAuthenticated = () => {
-    Axios.get('http://localhost:5000/user/isUserAuth', {
-      hearders: {
-        'x-access-token': localStorage.getItem('token')
+    Axios.get('http://localhost:5000/isUserAuth', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
       }
     }).then((response) => {
+      console.log(response.data)
       console.log(response)
     })
   }
-
+  */
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
@@ -77,7 +79,7 @@ export default function SignIn () {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 1 }}>
+          <Box noValidate sx={{ mt: 1 }}>
             <TextField
               margin='normal'
               required
@@ -100,10 +102,6 @@ export default function SignIn () {
               autoComplete='current-password'
               onChange={(e) => { setPassword(e.target.value) }}
             />
-            <FormControlLabel
-              control={<Checkbox value='remember' color='primary' />}
-              label='Remember me'
-            />
             <Button
               onClick={login}
               fullWidth
@@ -114,19 +112,16 @@ export default function SignIn () {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href='/Register' variant='body2'>
-                  Register
+                <Link variant='body2'>
+                  Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href='/' variant='body2'>
-                  Homese
+                <Link href='/Register' variant='body2'>
+                  Don't have an account? Sign Up
                 </Link>
               </Grid>
             </Grid>
-            {loginStatus && (
-              <button onClick={userAuthenticated}>check if auuth </button>
-            )}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
