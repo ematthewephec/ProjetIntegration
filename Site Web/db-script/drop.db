@@ -5,4 +5,4 @@ DROP TABLE ram;
 DROP TABLE cpu;
 DROP TABLE battery;
 DROP TABLE pcs;
-DROP TABLE users;
+DROP TABLE Users;

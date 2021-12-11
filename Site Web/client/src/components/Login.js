@@ -35,7 +35,7 @@ export default function SignIn () {
   const BASE_URL = process.env.REACT_APP_API_URL
   console.log(BASE_URL)
   const login = () => {
-    Axios.post('http://checkpcs.com/api/Login', {
+    Axios.post(BASE_URL + '/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {

@@ -105,7 +105,7 @@ app.post('/api/Login', async function (req, res) {
   try {
     const { username, password } = req.body
 
-    const sqlGetUser = 'SELECT id, username, password, role FROM users WHERE username = ?;'
+    const sqlGetUser = 'SELECT id, username, password, role FROM Users WHERE username = ?;'
     const rows = await pool.query(sqlGetUser, username)
     if (rows.length > 0) {
       const isValid = await bcrypt.compare(password, rows[0].password)
