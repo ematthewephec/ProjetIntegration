@@ -34,7 +34,6 @@ export default function SignIn () {
   const [passwords, setPassword] = React.useState('')
   const [loginStatus, setLoginStatus] = React.useState(false)
   Axios.defaults.withCredentials = true
-  const [tokenSave, settokenSave] = React.useState('')
 
   const login = () => {
     Axios.post('http://localhost:5000/Login', {
@@ -47,12 +46,11 @@ export default function SignIn () {
       } else {
         console.log(response.data.token)
         window.localStorage.setItem('token', response.data.token)
-        settokenSave(response.data.token)
         setLoginStatus(true)
       }
     })
   }
-
+  /*
   const userAuthenticated = () => {
     Axios.get('http://localhost:5000/isUserAuth', {
       headers: {
@@ -61,9 +59,9 @@ export default function SignIn () {
     }).then((response) => {
       console.log(response.data)
       console.log(response)
-      console.log(tokenSave)
     })
   }
+  */
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
@@ -130,9 +128,6 @@ export default function SignIn () {
               </Grid>
             </Grid>
           </Box>
-          {loginStatus && (
-            <button onClick={userAuthenticated}>check if auuth </button>
-          )}
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>

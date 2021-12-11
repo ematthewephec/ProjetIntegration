@@ -71,15 +71,14 @@ app.post('/Register', async function (req, res) {
 
 const verifyJWT = (req, res, next) => {
   const token = req.headers['x-access-token']
-  console.log(token)
   if (!token) {
-    res.send("on n'as besoin du token")
+    res.send({ auth: false, message: 'No token provided.' })
   } else {
     jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
       if (err) {
-        res.json({ auth: false, message: 'vous n avez pas reussi a vous auth' })
+        res.json({ auth: false, message: 'Failed to authenticate token.' })
       } else {
-        req.userId = decoded.id
+        req.userId = decoded
         next()
       }
     })
@@ -87,15 +86,20 @@ const verifyJWT = (req, res, next) => {
 }
 
 app.get('/isUserAuth', verifyJWT, (req, res) => {
-  res.send('tu est authentifié')
+  res.send({ user: req.userId })
 })
 
 app.get('/Login', (req, res) => {
   if (req.session.user) {
     res.send({ loggedIn: true, user: req.session.user })
   } else {
-    res.send({ loggedIn: false })
+    res.send({ loggedIn: false, user: [{ role: 'visitor' }] })
   }
+})
+
+app.get('/Logout', verifyJWT, (req, res) => {
+  req.session = null
+  res.redirect('/Login')
 })
 
 app.post('/Login', async function (req, res) {
@@ -108,7 +112,11 @@ app.post('/Login', async function (req, res) {
       const isValid = await bcrypt.compare(password, rows[0].password)
       // res.status(200).json({ valid_password: isValid })
       const id = rows[0].id
-      const token = jwt.sign({ id }, process.env.TOKEN_SECRET, {
+      let isAdmin = false
+      if (rows[0].role === 'Admin') {
+        isAdmin = true
+      }
+      const token = jwt.sign({ id: id, isAdmin: isAdmin }, process.env.TOKEN_SECRET, {
         expiresIn: 300
       })
       req.session.user = rows

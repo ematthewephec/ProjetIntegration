@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const pool = require('../helpers/database')
+
 require('dotenv').config()
+const pool = require('../helpers/database')
 
 router.get('/:id', async function (req, res) {
   try {
-    const sqlQuery = 'SELECT id, email, password, created_at FROM user WHERE id=?'
+    const sqlQuery = 'SELECT id, email, password, role FROM users WHERE id=?'
     const rows = await pool.query(sqlQuery, req.params.id)
     res.status(200).json(rows)
   } catch (error) {
