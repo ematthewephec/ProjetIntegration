@@ -115,7 +115,7 @@ const Navigations = () => {
   const [role, setRole] = React.useState('')
   const [role2, setRole2] = React.useState('')
   useEffect(() => {
-    Axios.get('http://localhost:5000/Login').then((response) => {
+    Axios.get(process.env.API_URL + '/Login').then((response) => {
       console.log(response.data)
       if (response.data.loggedIn === true) {
         setRole(response.data.user[0].role)
@@ -125,7 +125,7 @@ const Navigations = () => {
     })
   })
   useEffect(() => {
-    Axios.get('http://localhost:5000/isUserAuth', {
+    Axios.get(process.env.API_URL + '/isUserAuth', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -141,7 +141,7 @@ const Navigations = () => {
     })
   })
   const logout = () => {
-    Axios.get('http://localhost:5000/Logout', {
+    Axios.get(process.env.API_URL + '/Logout', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }

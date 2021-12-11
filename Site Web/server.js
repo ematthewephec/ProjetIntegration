@@ -19,7 +19,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: ['http://146.59.158.115/'],
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -34,8 +34,7 @@ app.use(session({
     expires: 60 * 60 * 24
   }
 }))
-
-app.use(express.static('client/build'))
+app.use(express.json())
 
 exports.validateEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -54,7 +53,7 @@ async function validateHuman (token) {
   return data.success
 }
 
-app.post('/Register', async function (req, res) {
+app.post('/api/Register', async function (req, res) {
   try {
     const { username, password, email, nom, prenom } = req.body
 
@@ -85,11 +84,11 @@ const verifyJWT = (req, res, next) => {
   }
 }
 
-app.get('/isUserAuth', verifyJWT, (req, res) => {
+app.get('/api/isUserAuth', verifyJWT, (req, res) => {
   res.send({ user: req.userId })
 })
 
-app.get('/Login', (req, res) => {
+app.get('/api/Login', (req, res) => {
   if (req.session.user) {
     res.send({ loggedIn: true, user: req.session.user })
   } else {
@@ -97,12 +96,12 @@ app.get('/Login', (req, res) => {
   }
 })
 
-app.get('/Logout', verifyJWT, (req, res) => {
+app.get('/api/Logout', verifyJWT, (req, res) => {
   req.session = null
   res.redirect('/Login')
 })
 
-app.post('/Login', async function (req, res) {
+app.post('/api/Login', async function (req, res) {
   try {
     const { username, password } = req.body
 
@@ -159,11 +158,7 @@ app.post('/api/mail', async (req, res) => {
   }
 })
 
-app.get('/*', (_, res) => {
-  res.sendFile(path.join(__dirname, './client/build/index.html'))
-})
-
-app.use('/user', userRouter)
+app.use('/api/user', userRouter)
 
 app.listen(PORT, () => {
   console.log(`le serveur est lancé sur le port : ${PORT}`)
