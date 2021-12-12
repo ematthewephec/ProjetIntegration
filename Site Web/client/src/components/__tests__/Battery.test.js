@@ -1,6 +1,6 @@
 import React from 'react'
 import Battery from '../content/Battery'
 
-test('page home s affiche', () => {
+test('Test de la page Home', () => {
   expect(true).toBe(true)
 })

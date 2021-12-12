@@ -21,20 +21,20 @@ import ListItemText from '@mui/material/ListItemText'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull'
 import BarChartIcon from '@mui/icons-material/BarChart'
-import DataSaverOffIcon from '@mui/icons-material/DataSaverOff'
 import ListSubheader from '@mui/material/ListSubheader'
-import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat'
+import StorageIcon from '@mui/icons-material/Storage';
 import NetworkCheckIcon from '@mui/icons-material/NetworkCheck'
+import MemoryIcon from '@mui/icons-material/Memory';
 import RouterIcon from '@mui/icons-material/Router'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import Dashboard from './content/Dashboard'
 import Routers from './content/Routers'
 import Baterry from './content/Battery'
-import Data from './content/Data'
+import Ram from './content/Ram'
 import Network from './content/Network'
 import Port from './content/Port'
-import Reports from './content/Reports'
-import Thermostat from './content/Thermostat'
+import Processeur from './content/Processeur'
+import Stockage from './content/Stockage'
 
 // import Chart from './Charts'
 // import Deposits from './Deposits'
@@ -178,29 +178,29 @@ const Navigations = () => {
                   </ListItemIcon>
                   <ListItemText primary='Dashboard' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('Data') }}>
+                <ListItem button onClick={() => { setSelected('Ram') }}>
                   <ListItemIcon>
-                    <DataSaverOffIcon />
+                    <MemoryIcon />
                   </ListItemIcon>
-                  <ListItemText primary='Data' />
+                  <ListItemText primary='Ram' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('Reports') }}>
+                <ListItem button onClick={() => { setSelected('Processeur') }}>
                   <ListItemIcon>
                     <BarChartIcon />
                   </ListItemIcon>
-                  <ListItemText primary='Reports' />
+                  <ListItemText primary='Processeur' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('BatteryChargingFull') }}>
+                <ListItem button onClick={() => { setSelected('Battery') }}>
                   <ListItemIcon>
                     <BatteryChargingFullIcon />
                   </ListItemIcon>
-                  <ListItemText primary='BatteryChargingFull' />
+                  <ListItemText primary='Batterie' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('DeviceThermostat') }}>
+                <ListItem button onClick={() => { setSelected('Stockage') }}>
                   <ListItemIcon>
-                    <DeviceThermostatIcon />
+                    <StorageIcon />
                   </ListItemIcon>
-                  <ListItemText primary='DeviceThermostat' />
+                  <ListItemText primary='Stockage' />
                 </ListItem>
               </List>
               <Divider />
@@ -242,16 +242,16 @@ const Navigations = () => {
               <Toolbar />
               {select === 'Dashboard' &&
                 <Dashboard />}
-              {select === 'Data' &&
-                <Data />}
-              {select === 'Reports' &&
-                <Reports />}
-              {select === 'BatteryChargingFull' &&
+              {select === 'Ram' &&
+                <Ram />}
+              {select === 'Processeur' &&
+                <Processeur />}
+              {select === 'Battery' &&
                 <Baterry />}
               {select === 'Router' &&
                 <Routers />}
-              {select === 'DeviceThermostat' &&
-                <Thermostat />}
+              {select === 'Stockage' &&
+                <Stockage />}
               {select === 'Port' &&
                 <Port />}
               {select === 'NetworkCheckIcon' &&
