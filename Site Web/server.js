@@ -12,7 +12,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const pool = require('./helpers/database')
 const saltRounds = 10
-
+const stripe = require('stripe')(process.env.PUBLISH_KEY_STRIPE)
+const uuidv4 = require('uuid/v4')
 const PORT = process.env.PORT || 5000
 
 const app = express()
@@ -129,6 +130,33 @@ app.post('/Login', async function (req, res) {
     res.status(400).send(error.message)
     res.json({ auth: false, message: 'no user exits' })
   }
+})
+
+app.post('/payment', (req, res) => {
+  const { product, token } = req.body
+  console.log('Product ', product)
+  console.log('Price ', product.price)
+  const idempontencyKey = uuidv4()
+  return stripe.customers.create({
+    email: token.email,
+    source: token.id
+  }).then(customer => {
+    stripe.charges.create({
+      amount: product.price * 100,
+      currency: 'usd',
+      customer: customer.id,
+      receipt_email: token.email,
+      description: product.name,
+      shipping: {
+        name: token.card.name,
+        address: {
+          country: token.card.address_country
+        }
+      }
+    }, { idempontencyKey })
+  })
+    .then(result => res.status(200).json(result))
+    .catch(err => console.log(err))
 })
 
 app.post('/api/mail', async (req, res) => {

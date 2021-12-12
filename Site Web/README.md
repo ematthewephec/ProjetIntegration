@@ -28,4 +28,8 @@ You can use the previous, 4.0.1, by doing the following.<br>
 Edit package.json and change the "react-scripts" value to "4.0.1".<br>
 Run npm install.<br>
 Run npm start.<br>
+
+pm2 start --name server server.js
+docker exec -it mariadbcheckpcs bash
+mysql -u root -p
 ```
