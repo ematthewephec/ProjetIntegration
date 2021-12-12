@@ -11,14 +11,14 @@ const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 const fetch = require('node-fetch')
 require('dotenv').config()
-
+const api = require('./routes/api')
 const PORT = process.env.PORT || 5000
 
 const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://localhost:5000'],
+  origin: ['http://localhost:3000'],
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -35,7 +35,6 @@ app.use(session({
 }))
 
 app.use(express.static('client/build'))
-
 exports.validateEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
@@ -81,6 +80,8 @@ app.post('/api/mail', async (req, res) => {
   }
 })
 
+app.use('/api', api);
+
 app.get('/*', (_, res) => {
   res.sendFile(path.join(__dirname, './client/build/index.html'))
 })
@@ -99,8 +100,8 @@ app.post('/Register', (req, res) => {
       console.log(_err)
     }
     pool.query(
-      'INSERT INTO users (username, password, email, nom, prenom) VALUE (?,?,?,?,?)',
-      [username, hash, email, nom, prenom],
+      'INSERT INTO users (username, password, email, nom, prenom, role) VALUE (?,?,?,?,?,?)',
+      [username, hash, email, nom, prenom, 'client'],
       (err, result) => {
         console.log(err)
       }

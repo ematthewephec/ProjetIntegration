@@ -3,7 +3,7 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
 
-function Baterry () {
+function Ram () {
 
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -79,36 +79,36 @@ function Baterry () {
   useEffect(() => {
 
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://localhost:5000/api/1/battery', true);
+    xhr.open('GET', 'http://localhost:5000/api/1/ram', true);
     xhr.onload = function () {
       let data = JSON.parse(xhr.responseText);
       let title = [];
       let percent = [];
-
+      
       for (let i of data) {
         title.push(i.test_date);
-        percent.push(Number((i.battery_percent)));
+        percent.push(((Number((i.total_virtual).slice(0, -2)) / 100) * Number(i.percent_virtual)).toFixed(2))
       }
-
+      
       setdatas({
         // eslint-disable-next-line
         ["datasets"]: [
           {
-            label: 'Batterie',
+            label: 'Mémoire Ram',
             fill: true,
             lineTension: 0.1,
-            backgroundColor: 'rgba(192,192,75,0.4)',
-            borderColor: 'rgba(192,192,75,1)',
+            backgroundColor: 'rgba(75,192,192,0.4)',
+            borderColor: 'rgba(75,192,192,1)',
             borderCapStyle: 'butt',
             borderDash: [],
             borderDashOffset: 0.0,
             borderJoinStyle: 'miter',
-            pointBorderColor: 'rgba(192,192,75,1)',
+            pointBorderColor: 'rgba(75,192,192,1)',
             pointBackgroundColor: '#fff',
             pointBorderWidth: 5,
             pointHoverRadius: 10,
-            pointHoverBackgroundColor: 'rgba(192,192,75,1)',
-            pointHoverBorderColor: 'rgba(192,192,75,1)',
+            pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+            pointHoverBorderColor: 'rgba(220,220,220,1)',
             pointHoverBorderWidth: 2,
             pointRadius: 2,
             pointHitRadius: 15,
@@ -127,11 +127,11 @@ function Baterry () {
   return (
     <Container>
       <Grid>
-        <h1>Batterie</h1>
-        <Line data={datas} option={lineOptions}/>
+        <h1>Ram</h1>
+        <Line data={datas} option={lineOptions} />
       </Grid>
     </Container>
   )
 }
 
-export default Baterry
+export default Ram
