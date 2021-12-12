@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import Container from '@mui/material/Container'
+import StripeCheckout from 'react-stripe-checkout'
 
 function Copyright (props) {
   return (
@@ -80,6 +81,32 @@ const footers = [
 ]
 
 function Shop () {
+  const BASE_URL = process.env.REACT_APP_API_URL
+  const [product, setProduct] = React.useState({
+    name: 'react from FB',
+    price: 10,
+    productBy: 'facbook'
+  })
+
+  const makePayment = token => {
+    const body = {
+      token,
+      product
+    }
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+    return fetch(BASE_URL + '/payment', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    }).then(response => {
+      console.log('RESPONSE', response)
+      const { status } = response
+      console.log('STATUS', status)
+    })
+      .catch(error => console.log(error))
+  }
   return (
     <div>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -159,9 +186,16 @@ function Shop () {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  <Button fullWidth variant={tier.buttonVariant}>
-                    {tier.buttonText}
-                  </Button>
+                  <StripeCheckout
+                    stripeKey={process.env.REACT_APP_KEY}
+                    token={makePayment}
+                    name={tier.title}
+                    amount={tier.price * 100}
+                  >
+                    <Button fullWidth variant={tier.buttonVariant}>
+                      {tier.buttonText}
+                    </Button>
+                  </StripeCheckout>
                 </CardActions>
               </Card>
             </Grid>

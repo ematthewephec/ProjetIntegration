@@ -104,6 +104,7 @@ function Copyright (props) {
 const Navigations = () => {
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
+  const BASE_URL = process.env.REACT_APP_API_URL
   const pos = (window.location.pathname !== '/App' ? 'relative' : 'absolute')
   window.location.pathname !== '/App' ? drawerWidth = 0 : drawerWidth = 240
   const title = 'Checkpcs'
@@ -115,7 +116,7 @@ const Navigations = () => {
   const [role, setRole] = React.useState('')
   const [role2, setRole2] = React.useState('')
   useEffect(() => {
-    Axios.get('http://localhost:5000/Login').then((response) => {
+    Axios.get(BASE_URL + '/Login').then((response) => {
       console.log(response.data)
       if (response.data.loggedIn === true) {
         setRole(response.data.user[0].role)
@@ -125,7 +126,7 @@ const Navigations = () => {
     })
   })
   useEffect(() => {
-    Axios.get('http://localhost:5000/isUserAuth', {
+    Axios.get(BASE_URL + '/isUserAuth', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -141,7 +142,7 @@ const Navigations = () => {
     })
   })
   const logout = () => {
-    Axios.get('http://localhost:5000/Logout', {
+    Axios.get(BASE_URL + '/Logout', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
