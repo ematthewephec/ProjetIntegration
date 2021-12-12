@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "jest": "^27.4.3",
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.13",
+    "sql-fixtures": "^1.0.4"
   }
 }
