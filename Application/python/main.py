@@ -1,175 +1,222 @@
-# import speedtest
+import speedtest as speed
 import psutil
 import platform
-import os
-import time
-# from pyspectator.processor import Cpu
-# import wmi
-# import clr
-# import cpuinfo
-# from temp.PyTherm.pytherm import start
+import cpuinfo
 import GPUtil
-import sys
-from tabulate import tabulate
 from datetime import datetime
+from threading import *
+import time
+import dbconnection as dbc
+import math
+import os
+from dotenv import load_dotenv as env
 
+IS_RUNNING = True
+computer_data = {}
+BUTTON_TOGGLE = False
+
+CURRENT_DATE = datetime.now()
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
-def get_size(bytes, suffix="B"):
-    """
-    Scale bytes to its proper format
-    e.g:
-        1253656 => '1.20MB'
-        1253656678 => '1.17GB'
-    """
-    factor = 1024
-    for unit in ["", "K", "M", "G", "T", "P"]:
+def get_size(bytes, suffix='B'):
+    factor = 1028
+    for unit in ["", "K", "M", "G", "P"]:
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
 
+def convert_time(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    return "%d:%02d:%02d" % (hours, minutes, seconds)
 
-def system_info():
-    print("=" * 40, "System Information", "=" * 40)
-    uname = platform.uname()
-    print(f"System: {uname.system}")
-    print(f"Node Name: {uname.node}")
-    print(f"Release: {uname.release}")
-    print(f"Version: {uname.version}")
-    print(f"Machine: {uname.machine}")
-    print(f"Processor: {uname.processor}")
+### TESTS ###
+def info_test():
+    computer_data['info'] = {}
+    """print('--------------------------')
+    print('------- info Test ---------')
+    print('--------------------------')"""
+    user = psutil.users()
+    # print(f"user is : {user[0].name}")
+    computer_data['info']['user_name'] = user[0].name
+    # print(f"User: {user[0].name}")
+    computer_data['info']['processor'] = platform.processor()
+    # print(f"the processor is : {platform.processor()}")
+    computer_data['info']['cpu_type'] = cpuinfo.get_cpu_info()['brand_raw']
+    computer_data['info']['os_version'] = platform.platform()
+    # print(f"CPU is : {cpu}")
+    # test1 = platform.machine()
+    # print(test1)
+    # lol1 = cpuinfo.get_cpu_info()
+    # print(f"the processor is : {lol1.brand_raw}")
 
+def battery_test():
+    computer_data['battery'] = {}
+    while IS_RUNNING:
+        """print('--------------------------')
+            print('----- Battery Test ------')
+            print('--------------------------')"""
+        battery = psutil.sensors_battery()
+        computer_data['battery']['percent'] = battery.percent
 
-def boot_time():
-    # Boot Time
-    print("=" * 40, "Boot Time", "=" * 40)
-    boot_time_timestamp = psutil.boot_time()
-    bt = datetime.fromtimestamp(boot_time_timestamp)
-    print(f"Boot Time: {bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}")
+def cpu_test():
+    computer_data['cpu'] = {}
+    while IS_RUNNING:
+        i = 0
+        while True:
+            i = i + 1
+            cpu = psutil.cpu_percent(interval=1)
+            if cpu > 60 or i == 10:
+                # print("FINI")
+                break
+        computer_data['cpu']['percent'] = cpu
 
+def ram_test():
+    computer_data['ram'] = {}
+    while IS_RUNNING:
+        svmem = psutil.virtual_memory()
+        """print('--------------------------')
+        print('------- RAM Test ---------')
+        print('--------------------------')
+        print(f" Total: {get_size(svmem.total)}")
+        print(f" Available: {get_size(svmem.available)}")
+        print(f" Used: {get_size(svmem.used)}")
+        print(f" Percentage: {get_size(svmem.percent)} %")"""
+        computer_data['ram']['total_virtual'] = get_size(svmem.total)
+        #computer_data['ram']['used_virtual'] = get_size(svmem.used)
+        #computer_data['ram']['available_virtual'] = get_size(svmem.available)
+        computer_data['ram']['percent_virtual'] = svmem.percent
 
-def cpu():
-    # let's print CPU information
-    print("=" * 40, "CPU Info", "=" * 40)
-    # number of cores
-    print("Physical cores:", psutil.cpu_count(logical=False))
-    print("Total cores:", psutil.cpu_count(logical=True))
-    # CPU frequencies
-    cpufreq = psutil.cpu_freq()
-    print(f"Max Frequency: {cpufreq.max:.2f}Mhz")
-    print(f"Min Frequency: {cpufreq.min:.2f}Mhz")
-    print(f"Current Frequency: {cpufreq.current:.2f}Mhz")
-    # CPU usage
-    print("CPU Usage Per Core:")
-    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
-        print(f"Core {i}: {percentage}%")
-    print(f"Total CPU Usage: {psutil.cpu_percent()}%")
+        swap = psutil.swap_memory()
+        """print('\nSwap Partition: ')
+        print(f" Total: {get_size(swap.total)}")
+        print(f" Free: {get_size(swap.free)}")
+        print(f" Used: {get_size(swap.used)}")
+        print(f" Percentage: {get_size(swap.percent)} %")"""
+        computer_data['ram']['total_swap'] = get_size(swap.total)
+        #computer_data['ram']['used_swap'] = get_size(swap.used)
+        #computer_data['ram']['available_swap'] = get_size(swap.available)
+        computer_data['ram']['percent_swap'] = swap.percent
 
+def storage_test():
+    computer_data['storage'] = {}
+    while IS_RUNNING:
+        partitions = psutil.disk_partitions()
+        # disk_nums, total storage, total used
+        # print(len(partitions))
+        #computer_data['storage_disk']['partitions'] = len(partitions)
+        total_storage_size = 0
+        total_storage_used = 0
 
-def memory():
-    # Memory Information
-    print("=" * 40, "Memory Information", "=" * 40)
-    # get the memory details
-    svmem = psutil.virtual_memory()
-    print(f"Total: {get_size(svmem.total)}")
-    print(f"Available: {get_size(svmem.available)}")
-    print(f"Used: {get_size(svmem.used)}")
-    print(f"Percentage: {svmem.percent}%")
-    print("=" * 20, "SWAP", "=" * 20)
-    # get the swap memory details (if exists)
-    swap = psutil.swap_memory()
-    print(f"Total: {get_size(swap.total)}")
-    print(f"Free: {get_size(swap.free)}")
-    print(f"Used: {get_size(swap.used)}")
-    print(f"Percentage: {swap.percent}%")
+        for partition in partitions:
+            try:
+                partition_usage = psutil.disk_usage(partition.mountpoint)
+            except PermissionError:
+                # this can be caught due to the disk that
+                # isn't ready
+                continue
+            total_storage_size += partition_usage.total
+            total_storage_used += partition_usage.used
 
+        computer_data['storage']['total_storage'] = get_size(total_storage_size)
+        computer_data['storage']['used_storage'] = get_size(total_storage_used)
 
-def disk():
-    # Disk Information
-    print("=" * 40, "Disk Information", "=" * 40)
-    print("Partitions and Usage:")
-    # get all disk partitions
-    partitions = psutil.disk_partitions()
-    for partition in partitions:
-        print(f"=== Device: {partition.device} ===")
-        print(f"  Mountpoint: {partition.mountpoint}")
-        print(f"  File system type: {partition.fstype}")
-        try:
-            partition_usage = psutil.disk_usage(partition.mountpoint)
-        except PermissionError:
-            # this can be catched due to the disk that
-            # isn't ready
-            continue
-        print(f"  Total Size: {get_size(partition_usage.total)}")
-        print(f"  Used: {get_size(partition_usage.used)}")
-        print(f"  Free: {get_size(partition_usage.free)}")
-        print(f"  Percentage: {partition_usage.percent}%")
-    # get IO statistics since boot
-    disk_io = psutil.disk_io_counters()
-    print(f"Total read: {get_size(disk_io.read_bytes)}")
-    print(f"Total write: {get_size(disk_io.write_bytes)}")
-
-
-def network():
-    # Network information
-    print("=" * 40, "Network Information", "=" * 40)
-    # get all network interfaces (virtual and physical)
-    if_addrs = psutil.net_if_addrs()
-    for interface_name, interface_addresses in if_addrs.items():
-        for address in interface_addresses:
-            print(f"=== Interface: {interface_name} ===")
-            if str(address.family) == 'AddressFamily.AF_INET':
-                print(f"  IP Address: {address.address}")
-                print(f"  Netmask: {address.netmask}")
-                print(f"  Broadcast IP: {address.broadcast}")
-            elif str(address.family) == 'AddressFamily.AF_PACKET':
-                print(f"  MAC Address: {address.address}")
-                print(f"  Netmask: {address.netmask}")
-                print(f"  Broadcast MAC: {address.broadcast}")
-    # get IO statistics since boot
-    net_io = psutil.net_io_counters()
-    print(f"Total Bytes Sent: {get_size(net_io.bytes_sent)}")
-    print(f"Total Bytes Received: {get_size(net_io.bytes_recv)}")
+        time.sleep(60)
 
 
-def gpu():
-    print("=" * 40, "GPU Details", "=" * 40)
-    gpus = GPUtil.getGPUs()
-    list_gpus = []
-    for gpu in gpus:
-        # get the GPU id
-        gpu_id = gpu.id
-        # name of GPU
-        gpu_name = gpu.name
-        # get % percentage of GPU usage of that GPU
-        gpu_load = f"{gpu.load * 100}%"
-        # get free memory in MB format
-        gpu_free_memory = f"{gpu.memoryFree}MB"
-        # get used memory
-        gpu_used_memory = f"{gpu.memoryUsed}MB"
-        # get total memory
-        gpu_total_memory = f"{gpu.memoryTotal}MB"
-        # get GPU temperature in Celsius
-        gpu_temperature = f"{gpu.temperature} °C"
-        gpu_uuid = gpu.uuid
-        list_gpus.append((
-            gpu_id, gpu_name, gpu_load, gpu_free_memory, gpu_used_memory,
-            gpu_total_memory, gpu_temperature, gpu_uuid
-        ))
-
-    print(tabulate(list_gpus, headers=("id", "name", "load", "free memory", "used memory", "total memory",
-                                       "temperature", "uuid")))
+### concept
+# run tests in concurrence
+# send data to database through backend nodejs request
+# once data has been successfully sent or received,
+# get data for display using another function
+# loop until app is killed or tests are stopped
 
 
-def main():
-    #system_info()
-    #boot_time()
-    #cpu()
-    #memory()
-    #disk()
-    #network()
-    gpu()
+def display_data():
+    while IS_RUNNING:
+        print('Waiting for data...')
+        time.sleep(15)
+        #print(computer_data)
 
+        print('=====OVERVIEW=====')
+        print(f'Time: {datetime.today()}')
+        print(f"User: {computer_data['info']['user']}")
+        print(f"CPU: {computer_data['info']['cpu_type']}")
+        print(f"Processor: {computer_data['info']['processor']}")
+        print(f"Battery Percentage: {computer_data['battery']['percent']}%")
+        print(f"CPU Percentage: {computer_data['cpu']['percent']}%")
+        print("\n")
+        print(f"Number of Disk Partitions: {computer_data['storage']['number']}")
+        print(f"Total Storage Space: {computer_data['storage']['total_storage']}")
+        print(f"Used Storage Space: {computer_data['storage']['used_storage']}")
+        print("\n")
+        print(f"RAM - Total Virtual Memory: {computer_data['ram']['vram_total']}")
+        print(f"RAM - Virtual Memory Percentage: {computer_data['ram']['vram_percent']}%")
+        print(f"RAM - Total Swap Memory: {computer_data['ram']['swap_total']}")
+        print(f"RAM - Swap Memory Percentage: {computer_data['ram']['swap_percent']}%")
+        print("\n")
+        #print(f"Network Download Speed: {computer_data['speedtest']['download']} Mbits/s")
+        #print(f"Network Upload Speed: {computer_data['speedtest']['upload']} Mbits/s")
+        #print(f"Network Ping: {computer_data['speedtest']['ping']} ms")
+
+def send_data():
+    while IS_RUNNING:
+        IDUSER = dbc.get_user_id(os.environ.get("USER_DISPLAY_NAME"))
+        IDPC = dbc.get_pc_id(IDUSER)
+        # this IF clause is to ensure that the ID of the PC
+        # already exists in the database before sending the other data
+        if IDPC == -1:
+            IDPC = dbc.get_pc_id(IDUSER, os.environ.get("USERNAME"))
+        time.sleep(10)
+        dbc.battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
+        dbc.cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
+        dbc.ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
+        dbc.storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
+        print('Data successfully sent!')
+
+def get_pc_info():
+    info_test()
+    IDUSER = dbc.get_user_id(os.environ.get("USER_DISPLAY_NAME"))
+    if IDUSER == -1:
+        IDUSER = dbc.get_user_id(os.environ.get("USER_DISPLAY_NAME"))
+        dbc.pc_info_test_to_db(IDUSER, CURRENT_DATE, **computer_data['info'])
+
+def run_tests():
+    IS_RUNNING = True
+    ### configure daemons
+    # cpu_test() OK
+    # ram_test() OK
+    # battery_test() OK
+    # storage_test() OK
+    # display_data() OK
+
+    battery_thread = Thread(target=battery_test, daemon=True)
+    cpu_thread = Thread(target=cpu_test, daemon=True)
+    ram_thread = Thread(target=ram_test, daemon=True)
+    storage_thread = Thread(target=storage_test, daemon=True)
+    #display_thread = Thread(target=display_data, daemon=True)
+    #send_data_thread = Thread(target=send_data, daemon=True)
+
+    ### initialize daemons
+    ### once tkinter button is linked, we can toggle start and stop
+    battery_thread.start()
+    cpu_thread.start()
+    ram_thread.start()
+    storage_thread.start()
+    #display_thread.start()
+    #send_data_thread.start()
+
+    while IS_RUNNING:
+        pass
+        # insert event listener here to check if App button stops tests
+        if BUTTON_TOGGLE:
+            IS_RUNNING = False
 
 if __name__ == "__main__":
-    main()
+    dbc.load_db()
+    get_pc_info()
+    run_tests()
+
+
+
+

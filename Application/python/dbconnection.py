@@ -3,7 +3,7 @@ import mariadb as mdb
 import os
 from dotenv import load_dotenv as env
 import time
-import extra
+import main
 
 ### SETUP ENVIRONMENT VARIABLES ###
 env()
