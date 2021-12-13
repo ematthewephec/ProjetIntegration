@@ -9,16 +9,16 @@ const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
-const fetch = require('node-fetch');
+const fetch = require('node-fetch')
 require('dotenv').config()
-
+const api = require('./routes/api')
 const PORT = process.env.PORT || 5000
 
 const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://localhost:5000'],
+  origin: ['http://localhost:3000'],
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -35,54 +35,52 @@ app.use(session({
 }))
 
 app.use(express.static('client/build'))
-
-function validateEmail(email) {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
+exports.validateEmail = (email) => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return re.test(String(email).toLowerCase())
 }
 
-async function validateHuman(token) {
-  const secret = process.env.SECRET_KEY;
+async function validateHuman (token) {
+  const secret = process.env.SECRET_KEY
   const response = await fetch(
     `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`,
     {
-      method: "POST",
+      method: 'POST'
     }
-  );
-  const data = await response.json();
-  return data.success;
+  )
+  const data = await response.json()
+  return data.success
 }
 
-
 app.post('/api/mail', async (req, res) => {
+  const human = await validateHuman(req.body.isVerif)
 
-  const human = await validateHuman(req.body.isVerif);
-
-  if(validateEmail(req.body.email) && req.body.name !== "" && req.body.message !== "" && human){
+  if (exports.validateEmail(req.body.email) && req.body.name !== '' && req.body.message !== '' && human) {
     const transporter = nodemailer.createTransport({
-      host: "ssl0.ovh.net",
+      host: 'ssl0.ovh.net',
       port: 587,
       secure: false,
       auth: {
         user: process.env.MAIL,
         pass: process.env.MAIL_PASS
       }
-    });
+    })
 
     const mailOptions = {
       from: req.body.email,
       to: process.env.MAIL,
-      subject: "Email de : " + req.body.name,
+      subject: 'Email de : ' + req.body.name,
       text: req.body.message
-    };
+    }
 
-    transporter.sendMail(mailOptions);
-    res.send("success");
-  }
-  else{
-    res.send("error");
+    transporter.sendMail(mailOptions)
+    res.send('success')
+  } else {
+    res.send('error')
   }
 })
+
+app.use('/api', api);
 
 app.get('/*', (_, res) => {
   res.sendFile(path.join(__dirname, './client/build/index.html'))
@@ -102,8 +100,8 @@ app.post('/Register', (req, res) => {
       console.log(_err)
     }
     pool.query(
-      'INSERT INTO users (username, password, email, nom, prenom) VALUE (?,?,?,?,?)',
-      [username, hash, email, nom, prenom],
+      'INSERT INTO users (username, password, email, nom, prenom, role) VALUE (?,?,?,?,?,?)',
+      [username, hash, email, nom, prenom, 'client'],
       (err, result) => {
         console.log(err)
       }

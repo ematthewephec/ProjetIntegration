@@ -7,7 +7,8 @@ const pool = mariadb.createPool({
   database: process.env.DATABASE,
   port: process.env.PORTDB,
   connectionLimit: 5,
-  allowPublicKeyRetrieval: true
+  allowPublicKeyRetrieval: true,
+  multipleStatements: true
 })
 
 pool.getConnection((err, connection) => {

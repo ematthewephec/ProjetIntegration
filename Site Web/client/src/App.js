@@ -3,6 +3,7 @@ import './App.css'
 // import Nav from './components/Nav'
 import Home from './components/Home'
 import Contact from './components/Contact'
+import Apropos from './components/Apropos'
 import Login from './components/Login'
 import Register from './components/Register'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
@@ -20,6 +21,7 @@ const App = () => {
           <Route path='/Contact' exact component={Contact}>
             <Navigations />
             <Contact/>
+            <Apropos/>
           </Route>
           <Route path='/Login' exact component={Login}>
             <Login />
