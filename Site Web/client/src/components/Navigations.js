@@ -37,10 +37,7 @@ import Port from './content/Port'
 import Processeur from './content/Processeur'
 import Stockage from './content/Stockage'
 
-import Reports from './content/Reports'
-import Thermostat from './content/Thermostat'
 import Axios from 'axios'
-
 
 // import Chart from './Charts'
 // import Deposits from './Deposits'
