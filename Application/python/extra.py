@@ -17,7 +17,6 @@ IS_RUNNING = True
 computer_data = {}
 BUTTON_TOGGLE = False
 
-IDPC = int(os.environ.get("IDPC"))
 CURRENT_DATE = datetime.now()
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
@@ -36,24 +35,22 @@ def convert_time(seconds):
 ### TESTS ###
 def info_test():
     computer_data['info'] = {}
-    while IS_RUNNING:
-        """print('--------------------------')
-        print('------- info Test ---------')
-        print('--------------------------')"""
-        user = psutil.users()
-        # print(f"user is : {user[0].name}")
-        computer_data['info']['user_name'] = user[0].name
-        # print(f"User: {user[0].name}")
-        computer_data['info']['processor'] = platform.processor()
-        # print(f"the processor is : {platform.processor()}")
-        computer_data['info']['cpu_type'] = cpuinfo.get_cpu_info()['brand_raw']
-        computer_data['info']['os_version'] = platform.platform()
-        # print(f"CPU is : {cpu}")
-        # test1 = platform.machine()
-        # print(test1)
-        # lol1 = cpuinfo.get_cpu_info()
-        # print(f"the processor is : {lol1.brand_raw}")
-        time.sleep(300)
+    """print('--------------------------')
+    print('------- info Test ---------')
+    print('--------------------------')"""
+    user = psutil.users()
+    # print(f"user is : {user[0].name}")
+    computer_data['info']['user_name'] = user[0].name
+    # print(f"User: {user[0].name}")
+    computer_data['info']['processor'] = platform.processor()
+    # print(f"the processor is : {platform.processor()}")
+    computer_data['info']['cpu_type'] = cpuinfo.get_cpu_info()['brand_raw']
+    computer_data['info']['os_version'] = platform.platform()
+    # print(f"CPU is : {cpu}")
+    # test1 = platform.machine()
+    # print(test1)
+    # lol1 = cpuinfo.get_cpu_info()
+    # print(f"the processor is : {lol1.brand_raw}")
 
 def battery_test():
     computer_data['battery'] = {}
@@ -128,46 +125,6 @@ def storage_test():
 
         time.sleep(60)
 
-#TO DO
-def gpu_test():
-    pass
-
-#TO DO
-def network_info_test():
-    pass
-
-#TO DO
-def temperature_test():
-    pass
-
-def speed_test():
-    while IS_RUNNING:
-        """print('--------------------------')
-        print('------- Speed Test -------')
-        print('--------------------------')"""
-        computer_data['speedtest'] = {}
-        test = speed.Speedtest()
-        # print("Loading server list ...")
-        test.get_servers()
-        # print("Choosing best server...")
-        best = test.get_best_server()
-
-        # print(f"Found: {best['host']} located in {best['country']}")
-
-        # print("performing download test ...")
-        download_result = test.download()
-        # print("performing upload test ...")
-        upload_result = test.upload()
-        ping_result = test.results.ping
-
-        # print(f" download test : {download_result / 1024 / 1024:.2f} Mbits/s")
-        # print(f" upload test : {upload_result / 1024 / 1024:.2f} Mbits/s")
-        # print(f" ping test : {ping_result} ms")
-
-        computer_data['speedtest']['download'] = math.trunc(download_result / 1024 / 1024)
-        computer_data['speedtest']['upload'] = math.trunc(upload_result / 1024 / 1024)
-        computer_data['speedtest']['ping'] = math.trunc(ping_result)
-
 
 ### concept
 # run tests in concurrence
@@ -206,50 +163,48 @@ def display_data():
 
 def send_data():
     while IS_RUNNING:
-        time.sleep(12)
-        dbc.info_test_to_db(IDPC, CURRENT_DATE, **computer_data['info'])
+        IDUSER = dbc.get_user_id(os.environ.get("USER_DISPLAY_NAME"))
+        IDPC = dbc.get_pc_id(IDUSER)
+        # this IF clause is to ensure that the ID of the PC
+        # already exists in the database before sending the other data
+        if IDPC == -1:
+            IDPC = dbc.get_pc_id(IDUSER, os.environ.get("USERNAME"))
+        time.sleep(10)
         dbc.battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
         dbc.cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
         dbc.ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
         dbc.storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
         print('Data successfully sent!')
 
+def get_pc_info():
+    info_test()
+    IDUSER = dbc.get_user_id(os.environ.get("USER_DISPLAY_NAME"))
+    if IDUSER == -1:
+        IDUSER = dbc.get_user_id(os.environ.get("USER_DISPLAY_NAME"))
+        dbc.pc_info_test_to_db(IDUSER, CURRENT_DATE, **computer_data['info'])
+
 def run_tests():
     IS_RUNNING = True
     ### configure daemons
-    # speed_test() TODO DEBUG
     # cpu_test() OK
     # ram_test() OK
     # battery_test() OK
-    # user_info_test() OK
     # storage_test() OK
-    # network_test TODO
-    # temperature_test() TODO
     # display_data() OK
 
-    info_thread = Thread(target=info_test, daemon=True)
     battery_thread = Thread(target=battery_test, daemon=True)
     cpu_thread = Thread(target=cpu_test, daemon=True)
     ram_thread = Thread(target=ram_test, daemon=True)
     storage_thread = Thread(target=storage_test, daemon=True)
-    #speedtest_thread = Thread(target=speed_test, daemon=True)
-    #gpu_thread
-    #network_thread
-    #temperature_thread
     #display_thread = Thread(target=display_data, daemon=True)
     send_data_thread = Thread(target=send_data, daemon=True)
 
     ### initialize daemons
     ### once tkinter button is linked, we can toggle start and stop
-    info_thread.start()
     battery_thread.start()
     cpu_thread.start()
     ram_thread.start()
     storage_thread.start()
-    #speedtest_thread.start()
-    #gpu_thread.start()
-    #network_thread.start()
-    #temperature_thread.start()
     #display_thread.start()
     send_data_thread.start()
 
@@ -261,6 +216,7 @@ def run_tests():
 
 if __name__ == "__main__":
     dbc.load_db()
+    get_pc_info()
     run_tests()
 
 
