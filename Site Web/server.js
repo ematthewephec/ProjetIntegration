@@ -136,6 +136,7 @@ app.post('/payment', (req, res) => {
   const { product, token } = req.body
   console.log('Product ', product)
   console.log('Price ', product.price)
+  console.log('Price ', product.title)
   const idempontencyKey = uuidv4()
   return stripe.customers.create({
     email: token.email,
@@ -146,7 +147,7 @@ app.post('/payment', (req, res) => {
       currency: 'usd',
       customer: customer.id,
       receipt_email: token.email,
-      description: product.name,
+      description: 'Acheter la version' + product.title,
       shipping: {
         name: token.card.name,
         address: {

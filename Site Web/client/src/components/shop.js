@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -13,6 +13,7 @@ import Link from '@mui/material/Link'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import Container from '@mui/material/Container'
 import StripeCheckout from 'react-stripe-checkout'
+import Axios from 'axios'
 
 function Copyright (props) {
   return (
@@ -82,11 +83,7 @@ const footers = [
 
 function Shop () {
   const BASE_URL = process.env.REACT_APP_API_URL
-  const [product, setProduct] = React.useState({
-    name: 'react from FB',
-    price: 10,
-    productBy: 'facbook'
-  })
+  const [product, setProduct] = React.useState({ title: 'Premium', price: 10 })
 
   const makePayment = token => {
     const body = {
