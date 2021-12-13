@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import Nav from './components/Nav'
-import { styled, createTheme, ThemeProvider} from '@mui/material/styles'
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Button from '@mui/material/Button'
 import { List } from '@mui/material'
@@ -35,6 +35,7 @@ import Network from './content/Network'
 import Port from './content/Port'
 import Reports from './content/Reports'
 import Thermostat from './content/Thermostat'
+import Axios from 'axios'
 
 // import Chart from './Charts'
 // import Deposits from './Deposits'
@@ -101,20 +102,62 @@ function Copyright (props) {
 }
 
 const Navigations = () => {
-  const pos = (window.location.href.includes("Contact") ? 'relative' : 'absolute');
-  window.location.href.includes("Contact") ? drawerWidth = 0 : drawerWidth = 240;
-  const title = ((window.location.pathname === "/") || (window.location.pathname === "/Home") ? "ressources pc" : "");
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
+  const BASE_URL = process.env.REACT_APP_API_URL
+  const pos = (window.location.pathname !== '/App' ? 'relative' : 'absolute')
+  window.location.pathname !== '/App' ? drawerWidth = 0 : drawerWidth = 240
+  const title = 'Checkpcs'
   const toggleDrawer = () => {
     setOpen(!open)
+  }
+  // FONCTION ROLE : ne pas Axios.defaults.withCredentials = true
+  Axios.defaults.withCredentials = true
+  const [role, setRole] = React.useState('')
+  const [role2, setRole2] = React.useState('')
+  useEffect(() => {
+    Axios.get(BASE_URL + '/Login').then((response) => {
+      console.log(response.data)
+      if (response.data.loggedIn === true) {
+        setRole(response.data.user[0].role)
+      } else {
+        setRole('visitor')
+      }
+    })
+  })
+  useEffect(() => {
+    Axios.get(BASE_URL + '/isUserAuth', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      console.log(response)
+      if (response.data.auth === false) {
+        setRole2('visitor')
+      } else if (response.data.user.isAdmin === false) {
+        setRole2('client')
+      } else {
+        setRole2('Admin')
+      }
+    })
+  })
+  const logout = () => {
+    Axios.get(BASE_URL + '/Logout', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      window.localStorage.clear()
+      setRole2('visitor')
+      window.location.href = '/Login'
+    })
   }
   return (
     <div>
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position={pos} open={open} >
+          <AppBar position={pos} open={open}>
             <Toolbar
               sx={{
                 pr: '24px' // keep right padding when drawer closed
@@ -132,6 +175,9 @@ const Navigations = () => {
               >
                 <MenuIcon />
               </IconButton>
+              <Button color='inherit' href='/'>
+                Home
+              </Button>
               <Typography
                 component='h1'
                 variant='h6'
@@ -141,21 +187,27 @@ const Navigations = () => {
               >
                 {title}
               </Typography>
-              <Button color='inherit' href='/'>
-                Home
-              </Button>
               <Button color='inherit' href='/Contact'>
                 contact
               </Button>
-              <Button color='inherit' href='/Login'>
-                Login
+              <Button color='inherit' href='/App'>
+                App
               </Button>
-              <Button color='inherit' href='/Register'>
-                Register
-              </Button>
+              {role2 !== 'visitor' &&
+                <Button color='inherit' onClick={logout}>
+                  Logout
+                </Button>}
+              {role2 === 'visitor' &&
+                <Button color='inherit' href='/Login'>
+                  Login
+                </Button>}
+              {role2 === 'visitor' &&
+                <Button color='inherit' href='/Register'>
+                  Register
+                </Button>}
             </Toolbar>
           </AppBar>
-          {window.location.pathname !== '/Contact' &&
+          {window.location.pathname === '/App' &&
             <Drawer variant='permanent' open={open}>
               <Toolbar
                 sx={{
@@ -226,7 +278,7 @@ const Navigations = () => {
                 </ListItem>
               </List>
             </Drawer>}
-          {window.location.pathname !== '/Contact' &&
+          {window.location.pathname === '/App' &&
             <Box
               component='main'
               sx={{
