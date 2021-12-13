@@ -112,4 +112,4 @@ class Window():
         self.tk.destroy()
 
     def open_website(self):
-        webbrowser.open('https://www.google.be')
+        webbrowser.open('https://www.checkpcs.com')

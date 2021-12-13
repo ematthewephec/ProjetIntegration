@@ -1,3 +1,4 @@
+
 GET http://localhost:5000/api/1/dashboard
 ###
 GET http://localhost:5000/api/1/ram
@@ -7,3 +8,4 @@ GET http://localhost:5000/api/1/cpu
 GET http://localhost:5000/api/1/battery
 ###
 GET http://localhost:5000/api/1/storage
+

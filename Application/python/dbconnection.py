@@ -3,6 +3,7 @@ import mariadb as mdb
 import os
 from dotenv import load_dotenv as env
 import time
+import extra
 
 ### SETUP ENVIRONMENT VARIABLES ###
 env()
@@ -31,7 +32,7 @@ def check_user_table():
     if len(test) == 0:
         db_cursor.execute("CREATE TABLE Users (id INT NOT NULL AUTO_INCREMENT, username VARCHAR(45) NOT NULL, \
         password VARCHAR(500) NOT NULL, email VARCHAR(60) NOT NULL, nom VARCHAR(45) NOT NULL, \
-        prenom VARCHAR(45) NOT NULL, PRIMARY KEY (id));")
+        prenom VARCHAR(45) NOT NULL, role VARCHAR(45) NOT NULL, PRIMARY KEY (id));")
 
 def check_pcs_table():
     db_cursor.execute("SHOW TABLES LIKE 'pcs';")
@@ -39,17 +40,9 @@ def check_pcs_table():
     # print(test)
     if len(test) == 0:
         db_cursor.execute("CREATE TABLE pcs(idPc INT NOT NULL AUTO_INCREMENT,\
-        idUser INT NOT NULL, PRIMARY KEY (idPc), FOREIGN KEY(idUser) \
+        idUser INT NOT NULL, test_date VARCHAR(60) NOT NULL, user_name VARCHAR(60) NOT NULL, processor VARCHAR(60) NOT NULL, \
+        cpu_type VARCHAR(60) NOT NULL, os_version VARCHAR(60), PRIMARY KEY (idPc), FOREIGN KEY(idUser) \
         REFERENCES Users(id));")
-
-def check_info_table():
-    db_cursor.execute("SHOW TABLES LIKE 'info';")
-    test = db_cursor.fetchall()
-    if len(test) == 0:
-        db_cursor.execute("CREATE TABLE info(id INT NOT NULL AUTO_INCREMENT, idPc INT NOT NULL, \
-        test_date VARCHAR(60) NOT NULL, user_name VARCHAR(60) NOT NULL, processor VARCHAR(60) NOT NULL, \
-        cpu_type VARCHAR(60) NOT NULL, os_version VARCHAR(60), \
-        PRIMARY KEY (id), FOREIGN KEY (idPc) REFERENCES pcs(idPc));")
 
 def check_battery_table():
     db_cursor.execute("SHOW TABLES LIKE 'battery';")
@@ -86,10 +79,10 @@ def check_storage_table():
 
 
 ### FUNCTIONS TO SEND DATA ###
-def info_test_to_db(idPc, current_date, user_name, processor, cpu_type, os_version):
-    sql = "INSERT INTO info (idPc, test_date, user_name, processor, cpu_type, os_version) \
+def pc_info_test_to_db(idUser, current_date, user_name, processor, cpu_type, os_version):
+    sql = "INSERT INTO pcs (idUser, test_date, user_name, processor, cpu_type, os_version) \
     VALUES (%s, %s, %s, %s, %s, %s);"
-    values = (idPc, current_date, user_name, processor, cpu_type, os_version)
+    values = (idUser, current_date, user_name, processor, cpu_type, os_version)
     db_cursor.execute(sql, values)
     my_db.commit()
 
@@ -125,9 +118,8 @@ def storage_test_to_db(idPc, current_date, total_storage, used_storage):
 def load_db():
     check_user_table()
     check_pcs_table()
-    #print(os.environ.get("USERNAME"))
-    check_user(os.environ.get("USERNAME"))
-    check_info_table()
+    #print(os.environ.get("USER_DISPLAY_NAME"))
+    check_user(os.environ.get("USER_DISPLAY_NAME"))
     check_cpu_table()
     check_ram_table()
     check_battery_table()
@@ -141,18 +133,44 @@ def check_user(user_name):
     test = db_cursor.fetchall()
     #print(test)
     if len(test) == 0:
-        print('Does not exist')
+        print('Who are you?')
     else:
-        check_pc(test[0], int(os.environ.get("IDPC")))
+        print(f"Hello, {user_name}!")
+        check_pc(test[0])
 
 
-def check_pc(idUser, idPC):
-    db_cursor.execute(f"SELECT * from pcs WHERE idPc = {idPC};")
+def check_pc(idUser):
+    db_cursor.execute(f"SELECT idPc from pcs WHERE idUser = '{idUser}';")
     test = db_cursor.fetchall()
     # print(test)
     if len(test) == 0:
-        db_cursor.execute(f"INSERT INTO pcs(idUser) VALUES ({idUser});")
-0
+        print(f"No PC registered.")
+    else:
+        print(f"{idUser} has {len(test)} computer(s) registered.")
+
+### GET USER ID and PC ID
+def get_user_id(user_name):
+    db_cursor.execute(f"SELECT id from Users WHERE username = '{user_name}';")
+    test = db_cursor.fetchall()
+    # print(test)
+    if len(test) == 0:
+        print('No user found!')
+        return -1;
+    else:
+        user_id = int(''.join(map(str, test[0])))
+        return user_id
+
+def get_pc_id(idUser):
+    db_cursor.execute(f"SELECT idPc from pcs WHERE idUser = '{idUser}';")
+    test = db_cursor.fetchall()
+    # print(test)
+    if len(test) == 0:
+        print("No PC found!")
+        return -1;
+    else:
+        pc_id = int(''.join(map(str, test[0])))
+        return pc_id
+
 
 if __name__ == '__main__':
     pass
