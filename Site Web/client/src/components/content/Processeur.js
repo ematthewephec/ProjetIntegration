@@ -79,7 +79,7 @@ function Processeur () {
   useEffect(() => {
 
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://localhost:5000/api/1/cpu', true);
+    xhr.open('GET', process.env.REACT_APP_API_URL + '/api/1/cpu', true);
     xhr.onload = function () {
       let data = JSON.parse(xhr.responseText);
       let title = [];

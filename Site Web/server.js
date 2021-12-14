@@ -24,7 +24,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: ['http://localhost:3000'],
+  origin: [process.env.URL_CORS],
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -40,7 +40,10 @@ app.use(session({
   }
 }))
 
-app.use(express.static('client/build'))
+if (process.env.NODE_ENV === 'dev') {
+  app.use(express.static('client/build'))
+}
+
 exports.validateEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
@@ -68,6 +71,23 @@ app.post('/Register', async function (req, res) {
     const result = await pool.query(sqlQuery, [username, encryptedPassword, email, nom, prenom, 'client'])
 
     res.status(200).json({ userId: result.insertId })
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+})
+
+app.post('/Register/Admin', async function (req, res) {
+  try {
+    const { username, password, email, nom, prenom, passwordAdmin } = req.body
+    if (passwordAdmin === process.env.PASSWORD_ADMIN) {
+      const encryptedPassword = await bcrypt.hash(password, saltRounds)
+
+      const sqlQuery = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
+      const result = await pool.query(sqlQuery, [username, encryptedPassword, email, nom, prenom, 'Admin'])
+      res.status(200).json({ userId: result.insertId })
+    } else {
+      res.status(200).json({ auth: false })
+    }
   } catch (error) {
     res.status(400).send(error.message)
   }
@@ -193,9 +213,11 @@ app.post('/api/mail', async (req, res) => {
 
 app.use('/api', api)
 
-app.get('/*', (_, res) => {
-  res.sendFile(path.join(__dirname, './client/build/index.html'))
-})
+if (process.env.NODE_ENV === 'dev') {
+  app.get('/*', (_, res) => {
+    res.sendFile(path.join(__dirname, './client/build/index.html'))
+  })
+}
 
 app.use('/user', userRouter)
 

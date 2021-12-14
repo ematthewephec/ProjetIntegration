@@ -79,7 +79,7 @@ function Baterry () {
   useEffect(() => {
 
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://localhost:5000/api/1/battery', true);
+    xhr.open('GET', process.env.REACT_APP_API_URL + '/api/1/battery', true);
     xhr.onload = function () {
       let data = JSON.parse(xhr.responseText);
       let title = [];
