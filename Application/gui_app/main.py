@@ -3,7 +3,6 @@ import pystray
 from pystray import MenuItem as item
 from PIL import Image, ImageTk
 
-
 if __name__ == '__main__':
     user = Image.open("photos/account.png").resize((45, 45), Image.ANTIALIAS)
     lock = Image.open("photos/lock.png").resize((45, 45), Image.ANTIALIAS)

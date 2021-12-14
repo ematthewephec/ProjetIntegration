@@ -3,7 +3,7 @@ import mariadb as mdb
 import os
 from dotenv import load_dotenv as env
 import time
-import main
+import datacollection
 
 ### SETUP ENVIRONMENT VARIABLES ###
 env()
@@ -142,7 +142,7 @@ def check_user(user_name):
         print('Who are you?')
     else:
         print(f"Hello, {user_name}!")
-        check_pc(test[0], os.environ.get("USERNAME"))
+        check_pc(os.environ.get("USERNAME"))
 
 def check_pc(idUser, pc_name):
     db_cursor.execute(f"SELECT idPc from pcs WHERE (idUser = '{idUser}' AND user_name = '{pc_name}');")
@@ -150,8 +150,10 @@ def check_pc(idUser, pc_name):
     # print(test)
     if len(test) == 0:
         print(f"No PC registered.")
+        return 0
     else:
         print(f"This computer's registered!")
+        return 1
 
 ### GET USER ID and PC ID
 def get_user_id(user_name):
@@ -165,13 +167,13 @@ def get_user_id(user_name):
         user_id = int(''.join(map(str, test[0])))
         return user_id
 
-def get_pc_id(idUser):
-    db_cursor.execute(f"SELECT idPc from pcs WHERE idUser = '{idUser}';")
+def get_pc_id(idUser, pc_name):
+    db_cursor.execute(f"SELECT idPc from pcs WHERE (idUser = '{idUser}' AND user_name = '{pc_name}');")
     test = db_cursor.fetchall()
     # print(test)
     if len(test) == 0:
-        print("No PC found!")
-        return -1;
+        print(f"No PC found!")
+        return -1
     else:
         pc_id = int(''.join(map(str, test[0])))
         return pc_id

@@ -14,6 +14,10 @@ import serial.tools.list_ports
 import speedtest
 import threading
 
+sys.path.insert(0,'Application/gui_app/app')
+import datacollection as data
+import dbconnection as dbc
+
 
 class Window():
     def __init__(self, user, lock, exit, web, icon):
@@ -181,6 +185,28 @@ class Window():
             self.counter += 1
             self.open_app()
 
+    def check_pc(self):
+        pc_name = psutil.users()[0].name
+        #userID = dbc.get_user_id(self.entry1)
+        userID = 1
+        if dbc.check_pc(userID, pc_name) == 0:
+            data.info_test()
+            dbc.pc_info_test_to_db(userID, data.CURRENT_DATE, **data.computer_data['info'])
+        print(f"PC {pc_name} exists!")
+        #self.start_tests()
+
+    def start_tests(self):
+        print("Starting tests...")
+        threading.Thread(target=data.run_tests(), daemon=True).start()
+        self.tk.after(30000, self.send_data())
+        # self.running?
+
+    def send_data(self):
+        pc_name = psutil.users()[0].name
+        userID = dbc.get_user_id(self.entry1)
+        pc_id = dbc.get_pc_id(userID, pc_name)
+        data.send_data(pc_id)
+
     def close_app(self):
        self.tk.destroy()
        if (self.icon_service != None):
@@ -200,6 +226,7 @@ class Window():
         self.displayInfos()
         self.connectedScreen()
         self.widget_speed_test()
+        self.check_pc()
         self.master.protocol('WM_DELETE_WINDOW', self.hide_master)
 
     def hide_master(self):
@@ -378,3 +405,6 @@ class Window():
         self.latence_val = latence_value
         self.down_val = download_value
         self.up_val = upload_value
+
+if __name__ == '__main__':
+    data.info_test()

@@ -165,21 +165,12 @@ def display_data():
         #print(f"Network Upload Speed: {computer_data['speedtest']['upload']} Mbits/s")
         #print(f"Network Ping: {computer_data['speedtest']['ping']} ms")
 
-def send_data():
-    while IS_RUNNING:
-        IDUSER = dbc.get_user_id(os.environ.get("USER_DISPLAY_NAME"))
-        IDPC = dbc.get_pc_id(IDUSER)
-        # this IF clause is to ensure that the ID of the PC
-        # already exists in the database before sending the other data
-        if IDPC == -1:
-            IDPC = dbc.get_pc_id(IDUSER, os.environ.get("USERNAME"))
-            
-        time.sleep(10)
-        dbc.battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
-        dbc.cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
-        dbc.ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
-        dbc.storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
-        print('Data successfully sent!')
+def send_data(IDPC):
+    dbc.battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
+    dbc.cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
+    dbc.ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
+    dbc.storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
+    print('Data successfully sent!')
 
 def get_pc_info():
     info_test()
@@ -203,7 +194,7 @@ def run_tests():
     ram_thread = Thread(target=ram_test, daemon=True)
     storage_thread = Thread(target=storage_test, daemon=True)
     #display_thread = Thread(target=display_data, daemon=True)
-    send_data_thread = Thread(target=send_data, daemon=True)
+    #send_data_thread = Thread(target=send_data, daemon=True)
 
     ### initialize daemons
     ### once tkinter button is linked, we can toggle start and stop
@@ -212,7 +203,7 @@ def run_tests():
     ram_thread.start()
     storage_thread.start()
     #display_thread.start()
-    send_data_thread.start()
+    #send_data_thread.start()
 
     while IS_RUNNING:
         pass
