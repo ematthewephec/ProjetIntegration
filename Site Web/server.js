@@ -39,12 +39,11 @@ app.use(session({
     expires: 60 * 60 * 24
   }
 }))
-/*
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static('client/build'));
+
+if (process.env.NODE_ENV === 'dev') {
+  app.use(express.static('client/build'))
 }
-*/
-app.use(express.static('client/build'))
+
 exports.validateEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
@@ -213,15 +212,12 @@ app.post('/api/mail', async (req, res) => {
 })
 
 app.use('/api', api)
-/*
-if (process.env.NODE_ENV === "production") {
+
+if (process.env.NODE_ENV === 'dev') {
   app.get('/*', (_, res) => {
-  res.sendFile(path.join(__dirname, './client/build/index.html'))
-})
-*/
-app.get('/*', (_, res) => {
-  res.sendFile(path.join(__dirname, './client/build/index.html'))
-})
+    res.sendFile(path.join(__dirname, './client/build/index.html'))
+  })
+}
 
 app.use('/user', userRouter)
 
