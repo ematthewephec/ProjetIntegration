@@ -1,3 +1,4 @@
+import sys
 from tkinter import *
 from PIL import ImageTk, Image
 import webbrowser
@@ -23,7 +24,7 @@ class Window():
         self.tk.geometry("500x600")
         self.tk.resizable(False, False)
         self.tk.configure(background='#8eb8de')
-        self.tk.protocol('WM_DELETE_WINDOW', self.hidde_window)
+        self.tk.protocol('WM_DELETE_WINDOW', self.hide_window)
 
         self.img1 = ImageTk.PhotoImage(file="photos/input.png")
         self.img2 = ImageTk.PhotoImage(file="photos/input.png")
@@ -79,18 +80,18 @@ class Window():
         self.icon_service.stop()
         self.tk.after(0, self.tk.deiconify())
 
-    def creat_service(self):
+    def create_service(self):
         image = Image.open("favicon.ico")
-        menu = (item('Show', self.show_window), item('Quit', self.close_app))
+        menu = (item('Login', self.show_window), item('Exit', self.close_app))
         self.icon_service = pystray.Icon("name", image, "Checkpcs", menu)
 
-    def hidde_window(self):
+    def hide_window(self):
         self.tk.withdraw()
-        self.creat_service()
+        self.create_service()
         self.icon_service.run()
 
     def run_as_service(self):
-        self.creat_service()
+        self.create_service()
         self.tk.withdraw()
         self.icon_service.run()
 
@@ -155,7 +156,7 @@ class Window():
             height=40)
 
         btn3 = Button(self.tk,
-                      command=self.conexion,
+                      command=self.connexion,
                       image=self.confirm,
                       borderwidth=0,
                       highlightthickness=0,
@@ -163,7 +164,7 @@ class Window():
                       activebackground="#8eb8de")
         btn3.pack(pady=10)
 
-    def conexion(self):
+    def connexion(self):
         """
         url = 'https://localhost:5000/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
@@ -181,9 +182,9 @@ class Window():
             self.open_app()
 
     def close_app(self):
-        self.tk.destroy()
-        if self.icon_service != None:
-            self.icon_service.stop()
+       self.tk.destroy()
+       if (self.icon_service != None):
+           self.icon_service.stop()
 
     def open_website(self):
         webbrowser.open('https://www.checkpcs.com')
@@ -199,14 +200,29 @@ class Window():
         self.displayInfos()
         self.connectedScreen()
         self.widget_speed_test()
-        self.master.protocol('WM_DELETE_WINDOW', self.hidde_master)
+        self.master.protocol('WM_DELETE_WINDOW', self.hide_master)
 
-    def hidde_master(self):
+    def hide_master(self):
         self.counter -= 1
-        self.master.destroy()
+        self.master.withdraw()
         self.tk.after_cancel(self.test_ecran)
-        self.creat_service()
+        self.create_service_data()
         self.icon_service.run()
+
+    def create_service_data(self):
+        image = Image.open("favicon.ico")
+        menu = (item('Show', self.show_window_data), item('Logout', self.logout), item('Exit', self.close_app))
+        self.icon_service = pystray.Icon("name", image, "Checkpcs", menu)
+
+    def show_window_data(self):
+        self.icon_service.stop()
+        self.tk.after(0, self.master.deiconify())
+
+    def logout(self):
+        self.master.destroy()
+        self.icon_service.stop()
+        self.tk.after(0, self.tk.deiconify())
+
 
     def widgets(self):
         info_widget = Label(self.master, image=self.widget_medium, borderwidth=0, highlightthickness=0)
