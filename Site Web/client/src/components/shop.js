@@ -13,7 +13,6 @@ import Link from '@mui/material/Link'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import Container from '@mui/material/Container'
 import StripeCheckout from 'react-stripe-checkout'
-import Axios from 'axios'
 
 function Copyright (props) {
   return (

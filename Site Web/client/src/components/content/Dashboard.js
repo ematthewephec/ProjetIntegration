@@ -47,7 +47,7 @@ function Dashboard () {
   useEffect(() => {
 
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://localhost:5000/api/1/dashboard', true);
+    xhr.open('GET', process.env.REACT_APP_API_URL + '/api/1/dashboard', true);
     xhr.onload = function () {
       let data = JSON.parse(xhr.responseText);
       let ram = Number(data[0][0]["percent_virtual"])
