@@ -8,7 +8,6 @@ const userRouter = require('./routes/user')
 const nodemailer = require('nodemailer')
 const fetch = require('node-fetch')
 require('dotenv').config()
-
 const api = require('./routes/api')
 
 const jwt = require('jsonwebtoken')
@@ -17,7 +16,6 @@ const pool = require('./helpers/database')
 const saltRounds = 10
 const stripe = require('stripe')(process.env.PUBLISH_KEY_STRIPE)
 const uuidv4 = require('uuid/v4')
-
 const PORT = process.env.PORT || 5000
 
 const app = express()
@@ -44,6 +42,55 @@ if (process.env.NODE_ENV === 'dev') {
   app.use(express.static('client/build'))
 }
 
+const verifyJWT = (req, res, next) => {
+  const token = req.headers['x-access-token']
+  if (!token) {
+    res.send({ auth: false, message: 'No token provided.' })
+  } else {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        res.json({ auth: false, message: 'Failed to authenticate token.' })
+      } else {
+        req.userId = decoded
+        next()
+      }
+    })
+  }
+}
+/*
+const verifyJWTAPI = (req, res, next) => {
+  const token = req.headers['x-access-token']
+  if (!token) {
+    res.send({ auth: false, message: 'No token provided.' })
+  } else {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        res.json({ auth: false, message: 'Failed to authenticate token.' })
+      } else {
+        req.body =
+        next()
+      }
+    })
+  }
+}
+*/
+const verifyJWTAdmin = (req, res, next) => {
+  const token = req.headers['x-access-token']
+  if (!token) {
+    res.send({ auth: false, message: 'No token provided.' })
+  } else {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        res.json({ auth: false, message: 'Failed to authenticate token.' })
+      } else {
+        req.userId = decoded
+        console.log(decoded)
+        next()
+      }
+    })
+  }
+}
+
 exports.validateEmail = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
@@ -60,11 +107,33 @@ async function validateHuman (token) {
   const data = await response.json()
   return data.success
 }
+/*
+async function hash(password) {
+  return new Promise((resolve, reject) => {
+    const salt = crypto.randomBytes(8).toString('hex')
 
+    crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+      if (err) reject(err)
+      resolve(salt + ':' + derivedKey.toString('hex'))
+    })
+  })
+}
+async function verify(password, hash) {
+  return new Promise((resolve, reject) => {
+    const [salt, key] = hash.split(':')
+    crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+      if (err) reject(err)
+      resolve(key === derivedKey.toString('hex'))
+    })
+  })
+}
+*/
 app.post('/Register', async function (req, res) {
   try {
     const { username, password, email, nom, prenom } = req.body
-
+    // const salt = await getRandomBytes(32)
+    // const encryptedPassword = await argon2i.hash(password, salt)
+    // const encryptedPassword = await hash(password)
     const encryptedPassword = await bcrypt.hash(password, saltRounds)
 
     const sqlQuery = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
@@ -76,7 +145,7 @@ app.post('/Register', async function (req, res) {
   }
 })
 
-app.post('/Register/Admin', async function (req, res) {
+app.post('/Register/Admin', verifyJWTAdmin, async function (req, res) {
   try {
     const { username, password, email, nom, prenom, passwordAdmin } = req.body
     if (passwordAdmin === process.env.PASSWORD_ADMIN) {
@@ -93,21 +162,28 @@ app.post('/Register/Admin', async function (req, res) {
   }
 })
 
-const verifyJWT = (req, res, next) => {
-  const token = req.headers['x-access-token']
-  if (!token) {
-    res.send({ auth: false, message: 'No token provided.' })
-  } else {
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
-      if (err) {
-        res.json({ auth: false, message: 'Failed to authenticate token.' })
+app.post('/NewOrder', verifyJWT, async function (req, res) {
+  try {
+    const { idUser, prix, type } = req.body
+    const sqlQuery = 'INSERT INTO commande (idUser, test_date, prix) VALUES (?,?,?)'
+    const result = await pool.query(sqlQuery, [idUser, '10/12/2021', prix])
+    if (res.status(200)) {
+      if (prix === 60000) {
+        const sqlQuery = 'INSERT INTO produit (idCom, test_date, prix, type) VALUES (?,?,?,?)'
+        const result1 = await pool.query(sqlQuery, [result.insertId, '10/12/2021', prix - 50, type])
+        const sqlQuery2 = 'INSERT INTO produit (idCom, test_date, prix, type) VALUES (?,?,?,?)'
+        const result2 = await pool.query(sqlQuery2, [result.insertId, '10/12/2021', prix, type])
+        res.status(200).json({ produitid1: result1.insertId, produitid2: result2.insertId })
       } else {
-        req.userId = decoded
-        next()
+        const sqlQuery = 'INSERT INTO produit (idCom, test_date, prix, type) VALUES (?,?,?,?)'
+        const result1 = await pool.query(sqlQuery, [result.insertId, '10/12/2021', prix, type])
+        res.status(200).json({ produitid: result1.insertId })
       }
-    })
+    }
+  } catch (error) {
+    res.status(400).send(error.message)
   }
-}
+})
 
 app.get('/isUserAuth', verifyJWT, (req, res) => {
   res.send({ user: req.userId })
@@ -155,7 +231,7 @@ app.post('/Login', async function (req, res) {
   }
 })
 
-app.post('/payment', (req, res) => {
+app.post('/payment', verifyJWT, (req, res) => {
   const { product, token } = req.body
   console.log('Product ', product)
   console.log('Price ', product.price)
@@ -179,7 +255,7 @@ app.post('/payment', (req, res) => {
       }
     }, { idempontencyKey })
   })
-    .then(result => res.status(200).json(result))
+    .then(res.status(200).send({ result: product, user: req.userId }))
     .catch(err => console.log(err))
 })
 

@@ -107,11 +107,13 @@ const Navigations = () => {
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
   const BASE_URL = process.env.REACT_APP_API_URL
+  console.log(window.location.pathname)
   const pos = (window.location.pathname !== '/App' ? 'relative' : 'absolute')
   window.location.pathname !== '/App' ? drawerWidth = 0 : drawerWidth = 240
   const title = 'Checkpcs'
   const toggleDrawer = () => {
     setOpen(!open)
+    console.log(open)
   }
   // FONCTION ROLE : ne pas Axios.defaults.withCredentials = true
   Axios.defaults.withCredentials = true
@@ -169,7 +171,7 @@ const Navigations = () => {
                 edge='start'
                 color='inherit'
                 aria-label='open drawer'
-                // onClick={toggleDrawer}
+                onClick={toggleDrawer}
                 sx={{
                   marginRight: '36px',
                   ...(open && { display: 'none' })

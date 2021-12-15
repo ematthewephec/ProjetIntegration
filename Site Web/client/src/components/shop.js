@@ -12,7 +12,8 @@ import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import Container from '@mui/material/Container'
-import StripeCheckout from 'react-stripe-checkout'
+// import StripeCheckout from 'react-stripe-checkout'
+import Checkout from './Checkout'
 
 function Copyright (props) {
   return (
@@ -32,35 +33,35 @@ const tiers = [
     title: 'Premium',
     price: '10',
     description: [
-      'Access of the website',
+      'Accès au site web',
       'Email support',
-      '5% of the profits go to an association'
+      '5% des bénéfice iront a une association'
     ],
-    buttonText: 'Buy and Signed',
+    buttonText: 'Acheter',
     buttonVariant: 'outlined'
   },
   {
     title: 'Pro',
-    subheader: 'Most popular',
+    subheader: 'Plus populaire',
     price: '60',
     description: [
-      'Access of the website',
-      'Screen Checkpcs',
+      'Accès au site web',
+      'Ecran Checkpcs',
       'Email support',
-      '5% to an association'
+      '5% des bénéfice iront a une association'
     ],
-    buttonText: 'Buy and Signed',
+    buttonText: 'Acheter',
     buttonVariant: 'contained'
   },
   {
     title: 'Trial',
     price: '0',
     description: [
-      'Try for 10 days',
-      'Access of the website',
+      'Période d\'essaie de 5 jours',
+      'Accès au site web',
       'Email support'
     ],
-    buttonText: 'try and Signed',
+    buttonText: 'Essayer',
     buttonVariant: 'outlined'
   }
 ]
@@ -81,28 +82,6 @@ const footers = [
 ]
 
 function Shop () {
-  const BASE_URL = process.env.REACT_APP_API_URL
-  const [product, setProduct] = React.useState({ title: 'Premium', price: 10 })
-
-  const makePayment = token => {
-    const body = {
-      token,
-      product
-    }
-    const headers = {
-      'Content-Type': 'application/json'
-    }
-    return fetch(BASE_URL + '/payment', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body)
-    }).then(response => {
-      console.log('RESPONSE', response)
-      const { status } = response
-      console.log('STATUS', status)
-    })
-      .catch(error => console.log(error))
-  }
   return (
     <div>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -119,9 +98,7 @@ function Shop () {
           Choisissez votre offre
         </Typography>
         <Typography variant='h5' align='center' color='text.secondary' component='p'>
-          Quickly build an effective pricing table for your potential customers with
-          this layout. It&apos;s built with default MUI components with little
-          customization.
+          Nous sommes heureux de vous proposer 3 choix d'offres possible qui pourront satifaire tous les utilisateurs
         </Typography>
       </Container>
       {/* End hero unit */}
@@ -182,16 +159,11 @@ function Shop () {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  <StripeCheckout
-                    stripeKey={process.env.REACT_APP_KEY}
-                    token={makePayment}
+                  <Checkout
                     name={tier.title}
-                    amount={tier.price * 100}
-                  >
-                    <Button fullWidth variant={tier.buttonVariant}>
-                      {tier.buttonText}
-                    </Button>
-                  </StripeCheckout>
+                    description={tier.title}
+                    amount={tier.price}
+                  />
                 </CardActions>
               </Card>
             </Grid>
@@ -217,7 +189,7 @@ function Shop () {
               <ul>
                 {footer.description.map((item) => (
                   <li key={item}>
-                    <Link href='#' variant='subtitle1' color='text.secondary'>
+                    <Link href='/' variant='subtitle1' color='text.secondary'>
                       {item}
                     </Link>
                   </li>
