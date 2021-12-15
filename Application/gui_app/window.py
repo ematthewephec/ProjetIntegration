@@ -1,10 +1,10 @@
 import sys
 from tkinter import *
+import requests
 from PIL import ImageTk, Image
 import webbrowser
 import pystray
 from pystray import MenuItem as item
-import requests
 import json
 import platform
 import cpuinfo
@@ -15,7 +15,8 @@ import speedtest
 import threading
 import Application.data.datacollection as data
 import Application.data.dbconnection as dbc
-
+import rx
+from rx.scheduler import ThreadPoolScheduler
 
 class Window():
     def __init__(self, user, lock, exit, web, icon):
@@ -64,6 +65,8 @@ class Window():
         self.user_id = None
         self.pc_id = None
 
+        self.pool_scheduler = ThreadPoolScheduler(1) # thread pool with 1 worker thread
+
         self.master = None
         self.ecran = False
         self.btn_speed_test = None
@@ -81,6 +84,7 @@ class Window():
         self.create_input()
         self.create_button()
         self.tk.after(0, self.run_as_service())
+
         self.tk.mainloop()
 
     def show_window(self):
@@ -110,7 +114,6 @@ class Window():
             height=60)
 
     def create_input(self):
-
         label = Label(self.tk, image=self.img1, borderwidth=0,highlightthickness=0 )
         label.pack(pady=140)
         label_user1 = Label(self.tk, image=self.user_img, borderwidth=0,highlightthickness=0)
@@ -163,7 +166,7 @@ class Window():
             height=40)
 
         btn3 = Button(self.tk,
-                      command=self.connexion,
+                      command=self.connexion(),
                       image=self.confirm,
                       borderwidth=0,
                       highlightthickness=0,
@@ -186,10 +189,26 @@ class Window():
         """
         if(self.counter == 0):
             self.counter += 1
-            app_thread = threading.Thread(target=self.open_app())
-            app_thread.start()
-            app_thread.join()
-            self.tk.after(15000, self.start_tests())
+            self.open_app()
+            self.tk.after(1000, self.thread_handler)
+
+    def thread_handler(self):
+        rx.just(1).subscribe(
+            on_next=self.run_tests,
+            on_completed=lambda: self.tk.after(10000, self.send_data),
+            scheduler=self.pool_scheduler
+        )
+
+    def run_tests(self):
+        data.run_tests()
+
+    def send_data(self):
+        if self.counter > 0:
+            # self.user_id = dbc.get_user_id(self.entry1)
+            self.pc_id = dbc.get_pc_id(self.user_id, self.pc_name)
+            # print(self.pc_id)
+            data.send_data(self.pc_id)
+
 
     def check_pc(self):
         self.pc_name = psutil.users()[0].name
@@ -200,25 +219,10 @@ class Window():
             dbc.pc_info_test_to_db(self.user_id, data.CURRENT_DATE, **data.computer_data['info'])
         print(f"PC {self.pc_name} exists!")
 
-    def start_tests(self):
-        print("Starting tests...")
-        data.run_tests()
-        #self.tk.after(15000, data.display_data())
-        self.tk.after(100000, self.send_data())
-        self.tk.after(300000, self.start_tests())
-
-    def send_data(self):
-        pc_name = psutil.users()[0].name
-        #self.user_id = dbc.get_user_id(self.entry1)
-        self.user_id = 1
-        self.pc_id = dbc.get_pc_id(self.user_id, pc_name)
-        print(self.pc_id)
-        data.send_data(self.pc_id)
-
     def close_app(self):
-       self.tk.destroy()
-       if (self.icon_service != None):
-           self.icon_service.stop()
+        self.tk.destroy()
+        if self.icon_service != None:
+            self.icon_service.stop()
 
     def open_website(self):
         webbrowser.open('https://www.checkpcs.com')
@@ -236,7 +240,6 @@ class Window():
         self.widget_speed_test()
         self.check_pc()
         self.master.protocol('WM_DELETE_WINDOW', self.hide_master)
-        #self.tk.after(5000, self.start_tests())
 
     def hide_master(self):
         self.counter -= 1
@@ -255,7 +258,7 @@ class Window():
         self.tk.after(0, self.master.deiconify())
 
     def logout(self):
-        data.IS_RUNNING = False
+        self.counter = 0
         self.master.destroy()
         self.icon_service.stop()
         self.tk.after(0, self.tk.deiconify())

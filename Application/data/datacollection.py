@@ -124,7 +124,7 @@ def send_data(IDPC):
     cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
     ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
     storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
-    print('Data successfully sent!')
+    #print('Data successfully sent!')
 
 def get_pc_info():
     info_test()
@@ -142,19 +142,24 @@ def run_tests():
     # display_data() OK
 
     battery_thread = Thread(target=battery_test, daemon=True)
-    #cpu_thread = Thread(target=cpu_test, daemon=True)
-    #ram_thread = Thread(target=ram_test, daemon=True)
-    #storage_thread = Thread(target=storage_test, daemon=True)
+    cpu_thread = Thread(target=cpu_test, daemon=True)
+    ram_thread = Thread(target=ram_test, daemon=True)
+    storage_thread = Thread(target=storage_test, daemon=True)
     #display_thread = Thread(target=display_data, daemon=True)
     #send_data_thread = Thread(target=send_data, daemon=True)
 
     ### initialize daemons
     battery_thread.start()
-    #cpu_thread.start()
-    #ram_thread.start()
-    #storage_thread.start()
+    cpu_thread.start()
+    ram_thread.start()
+    storage_thread.start()
     #display_thread.start()
     #send_data_thread.start()
+
+    #battery_thread.join()
+    #cpu_thread.join()
+    #ram_thread.join()
+    #storage_thread.join()
 
 
 if __name__ == "__main__":
