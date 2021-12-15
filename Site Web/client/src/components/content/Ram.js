@@ -2,9 +2,9 @@ import React, { useReducer, useEffect } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
+import Axios from 'axios'
 
 function Ram () {
-
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -29,11 +29,11 @@ function Ram () {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-          data: [0,0,0]
+          data: [0, 0, 0]
         }
       ]
     }
-  );
+  )
 
   const lineOptions = {
     onClick: (e, element) => {
@@ -57,7 +57,7 @@ function Ram () {
           },
           ticks: {
             beginAtZero: true,
-            userCallback(value) {
+            userCallback (value) {
               value = value.toString()
               value = value.split(/(?=(?:...)*$)/)
               value = value.join('.')
@@ -74,22 +74,22 @@ function Ram () {
       enabled: true
     }
   }
-
-
+  Axios.defaults.withCredentials = true
   useEffect(() => {
+    Axios.get(process.env.REACT_APP_API_URL + '/api/1/ram', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      const data = response.data
+      const title = []
+      const percent = []
 
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', process.env.REACT_APP_API_URL + '/api/1/ram', true);
-    xhr.onload = function () {
-      let data = JSON.parse(xhr.responseText);
-      let title = [];
-      let percent = [];
-      
-      for (let i of data) {
-        title.push(i.test_date);
+      for (const i of data) {
+        title.push(i.test_date)
         percent.push(((Number((i.total_virtual).slice(0, -2)) / 100) * Number(i.percent_virtual)).toFixed(2))
       }
-      
+
       setdatas({
         // eslint-disable-next-line
         ["datasets"]: [
@@ -117,13 +117,55 @@ function Ram () {
         ],
         // eslint-disable-next-line
         ["labels"]: title
-      });
+      })
+    })
+  })
+  /*
+  useEffect(() => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', process.env.REACT_APP_API_URL + '/api/1/ram', true)
+    xhr.onload = function () {
+      const data = JSON.parse(xhr.responseText)
+      const title = []
+      const percent = []
 
+      for (const i of data) {
+        title.push(i.test_date)
+        percent.push(((Number((i.total_virtual).slice(0, -2)) / 100) * Number(i.percent_virtual)).toFixed(2))
+      }
+
+      setdatas({
+        // eslint-disable-next-line
+        ["datasets"]: [
+          {
+            label: 'Mémoire Ram',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: 'rgba(75,192,192,0.4)',
+            borderColor: 'rgba(75,192,192,1)',
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: 'rgba(75,192,192,1)',
+            pointBackgroundColor: '#fff',
+            pointBorderWidth: 5,
+            pointHoverRadius: 10,
+            pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+            pointHoverBorderColor: 'rgba(220,220,220,1)',
+            pointHoverBorderWidth: 2,
+            pointRadius: 2,
+            pointHitRadius: 15,
+            data: percent
+          }
+        ],
+        // eslint-disable-next-line
+        ["labels"]: title
+      })
     }
-    xhr.send();
-
+    xhr.send()
   }, [])
-
+  */
   return (
     <Container>
       <Grid>

@@ -15,9 +15,14 @@ const successPayment = response => {
     idUser: response.data.user.id,
     prix: response.data.result.price,
     type: response.data.result.title
-  }).then((response) => {
-    console.log(response)
+  }, {
+    headers: {
+      'x-access-token': window.localStorage.getItem('token')
+    }
   })
+    .then((response) => {
+      console.log(response)
+    })
 }
 
 function errorPayment (data) {

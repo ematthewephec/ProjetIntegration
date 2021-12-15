@@ -67,7 +67,7 @@ const verifyJWTAPI = (req, res, next) => {
       if (err) {
         res.json({ auth: false, message: 'Failed to authenticate token.' })
       } else {
-        req.body = 
+        req.body =
         next()
       }
     })
@@ -162,7 +162,7 @@ app.post('/Register/Admin', verifyJWTAdmin, async function (req, res) {
   }
 })
 
-app.post('/NewOrder', async function (req, res) {
+app.post('/NewOrder', verifyJWT, async function (req, res) {
   try {
     const { idUser, prix, type } = req.body
     const sqlQuery = 'INSERT INTO commande (idUser, test_date, prix) VALUES (?,?,?)'
