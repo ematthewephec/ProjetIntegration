@@ -3,7 +3,6 @@ import mariadb as mdb
 import os
 from dotenv import load_dotenv as env
 import time
-import main
 
 ### SETUP ENVIRONMENT VARIABLES ###
 env()
@@ -47,7 +46,7 @@ def check_pcs_table():
     if len(test) == 0:
         db_cursor.execute("CREATE TABLE pcs(idPc INT NOT NULL AUTO_INCREMENT,\
         idUser INT NOT NULL, test_date VARCHAR(60) NOT NULL, user_name VARCHAR(60) NOT NULL, processor VARCHAR(60) NOT NULL, \
-        cpu_type VARCHAR(60) NOT NULL, os_version VARCHAR(60), PRIMARY KEY (idPc), FOREIGN KEY(idUser) \
+        cpu_type VARCHAR(60) NOT NULL, PRIMARY KEY (idPc), FOREIGN KEY(idUser) \
         REFERENCES Users(id));")
 
 def check_battery_table():
@@ -72,8 +71,7 @@ def check_ram_table():
     if len(test) == 0:
         db_cursor.execute("CREATE TABLE ram (id INT NOT NULL AUTO_INCREMENT, idPc INT NOT NULL, \
         test_date VARCHAR(60) NOT NULL, total_virtual VARCHAR(12) NOT NULL, percent_virtual FLOAT(3,1) NOT NULL, \
-        total_swap VARCHAR(12) NOT NULL, percent_swap FLOAT(3,1) NOT NULL, PRIMARY KEY (id), \
-        FOREIGN KEY (idPc) REFERENCES pcs(idPc));")
+        total_swap VARCHAR(12) NOT NULL, PRIMARY KEY (id), FOREIGN KEY (idPc) REFERENCES pcs(idPc));")
 
 def check_storage_table():
     db_cursor.execute("SHOW TABLES LIKE 'storage';")
@@ -85,10 +83,10 @@ def check_storage_table():
 
 
 ### FUNCTIONS TO SEND DATA ###
-def pc_info_test_to_db(idUser, current_date, user_name, processor, cpu_type, os_version):
-    sql = "INSERT INTO pcs (idUser, test_date, user_name, processor, cpu_type, os_version) \
-    VALUES (%s, %s, %s, %s, %s, %s);"
-    values = (idUser, current_date, user_name, processor, cpu_type, os_version)
+def pc_info_test_to_db(idUser, current_date, user_name, processor, cpu_type):
+    sql = "INSERT INTO pcs (idUser, test_date, user_name, processor, cpu_type) \
+    VALUES (%s, %s, %s, %s, %s);"
+    values = (idUser, current_date, user_name, processor, cpu_type)
     db_cursor.execute(sql, values)
     my_db.commit()
 
@@ -104,9 +102,9 @@ def cpu_test_to_db(idPc, current_date, percent):
     db_cursor.execute(sql, values)
     my_db.commit()
 
-def ram_test_to_db(idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap):
-    sql = "INSERT INTO ram (idPc, test_date, total_virtual, percent_virtual, total_swap, percent_swap) VALUES (%s, %s, %s, %s, %s, %s);"
-    values = (idPc, current_date, total_virtual, percent_virtual, total_swap, percent_swap)
+def ram_test_to_db(idPc, current_date, total_virtual, percent_virtual, total_swap):
+    sql = "INSERT INTO ram (idPc, test_date, total_virtual, percent_virtual, total_swap) VALUES (%s, %s, %s, %s, %s);"
+    values = (idPc, current_date, total_virtual, percent_virtual, total_swap)
     db_cursor.execute(sql, values)
     my_db.commit()
 
@@ -142,7 +140,7 @@ def check_user(user_name):
         print('Who are you?')
     else:
         print(f"Hello, {user_name}!")
-        check_pc(test[0], os.environ.get("USERNAME"))
+        check_pc(os.environ.get("USERNAME"))
 
 def check_pc(idUser, pc_name):
     db_cursor.execute(f"SELECT idPc from pcs WHERE (idUser = '{idUser}' AND user_name = '{pc_name}');")
@@ -150,8 +148,10 @@ def check_pc(idUser, pc_name):
     # print(test)
     if len(test) == 0:
         print(f"No PC registered.")
+        return 0
     else:
         print(f"This computer's registered!")
+        return 1
 
 ### GET USER ID and PC ID
 def get_user_id(user_name):
@@ -165,13 +165,13 @@ def get_user_id(user_name):
         user_id = int(''.join(map(str, test[0])))
         return user_id
 
-def get_pc_id(idUser):
-    db_cursor.execute(f"SELECT idPc from pcs WHERE idUser = '{idUser}';")
+def get_pc_id(idUser, pc_name):
+    db_cursor.execute(f"SELECT idPc from pcs WHERE (idUser = '{idUser}' AND user_name = '{pc_name}');")
     test = db_cursor.fetchall()
     # print(test)
     if len(test) == 0:
-        print("No PC found!")
-        return -1;
+        print(f"No PC found!")
+        return -1
     else:
         pc_id = int(''.join(map(str, test[0])))
         return pc_id

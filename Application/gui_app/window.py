@@ -13,10 +13,8 @@ import GPUtil
 import serial.tools.list_ports
 import speedtest
 import threading
-
-sys.path.insert(0,'Application/gui_app/app')
-import datacollection as data
-import dbconnection as dbc
+import Application.data.datacollection as data
+import Application.data.dbconnection as dbc
 
 
 class Window():
@@ -61,6 +59,11 @@ class Window():
         self.counter = 0
         self.entry1 = None
         self.entry2 = None
+
+        self.pc_name = None
+        self.user_id = None
+        self.pc_id = None
+
         self.master = None
         self.ecran = False
         self.btn_speed_test = None
@@ -183,29 +186,34 @@ class Window():
         """
         if(self.counter == 0):
             self.counter += 1
-            self.open_app()
+            app_thread = threading.Thread(target=self.open_app())
+            app_thread.start()
+            app_thread.join()
+            self.tk.after(15000, self.start_tests())
 
     def check_pc(self):
-        pc_name = psutil.users()[0].name
-        #userID = dbc.get_user_id(self.entry1)
-        userID = 1
-        if dbc.check_pc(userID, pc_name) == 0:
+        self.pc_name = psutil.users()[0].name
+        #self.user_id = dbc.get_user_id(self.entry1)
+        self.user_id = 1
+        if dbc.check_pc(self.user_id, self.pc_name) == 0:
             data.info_test()
-            dbc.pc_info_test_to_db(userID, data.CURRENT_DATE, **data.computer_data['info'])
-        print(f"PC {pc_name} exists!")
-        #self.start_tests()
+            dbc.pc_info_test_to_db(self.user_id, data.CURRENT_DATE, **data.computer_data['info'])
+        print(f"PC {self.pc_name} exists!")
 
     def start_tests(self):
         print("Starting tests...")
-        threading.Thread(target=data.run_tests(), daemon=True).start()
-        self.tk.after(30000, self.send_data())
-        # self.running?
+        data.run_tests()
+        #self.tk.after(15000, data.display_data())
+        self.tk.after(100000, self.send_data())
+        self.tk.after(300000, self.start_tests())
 
     def send_data(self):
         pc_name = psutil.users()[0].name
-        userID = dbc.get_user_id(self.entry1)
-        pc_id = dbc.get_pc_id(userID, pc_name)
-        data.send_data(pc_id)
+        #self.user_id = dbc.get_user_id(self.entry1)
+        self.user_id = 1
+        self.pc_id = dbc.get_pc_id(self.user_id, pc_name)
+        print(self.pc_id)
+        data.send_data(self.pc_id)
 
     def close_app(self):
        self.tk.destroy()
@@ -228,6 +236,7 @@ class Window():
         self.widget_speed_test()
         self.check_pc()
         self.master.protocol('WM_DELETE_WINDOW', self.hide_master)
+        #self.tk.after(5000, self.start_tests())
 
     def hide_master(self):
         self.counter -= 1
@@ -246,10 +255,10 @@ class Window():
         self.tk.after(0, self.master.deiconify())
 
     def logout(self):
+        data.IS_RUNNING = False
         self.master.destroy()
         self.icon_service.stop()
         self.tk.after(0, self.tk.deiconify())
-
 
     def widgets(self):
         info_widget = Label(self.master, image=self.widget_medium, borderwidth=0, highlightthickness=0)
