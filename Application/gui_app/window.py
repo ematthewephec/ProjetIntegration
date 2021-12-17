@@ -210,6 +210,7 @@ class Window():
             self.pc_id = dbc.get_pc_id(self.user_id, self.pc_name)
             # print(self.pc_id)
             data.send_data(self.pc_id)
+            self.tk.after(10000, self.run_tests)
 
 
     def check_pc(self):
