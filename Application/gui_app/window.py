@@ -65,7 +65,7 @@ class Window():
         self.user_id = None
         self.pc_id = None
 
-        self.pool_scheduler = ThreadPoolScheduler(1) # thread pool with 1 worker thread
+        #self.pool_scheduler = ThreadPoolScheduler(1) # thread pool with 1 worker thread
 
         self.master = None
         self.ecran = False
@@ -166,7 +166,7 @@ class Window():
             height=40)
 
         btn3 = Button(self.tk,
-                      command=self.connexion(),
+                      command=self.connexion,
                       image=self.confirm,
                       borderwidth=0,
                       highlightthickness=0,
@@ -190,17 +190,19 @@ class Window():
         if(self.counter == 0):
             self.counter += 1
             self.open_app()
-            self.tk.after(1000, self.thread_handler)
+            #self.tk.after(1000, self.thread_handler())
+            self.tk.after(1000, self.run_tests)
 
     def thread_handler(self):
         rx.just(1).subscribe(
             on_next=self.run_tests,
-            on_completed=lambda: self.tk.after(10000, self.send_data),
+            on_completed=lambda: self.tk.after(15000, self.send_data),
             scheduler=self.pool_scheduler
         )
 
     def run_tests(self):
         data.run_tests()
+        self.tk.after(15000, self.send_data)
 
     def send_data(self):
         if self.counter > 0:
@@ -221,7 +223,7 @@ class Window():
 
     def close_app(self):
         self.tk.destroy()
-        if self.icon_service != None:
+        if self.icon_service is not None:
             self.icon_service.stop()
 
     def open_website(self):

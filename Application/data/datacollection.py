@@ -124,7 +124,7 @@ def send_data(IDPC):
     cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
     ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
     storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
-    #print('Data successfully sent!')
+    print('Data successfully sent!')
 
 def get_pc_info():
     info_test()
