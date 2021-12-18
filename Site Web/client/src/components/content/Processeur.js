@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
 import Axios from 'axios'
 
-function Baterry () {
+function Processeur () {
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -76,7 +76,7 @@ function Baterry () {
   }
   Axios.defaults.withCredentials = true
   useEffect(() => {
-    Axios.get(process.env.REACT_APP_API_URL + '/api/1/battery', {
+    Axios.get(process.env.REACT_APP_API_URL + '/api/1/cpu', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -84,31 +84,30 @@ function Baterry () {
       const data = response.data
       const title = []
       const percent = []
-
       for (const i of data) {
         title.push(i.test_date)
-        percent.push(Number((i.battery_percent)))
+        percent.push(Number((i.cpu_percent)))
       }
 
       setdatas({
         // eslint-disable-next-line
         ["datasets"]: [
           {
-            label: 'Batterie',
+            label: 'Processeur',
             fill: true,
             lineTension: 0.1,
-            backgroundColor: 'rgba(192,192,75,0.4)',
-            borderColor: 'rgba(192,192,75,1)',
+            backgroundColor: 'rgba(192,75,192,0.4)',
+            borderColor: 'rgba(192,75,192,1)',
             borderCapStyle: 'butt',
             borderDash: [],
             borderDashOffset: 0.0,
             borderJoinStyle: 'miter',
-            pointBorderColor: 'rgba(192,192,75,1)',
+            pointBorderColor: 'rgba(192,75,192,1)',
             pointBackgroundColor: '#fff',
             pointBorderWidth: 5,
             pointHoverRadius: 10,
-            pointHoverBackgroundColor: 'rgba(192,192,75,1)',
-            pointHoverBorderColor: 'rgba(192,192,75,1)',
+            pointHoverBackgroundColor: 'rgba(192,75,192,1)',
+            pointHoverBorderColor: 'rgba(192,75,192,1)',
             pointHoverBorderWidth: 2,
             pointRadius: 2,
             pointHitRadius: 15,
@@ -123,36 +122,36 @@ function Baterry () {
   /*
   useEffect(() => {
     const xhr = new XMLHttpRequest()
-    xhr.open('GET', process.env.REACT_APP_API_URL + '/api/1/battery', true)
+    xhr.open('GET', process.env.REACT_APP_API_URL + '/api/1/cpu', true)
     xhr.onload = function () {
       const data = JSON.parse(xhr.responseText)
-      const title = []
-      const percent = []
+      let title = []
+      let percent = []
 
       for (const i of data) {
         title.push(i.test_date)
-        percent.push(Number((i.battery_percent)))
+        percent.push(Number((i.cpu_percent)))
       }
 
       setdatas({
         // eslint-disable-next-line
         ["datasets"]: [
           {
-            label: 'Batterie',
+            label: 'Processeur',
             fill: true,
             lineTension: 0.1,
-            backgroundColor: 'rgba(192,192,75,0.4)',
-            borderColor: 'rgba(192,192,75,1)',
+            backgroundColor: 'rgba(192,75,192,0.4)',
+            borderColor: 'rgba(192,75,192,1)',
             borderCapStyle: 'butt',
             borderDash: [],
             borderDashOffset: 0.0,
             borderJoinStyle: 'miter',
-            pointBorderColor: 'rgba(192,192,75,1)',
+            pointBorderColor: 'rgba(192,75,192,1)',
             pointBackgroundColor: '#fff',
             pointBorderWidth: 5,
             pointHoverRadius: 10,
-            pointHoverBackgroundColor: 'rgba(192,192,75,1)',
-            pointHoverBorderColor: 'rgba(192,192,75,1)',
+            pointHoverBackgroundColor: 'rgba(192,75,192,1)',
+            pointHoverBorderColor: 'rgba(192,75,192,1)',
             pointHoverBorderWidth: 2,
             pointRadius: 2,
             pointHitRadius: 15,
@@ -169,11 +168,11 @@ function Baterry () {
   return (
     <Container>
       <Grid>
-        <h1>Batterie</h1>
+        <h1>Processeur</h1>
         <Line data={datas} option={lineOptions} />
       </Grid>
     </Container>
   )
 }
 
-export default Baterry
+export default Processeur

@@ -1,21 +1,27 @@
-CREATE TABLE Users(
-id INT NOT NULL AUTO_INCREMENT,
-username VARCHAR(45) NOT NULL,
-password VARCHAR(500) NOT NULL,
-email VARCHAR(60) NOT NULL,
-nom VARCHAR(45) NOT NULL,
-prenom VARCHAR(45) NOT NULL,
-PRIMARY KEY ( id ));
+{
+    "username": "Louis54",
+    "password": "1234",
+    "email": "Admin.louis@gmail.com",
+    "nom": "Louis",
+    "prenom": "Bauchau",
+    "role": "Admin"
+}
+
+{
+    "username": "Louis54",
+    "password": "1234",
+    "email": "Admin.louis@gmail.com",
+    "nom": "Louis",
+    "prenom": "Bauchau",
+    "role": "Admin"
+}
 
 
-
-CREATE TABLE Users(
-id INT NOT NULL AUTO_INCREMENT,
-idPc INT,
-username VARCHAR(45) NOT NULL,
-passwords VARCHAR(500) NOT NULL,
-email VARCHAR(60) NOT NULL,
-nom VARCHAR(45) NOT NULL,
-prenom VARCHAR(45) NOT NULL,
-PRIMARY KEY (id),
-FOREIGN KEY(idPc) REFERENCES pcs(idPc));
+{
+    "username": "Louis54",
+    "password": "1234",
+    "email": "Admin.louis@gmail.com",
+    "nom": "Louis",
+    "prenom": "Bauchau",
+    "role": "Admin"
+}

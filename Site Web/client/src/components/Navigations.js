@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import Nav from './components/Nav'
-import { styled, createTheme, ThemeProvider} from '@mui/material/styles'
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Button from '@mui/material/Button'
 import { List } from '@mui/material'
@@ -21,20 +21,23 @@ import ListItemText from '@mui/material/ListItemText'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull'
 import BarChartIcon from '@mui/icons-material/BarChart'
-import DataSaverOffIcon from '@mui/icons-material/DataSaverOff'
 import ListSubheader from '@mui/material/ListSubheader'
-import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat'
+import StorageIcon from '@mui/icons-material/Storage';
 import NetworkCheckIcon from '@mui/icons-material/NetworkCheck'
+import MemoryIcon from '@mui/icons-material/Memory';
 import RouterIcon from '@mui/icons-material/Router'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import Dashboard from './content/Dashboard'
 import Routers from './content/Routers'
 import Baterry from './content/Battery'
-import Data from './content/Data'
+import Ram from './content/Ram'
 import Network from './content/Network'
 import Port from './content/Port'
-import Reports from './content/Reports'
-import Thermostat from './content/Thermostat'
+
+import Processeur from './content/Processeur'
+import Stockage from './content/Stockage'
+
+import Axios from 'axios'
 
 // import Chart from './Charts'
 // import Deposits from './Deposits'
@@ -101,20 +104,64 @@ function Copyright (props) {
 }
 
 const Navigations = () => {
-  const pos = (window.location.href.includes("Contact") ? 'relative' : 'absolute');
-  window.location.href.includes("Contact") ? drawerWidth = 0 : drawerWidth = 240;
-  const title = ((window.location.pathname === "/") || (window.location.pathname === "/Home") ? "ressources pc" : "");
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
+  const BASE_URL = process.env.REACT_APP_API_URL
+  console.log(window.location.pathname)
+  const pos = (window.location.pathname !== '/App' ? 'relative' : 'absolute')
+  window.location.pathname !== '/App' ? drawerWidth = 0 : drawerWidth = 240
+  const title = 'Checkpcs'
   const toggleDrawer = () => {
     setOpen(!open)
+    console.log(open)
+  }
+  // FONCTION ROLE : ne pas Axios.defaults.withCredentials = true
+  Axios.defaults.withCredentials = true
+  const [role, setRole] = React.useState('')
+  const [role2, setRole2] = React.useState('')
+  useEffect(() => {
+    Axios.get(BASE_URL + '/Login').then((response) => {
+      console.log(response.data)
+      if (response.data.loggedIn === true) {
+        setRole(response.data.user[0].role)
+      } else {
+        setRole('visitor')
+      }
+    })
+  })
+  useEffect(() => {
+    Axios.get(BASE_URL + '/isUserAuth', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      console.log(response)
+      if (response.data.auth === false) {
+        setRole2('visitor')
+      } else if (response.data.user.isAdmin === false) {
+        setRole2('client')
+      } else {
+        setRole2('Admin')
+      }
+    })
+  })
+  const logout = () => {
+    Axios.get(BASE_URL + '/Logout', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      window.localStorage.clear()
+      setRole2('visitor')
+      window.location.href = '/Login'
+    })
   }
   return (
     <div>
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position={pos} open={open} >
+          <AppBar position={pos} open={open}>
             <Toolbar
               sx={{
                 pr: '24px' // keep right padding when drawer closed
@@ -124,7 +171,7 @@ const Navigations = () => {
                 edge='start'
                 color='inherit'
                 aria-label='open drawer'
-                // onClick={toggleDrawer}
+                onClick={toggleDrawer}
                 sx={{
                   marginRight: '36px',
                   ...(open && { display: 'none' })
@@ -132,6 +179,9 @@ const Navigations = () => {
               >
                 <MenuIcon />
               </IconButton>
+              <Button color='inherit' href='/'>
+                Home
+              </Button>
               <Typography
                 component='h1'
                 variant='h6'
@@ -141,21 +191,27 @@ const Navigations = () => {
               >
                 {title}
               </Typography>
-              <Button color='inherit' href='/'>
-                Home
-              </Button>
               <Button color='inherit' href='/Contact'>
                 contact
               </Button>
-              <Button color='inherit' href='/Login'>
-                Login
+              <Button color='inherit' href='/App'>
+                App
               </Button>
-              <Button color='inherit' href='/Register'>
-                Register
-              </Button>
+              {role2 !== 'visitor' &&
+                <Button color='inherit' onClick={logout}>
+                  Logout
+                </Button>}
+              {role2 === 'visitor' &&
+                <Button color='inherit' href='/Login'>
+                  Login
+                </Button>}
+              {role2 === 'visitor' &&
+                <Button color='inherit' href='/Register'>
+                  Register
+                </Button>}
             </Toolbar>
           </AppBar>
-          {window.location.pathname !== '/Contact' &&
+          {window.location.pathname === '/App' &&
             <Drawer variant='permanent' open={open}>
               <Toolbar
                 sx={{
@@ -178,29 +234,29 @@ const Navigations = () => {
                   </ListItemIcon>
                   <ListItemText primary='Dashboard' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('Data') }}>
+                <ListItem button onClick={() => { setSelected('Ram') }}>
                   <ListItemIcon>
-                    <DataSaverOffIcon />
+                    <MemoryIcon />
                   </ListItemIcon>
-                  <ListItemText primary='Data' />
+                  <ListItemText primary='Ram' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('Reports') }}>
+                <ListItem button onClick={() => { setSelected('Processeur') }}>
                   <ListItemIcon>
                     <BarChartIcon />
                   </ListItemIcon>
-                  <ListItemText primary='Reports' />
+                  <ListItemText primary='Processeur' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('BatteryChargingFull') }}>
+                <ListItem button onClick={() => { setSelected('Battery') }}>
                   <ListItemIcon>
                     <BatteryChargingFullIcon />
                   </ListItemIcon>
-                  <ListItemText primary='BatteryChargingFull' />
+                  <ListItemText primary='Batterie' />
                 </ListItem>
-                <ListItem button onClick={() => { setSelected('DeviceThermostat') }}>
+                <ListItem button onClick={() => { setSelected('Stockage') }}>
                   <ListItemIcon>
-                    <DeviceThermostatIcon />
+                    <StorageIcon />
                   </ListItemIcon>
-                  <ListItemText primary='DeviceThermostat' />
+                  <ListItemText primary='Stockage' />
                 </ListItem>
               </List>
               <Divider />
@@ -226,7 +282,7 @@ const Navigations = () => {
                 </ListItem>
               </List>
             </Drawer>}
-          {window.location.pathname !== '/Contact' &&
+          {window.location.pathname === '/App' &&
             <Box
               component='main'
               sx={{
@@ -242,16 +298,16 @@ const Navigations = () => {
               <Toolbar />
               {select === 'Dashboard' &&
                 <Dashboard />}
-              {select === 'Data' &&
-                <Data />}
-              {select === 'Reports' &&
-                <Reports />}
-              {select === 'BatteryChargingFull' &&
+              {select === 'Ram' &&
+                <Ram />}
+              {select === 'Processeur' &&
+                <Processeur />}
+              {select === 'Battery' &&
                 <Baterry />}
               {select === 'Router' &&
                 <Routers />}
-              {select === 'DeviceThermostat' &&
-                <Thermostat />}
+              {select === 'Stockage' &&
+                <Stockage />}
               {select === 'Port' &&
                 <Port />}
               {select === 'NetworkCheckIcon' &&
