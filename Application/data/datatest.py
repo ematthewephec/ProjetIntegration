@@ -4,6 +4,7 @@ import platform
 import cpuinfo
 import Application.data.dbconnection as dbc
 import Application.data.datacollection as data
+from unittest.mock import patch, MagicMock
 
 computer_data_test = {}
 
@@ -13,7 +14,7 @@ class TestDataCollection(unittest.TestCase):
         self.result = None
         self.expected = None
 
-    def test_init(self):
+    def test_info(self):
         # gather PC info
         computer_data_test['info'] = {}
         user = psutil.users()
@@ -26,6 +27,21 @@ class TestDataCollection(unittest.TestCase):
 
         self.result = data.computer_data['info']
         self.expected = computer_data_test['info']
+
+    def test_cpu(self):
+        pass
+
+    def test_battery(self):
+        pass
+
+    def test_ram(self):
+        pass
+
+    def test_storage(self):
+        pass
+
+    def test_size(self):
+        pass
 
     def test_count_eq(self):
         """Will succeed"""

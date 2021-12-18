@@ -25,8 +25,8 @@ CURRENT_DATE = now.strftime("%m/%d/%Y")
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
 def get_size(bytes, suffix='B'):
-    factor = 1028
-    for unit in ["", "K", "M", "G", "P"]:
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
