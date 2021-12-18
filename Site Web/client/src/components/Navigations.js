@@ -117,7 +117,6 @@ const Navigations = () => {
   const title = 'Checkpcs'
   const toggleDrawer = () => {
     setOpen(!open)
-    console.log(open)
   }
   // FONCTION ROLE : ne pas Axios.defaults.withCredentials = true
   Axios.defaults.withCredentials = true
@@ -180,7 +179,9 @@ const Navigations = () => {
   }
   const handleChange = (event) => {
     setAge(event.target.value)
-    context.SelectPCs(event.target.value)
+    if (window.location.pathname === '/App') {
+      context.SelectPCs(event.target.value)
+    }
   }
   return (
     <div>
@@ -252,6 +253,20 @@ const Navigations = () => {
                 </IconButton>
               </Toolbar>
               <Divider />
+              <Box sx={{ maxWidth: 180 }}>
+                <FormControl fullWidth>
+                  <InputLabel id='demo-simple-select-label'>Sélectionner votre PC</InputLabel>
+                  <Select
+                    labelId='demo-simple-select-label'
+                    id='demo-simple-select'
+                    value={age}
+                    label='Age'
+                    onChange={handleChange}
+                  >
+                    {list}
+                  </Select>
+                </FormControl>
+              </Box>
               <List>
                 <ListSubheader inset>Pc Ressource</ListSubheader>
                 <ListItem button onClick={() => { setSelected('Dashboard') }}>
@@ -322,20 +337,6 @@ const Navigations = () => {
               }}
             >
               <Toolbar />
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id='demo-simple-select-label'>Sélectionner votre PC</InputLabel>
-                  <Select
-                    labelId='demo-simple-select-label'
-                    id='demo-simple-select'
-                    value={age}
-                    label='Age'
-                    onChange={handleChange}
-                  >
-                    {list}
-                  </Select>
-                </FormControl>
-              </Box>
               {select === 'Dashboard' &&
                 <Dashboard />}
               {select === 'Ram' &&

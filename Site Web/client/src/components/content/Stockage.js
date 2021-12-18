@@ -1,10 +1,12 @@
-import React, { useEffect, useReducer, useRef } from 'react'
+import React, { useEffect, useReducer, useRef, useContext } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
 import Axios from 'axios'
+import { AppContext } from '../../Contexts/AppContext'
 
 function Stockage () {
+  const context = useContext(AppContext)
   let isRendered = useRef(false)
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -78,7 +80,7 @@ function Stockage () {
   Axios.defaults.withCredentials = true
   useEffect(() => {
     isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/1/storage', {
+    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/storage', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }

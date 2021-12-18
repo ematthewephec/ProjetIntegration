@@ -1,2 +1,3 @@
 Application/python/dbconnection.py
 Application/python/.env
+.vscode/settings.json

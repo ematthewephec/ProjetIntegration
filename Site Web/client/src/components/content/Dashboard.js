@@ -1,10 +1,13 @@
-import React, { useEffect, useReducer, useRef } from 'react'
+import React, { useEffect, useReducer, useRef, useContext } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Radar } from 'react-chartjs-2'
 import Axios from 'axios'
+import { AppContext } from '../../Contexts/AppContext'
 
 function Dashboard () {
+  const context = useContext(AppContext)
+  console.log(context.pcs)
   let isRendered = useRef(false)
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -47,7 +50,7 @@ function Dashboard () {
   Axios.defaults.withCredentials = true
   useEffect(() => {
     isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/1/dashboard', {
+    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/dashboard', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
