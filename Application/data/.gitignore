@@ -1,2 +1,5 @@
-.env
+
+# created by virtualenv automatically
 venv
+.env
+

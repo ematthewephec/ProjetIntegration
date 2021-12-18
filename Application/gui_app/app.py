@@ -10,6 +10,9 @@ import serial.tools.list_ports
 import speedtest
 import threading
 import sys
+from . import window
+import pystray
+from pystray import MenuItem as item
 
 class App():
   def __init__(self):
@@ -36,6 +39,12 @@ class App():
     self.img_latence = ImageTk.PhotoImage(file="photos/latency.png")
     self.img_download = ImageTk.PhotoImage(file="photos/down-arrow.png")
     self.img_upload = ImageTk.PhotoImage(file="photos/upload.png")
+    self.icon = ImageTk.PhotoImage(file="photos/icon.png")
+
+    self.user = Image.open("photos/account.png").resize((45, 45), Image.ANTIALIAS)
+    self.lock = Image.open("photos/lock.png").resize((45, 45), Image.ANTIALIAS)
+    self.exit = Image.open("photos/logout.png").resize((30, 30), Image.ANTIALIAS)
+    self.web = Image.open("photos/web.png").resize((30, 30), Image.ANTIALIAS)
 
     self.ecran = False
     self.btn_speed_test = None
@@ -43,6 +52,8 @@ class App():
     self.latence_val = None
     self.down_val = None
     self.up_val = None
+    self.icon = None
+    self.test_ecran = None
 
     self.widgets()
     self.displayInfos()
@@ -51,11 +62,14 @@ class App():
     self.upload = IntVar()
     self.download = IntVar()
     self.latence = IntVar()
-    self.tk.protocol("WM_DELETE_WINDOW", self.on_closing)
+    self.tk.protocol("WM_DELETE_WINDOW", self.hidde_window)
     self.tk.mainloop()
 
-  def on_closing(self):
-    sys.exit()
+
+  def hidde_window(self):
+    self.tk.after_cancel(self.test_ecran)
+    self.tk.destroy()
+    win = window.Window(self.user, self.lock, self.exit, self.web, self.icon)
 
   def widgets(self):
     info_widget = Label(self.tk, image=self.widget_medium, borderwidth=0, highlightthickness=0)
@@ -148,7 +162,7 @@ class App():
     else:
       self.ecran = False
     self.screen()
-    self.tk.after(5000, self.connectedScreen)
+    self.test_ecran = self.tk.after(5000, self.connectedScreen)
 
   def connexion_test(self):
     threads = None
