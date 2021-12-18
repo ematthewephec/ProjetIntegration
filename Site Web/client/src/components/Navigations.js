@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 // import Nav from './components/Nav'
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -22,9 +22,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull'
 import BarChartIcon from '@mui/icons-material/BarChart'
 import ListSubheader from '@mui/material/ListSubheader'
-import StorageIcon from '@mui/icons-material/Storage';
+import StorageIcon from '@mui/icons-material/Storage'
 import NetworkCheckIcon from '@mui/icons-material/NetworkCheck'
-import MemoryIcon from '@mui/icons-material/Memory';
+import MemoryIcon from '@mui/icons-material/Memory'
 import RouterIcon from '@mui/icons-material/Router'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import Dashboard from './content/Dashboard'
@@ -33,10 +33,13 @@ import Baterry from './content/Battery'
 import Ram from './content/Ram'
 import Network from './content/Network'
 import Port from './content/Port'
-
+import { AppContext } from '../Contexts/AppContext'
 import Processeur from './content/Processeur'
 import Stockage from './content/Stockage'
-
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
 import Axios from 'axios'
 
 // import Chart from './Charts'
@@ -104,10 +107,11 @@ function Copyright (props) {
 }
 
 const Navigations = () => {
+  const [age, setAge] = React.useState('')
+  const context = useContext(AppContext)
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
   const BASE_URL = process.env.REACT_APP_API_URL
-  console.log(window.location.pathname)
   const pos = (window.location.pathname !== '/App' ? 'relative' : 'absolute')
   window.location.pathname !== '/App' ? drawerWidth = 0 : drawerWidth = 240
   const title = 'Checkpcs'
@@ -117,8 +121,15 @@ const Navigations = () => {
   }
   // FONCTION ROLE : ne pas Axios.defaults.withCredentials = true
   Axios.defaults.withCredentials = true
-  const [role, setRole] = React.useState('')
   const [role2, setRole2] = React.useState('')
+  let list = ''
+  if (window.location.pathname === '/App') {
+    list = context.app.map((number) =>
+      <MenuItem value={number.idPc} key={number.idPc}>{number.user_name}</MenuItem>
+    )
+  }
+
+  /*
   useEffect(() => {
     Axios.get(BASE_URL + '/Login').then((response) => {
       console.log(response.data)
@@ -129,6 +140,17 @@ const Navigations = () => {
       }
     })
   })
+  const [pcTitle, SetPcTitle] = React.useState('')
+  useEffect(() => {
+    Axios.get(BASE_URL + '/api/pcs', {
+      headers: {
+        'x-access-token': window.localStorage.getItem('token')
+      }
+    }).then((response) => {
+      console.log(response.data)
+    })
+  })
+  */
   useEffect(() => {
     Axios.get(BASE_URL + '/isUserAuth', {
       headers: {
@@ -155,6 +177,10 @@ const Navigations = () => {
       setRole2('visitor')
       window.location.href = '/Login'
     })
+  }
+  const handleChange = (event) => {
+    setAge(event.target.value)
+    context.SelectPCs(event.target.value)
   }
   return (
     <div>
@@ -296,6 +322,20 @@ const Navigations = () => {
               }}
             >
               <Toolbar />
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <InputLabel id='demo-simple-select-label'>Sélectionner votre PC</InputLabel>
+                  <Select
+                    labelId='demo-simple-select-label'
+                    id='demo-simple-select'
+                    value={age}
+                    label='Age'
+                    onChange={handleChange}
+                  >
+                    {list}
+                  </Select>
+                </FormControl>
+              </Box>
               {select === 'Dashboard' &&
                 <Dashboard />}
               {select === 'Ram' &&

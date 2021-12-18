@@ -9,6 +9,7 @@ import Shop from './components/shop'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 // import Dashboard from './components/Navbar'
 import Navigations from './components/Navigations'
+import AppContextProvider from './Contexts/AppContext'
 
 const App = () => {
   return (
@@ -21,7 +22,9 @@ const App = () => {
             <Shop />
           </Route>
           <Route path='/App' exact component={Navigations}>
-            <Navigations />
+            <AppContextProvider>
+              <Navigations />
+            </AppContextProvider>
           </Route>
           <Route path='/Contact' exact component={Navigations}>
             <Navigations />

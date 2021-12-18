@@ -7,36 +7,42 @@ class AppContextProvider extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      app: []
+      app: [],
+      pcs: ''
     }
     this.readAppListe()
   }
 
   // read
   readAppListe () {
-    Axios.get(process.env.REACT_APP_API_URL + '/api/1/dashboard', {
+    Axios.get(process.env.REACT_APP_API_URL + '/api/pcs', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
-    })
-      .then(response => {
-        const read = response.data
-        if (read.length > 1) {
-          read.sort((a, b) => a.idApp > b.idApp ? 1 : -1)
-        }
-        this.setState({
-          app: read
-        })
-      }).catch(error => {
-        console.log(error)
+    }).then((response) => {
+      const data = response.data
+      console.log(response.data)
+      this.setState({
+        app: data
       })
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+
+  SelectPCs (Selectpc) {
+    console.log(Selectpc)
+    this.setState({
+      pcs: Selectpc
+    })
   }
 
   render () {
     return (
       <AppContext.Provider value={{
         ...this.state,
-        createListe: this.createListe.bind(this)
+        readAppListe: this.readAppListe.bind(this),
+        SelectPCs: this.SelectPCs.bind(this)
       }}
       >
         {this.props.children}

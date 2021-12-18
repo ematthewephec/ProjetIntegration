@@ -1,6 +1,34 @@
 const pool = require('../helpers/database')
 const express = require('express')
 const router = express.Router()
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
+
+const verifyJWT = (req, res, next) => {
+  const token = req.headers['x-access-token']
+  if (!token) {
+    res.send({ auth: false, message: 'No token provided.' })
+  } else {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        res.json({ auth: false, message: 'Failed to authenticate token.' })
+      } else {
+        req.userId = decoded
+        next()
+      }
+    })
+  }
+}
+
+router.get('/pcs', async function (req, res) {
+  try {
+    const sqlQuery = 'SELECT idPc, user_name FROM pcs Where idUser=?'
+    const rows = await pool.query(sqlQuery, [7])
+    res.status(200).json(rows)
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+})
 
 router.get('/:idpc/dashboard', async function (req, res) {
   const id = req.params.idpc
