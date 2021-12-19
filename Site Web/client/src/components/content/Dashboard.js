@@ -82,7 +82,7 @@ function Dashboard () {
     return () => {
       isRendered = false
     }
-  }, [])
+  }, [isRendered])
   return (
     <Container>
       <Grid>

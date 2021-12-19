@@ -21,7 +21,7 @@ year = now.strftime("%Y")
 month = now.strftime("%m")
 day = now.strftime("%d")
 
-CURRENT_DATE = now.strftime("%m/%d/%Y")
+CURRENT_DATE = now.strftime("%d/%m/%Y")
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
 def get_size(bytes, suffix='B'):

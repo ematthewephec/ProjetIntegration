@@ -55,7 +55,8 @@ class Window():
         self.ram = {}
         self.gpu = {}
         self.getInfos()
-        self.speed = speedtest.Speedtest()
+        # verson python 3.7
+        # self.speed = speedtest.Speedtest()
 
         self.counter = 0
         self.entry1 = None
@@ -216,7 +217,7 @@ class Window():
     def check_pc(self):
         self.pc_name = psutil.users()[0].name
         #self.user_id = dbc.get_user_id(self.entry1)
-        self.user_id = 1
+        self.user_id = 7
         if dbc.check_pc(self.user_id, self.pc_name) == 0:
             data.info_test()
             dbc.pc_info_test_to_db(self.user_id, data.CURRENT_DATE, **data.computer_data['info'])
