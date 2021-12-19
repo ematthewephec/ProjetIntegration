@@ -20,7 +20,7 @@ const verifyJWT = (req, res, next) => {
   }
 }
 
-router.get('/pcs', async function (req, res) {
+router.get('/pcs', verifyJWT, async function (req, res) {
   try {
     const sqlQuery = 'SELECT idPc, user_name FROM pcs Where idUser=?'
     const rows = await pool.query(sqlQuery, [7])
@@ -30,7 +30,7 @@ router.get('/pcs', async function (req, res) {
   }
 })
 
-router.get('/:idpc/dashboard', async function (req, res) {
+router.get('/:idpc/dashboard', verifyJWT, async function (req, res) {
   const id = req.params.idpc
 
   try {
@@ -45,7 +45,7 @@ router.get('/:idpc/dashboard', async function (req, res) {
   }
 })
 
-router.get('/:idpc/ram', async function (req, res) {
+router.get('/:idpc/ram', verifyJWT, async function (req, res) {
   const id = req.params.idpc
 
   try {
@@ -57,7 +57,7 @@ router.get('/:idpc/ram', async function (req, res) {
   }
 })
 
-router.get('/:idpc/battery', async function (req, res) {
+router.get('/:idpc/battery', verifyJWT, async function (req, res) {
   const id = req.params.idpc
 
   try {
@@ -69,7 +69,7 @@ router.get('/:idpc/battery', async function (req, res) {
   }
 })
 
-router.get('/:idpc/cpu', async function (req, res) {
+router.get('/:idpc/cpu', verifyJWT, async function (req, res) {
   const id = req.params.idpc
   try {
     const sqlQuery = 'SELECT test_date, cpu_percent FROM cpu Where idPc=? ORDER BY STR_TO_DATE(test_date, "%d/%m/%Y") ASC'
@@ -80,7 +80,7 @@ router.get('/:idpc/cpu', async function (req, res) {
   }
 })
 
-router.get('/:idpc/storage', async function (req, res) {
+router.get('/:idpc/storage', verifyJWT, async function (req, res) {
   const id = req.params.idpc
 
   try {
