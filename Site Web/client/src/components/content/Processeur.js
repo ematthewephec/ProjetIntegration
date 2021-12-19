@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
 import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
+import Instruction from './instruction'
 
 function Processeur () {
   const context = useContext(AppContext)
@@ -132,7 +133,10 @@ function Processeur () {
     <Container>
       <Grid>
         <h1>Processeur</h1>
-        <Line data={datas} option={lineOptions} />
+        {context.pcs &&
+          <Line data={datas} option={lineOptions} />}
+        {!context.pcs &&
+          <Instruction />}
       </Grid>
     </Container>
   )

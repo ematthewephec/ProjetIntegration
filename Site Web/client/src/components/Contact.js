@@ -25,7 +25,7 @@ function Contact () {
 
     if (data.question === '' && data.nickname === '') {
       const xhr = new XMLHttpRequest()
-      xhr.open('POST', '/api/mail')
+      xhr.open('POST', '/mail')
       xhr.setRequestHeader('content-type', 'application/json')
       xhr.onload = function () {
         if (xhr.responseText === 'success') {

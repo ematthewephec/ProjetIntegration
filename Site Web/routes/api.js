@@ -1,24 +1,8 @@
 const pool = require('../helpers/database')
 const express = require('express')
 const router = express.Router()
-const jwt = require('jsonwebtoken')
 require('dotenv').config()
-
-const verifyJWT = (req, res, next) => {
-  const token = req.headers['x-access-token']
-  if (!token) {
-    res.send({ auth: false, message: 'No token provided.' })
-  } else {
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
-      if (err) {
-        res.json({ auth: false, message: 'Failed to authenticate token.' })
-      } else {
-        req.userId = decoded
-        next()
-      }
-    })
-  }
-}
+const verifyJWT = require('./verifyToken')
 
 router.get('/pcs', verifyJWT, async function (req, res) {
   try {

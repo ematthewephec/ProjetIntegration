@@ -35,7 +35,7 @@ export default function SignIn () {
   const BASE_URL = process.env.REACT_APP_API_URL
 
   const login = () => {
-    Axios.post(BASE_URL + '/Login', {
+    Axios.post(BASE_URL + '/user/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
@@ -44,7 +44,8 @@ export default function SignIn () {
         setLoginStatus(false)
       } else {
         console.log(response.data.token)
-        window.localStorage.setItem('token', response.data.token)
+        window.localStorage.setItem('token', response.data.accessToken)
+        window.localStorage.setItem('refreshToken', response.data.refreshToken)
         setLoginStatus(true)
         window.location.href = '/'
       }
