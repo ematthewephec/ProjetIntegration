@@ -2,8 +2,8 @@ import unittest
 import psutil
 import platform
 import cpuinfo
-import Application.data.dbconnection as dbc
-import Application.data.datacollection as data
+import dbconnection as dbc
+import datacollection as data
 
 computer_data_test = {}
 

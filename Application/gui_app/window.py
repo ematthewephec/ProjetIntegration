@@ -13,8 +13,8 @@ import GPUtil
 import serial.tools.list_ports
 import speedtest
 import threading
-import Application.data.datacollection as data
-import Application.data.dbconnection as dbc
+import data.datacollection as data
+import data.dbconnection as dbc
 import rx
 from rx.scheduler import ThreadPoolScheduler
 
