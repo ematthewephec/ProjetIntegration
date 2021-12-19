@@ -56,7 +56,7 @@ class Window():
         self.gpu = {}
         self.getInfos()
         # verson python 3.7
-        # self.speed = speedtest.Speedtest()
+        self.speed = speedtest.Speedtest()
 
         self.counter = 0
         self.entry1 = None
