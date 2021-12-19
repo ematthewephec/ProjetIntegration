@@ -176,21 +176,22 @@ class Window():
         btn3.pack(pady=10)
 
     def connexion(self):
-        """
-        url = 'https://localhost:5000/Login'
+        url = 'http://localhost:5000/user/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
         x = requests.post(url, data=myobj)
         data = json.loads(x.text)
 
         if(data["auth"]):
-            self.tk.destroy()
-            self.new = App()
-        else:
-            self.tk.destroy()
-        """
-        if(self.counter == 0):
             self.counter += 1
             self.open_app()
+            # self.tk.after(1000, self.thread_handler())
+            self.tk.after(1000, self.run_tests)
+        else:
+            self.tk.destroy()
+
+        if(self.counter == 0):
+            self.counter += 1
+            #self.open_app()
             #self.tk.after(1000, self.thread_handler())
             self.tk.after(1000, self.run_tests)
 
@@ -207,7 +208,7 @@ class Window():
 
     def send_data(self):
         if self.counter > 0:
-            # self.user_id = dbc.get_user_id(self.entry1)
+            self.user_id = dbc.get_user_id(self.entry1.get())
             self.pc_id = dbc.get_pc_id(self.user_id, self.pc_name)
             # print(self.pc_id)
             data.send_data(self.pc_id)
@@ -216,8 +217,8 @@ class Window():
 
     def check_pc(self):
         self.pc_name = psutil.users()[0].name
-        #self.user_id = dbc.get_user_id(self.entry1)
-        self.user_id = 7
+        self.user_id = dbc.get_user_id(self.entry1.get())
+        #self.user_id = 7
         if dbc.check_pc(self.user_id, self.pc_name) == 0:
             data.info_test()
             dbc.pc_info_test_to_db(self.user_id, data.CURRENT_DATE, **data.computer_data['info'])

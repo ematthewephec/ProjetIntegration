@@ -157,7 +157,7 @@ def check_pc(idUser, pc_name):
 def get_user_id(user_name):
     db_cursor.execute(f"SELECT id from Users WHERE username = '{user_name}';")
     test = db_cursor.fetchall()
-    # print(test)
+    print(test)
     if len(test) == 0:
         print('No user found!')
         return -1;
