@@ -1,19 +1,26 @@
 import unittest
+import pytest
+import mock
 import bottle
 from unittest.mock import patch, MagicMock
+from bottle import template as bottle_template
 
 import psutil
 import platform
 import cpuinfo
-import Application.data.dbconnection as dbc
-import Application.data.datacollection as data
+import dbconnection as dbc
+import datacollection as data
 
 computer_data_test = {}
 
 #set up mock data for testing below this line
 
-class TestDataCollection(unittest.TestCase):
 
+class TestOne(unittest.TestCase):
+    pass
+
+
+class TestDataCollection(unittest.TestCase):
     def setUp(self):
         self.result = None
         self.expected = None

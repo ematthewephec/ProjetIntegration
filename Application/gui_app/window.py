@@ -10,6 +10,7 @@ import platform
 import cpuinfo
 import psutil
 import GPUtil
+import serial
 import serial.tools.list_ports
 import speedtest
 import threading
@@ -64,6 +65,10 @@ class Window():
         self.pc_name = None
         self.user_id = None
         self.pc_id = None
+
+        self.logged_in = False
+
+        self.ser = None
 
         #self.pool_scheduler = ThreadPoolScheduler(1) # thread pool with 1 worker thread
 
@@ -175,33 +180,48 @@ class Window():
         btn3.pack(pady=10)
 
     def connexion(self):
-        """
-        url = 'https://localhost:5000/Login'
+        """url = 'https://checkpcs.com/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
         x = requests.post(url, data=myobj)
         data = json.loads(x.text)
 
-        if(data["auth"]):
-            self.tk.destroy()
-            self.new = App()
+        if data["auth"]:
+            self.open_app()
+            # self.tk.after(1000, self.thread_handler())
+            self.tk.after(1000, self.run_tests)
         else:
-            self.tk.destroy()
-        """
-        if(self.counter == 0):
+            self.tk.destroy()"""
+
+        if self.counter == 0:
             self.counter += 1
             self.open_app()
-            #self.tk.after(1000, self.thread_handler())
+            # self.tk.after(1000, self.thread_handler())
             self.tk.after(1000, self.run_tests)
 
-    def thread_handler(self):
+    """def thread_handler(self):
         rx.just(1).subscribe(
             on_next=self.run_tests,
             on_completed=lambda: self.tk.after(15000, self.send_data),
             scheduler=self.pool_scheduler
-        )
+        )"""
+
+    def send_to_arduino(self, page_data):
+        myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+        if "VID:PID=2341:0043" in myports[0][2]:
+            self.ser = serial.Serial()
+            self.ser.baudrate = 19200
+            self.ser.port = myports[0][0]
+            self.ser.open()
+
+            # send data to Arduino
+            # test = "99-88-77-66"
+
+            # ram-cpu-batterie-stockage
+            self.tk.after(3500, lambda: self.ser.write(b'' + page_data.encode() + b'\n'))
 
     def run_tests(self):
         data.run_tests()
+        self.tk.after(15000, self.send_to_arduino)
         self.tk.after(15000, self.send_data)
 
     def send_data(self):
