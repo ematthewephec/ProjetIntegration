@@ -11,7 +11,7 @@ const successPayment = response => {
   console.log('RESPONSE', response)
   const { status } = response
   console.log('STATUS', status)
-  Axios.post(BASE_URL + '/NewOrder', {
+  Axios.post(BASE_URL + '/shop/NewOrder', {
     idUser: response.data.user.id,
     prix: response.data.result.price,
     type: response.data.result.title
@@ -30,7 +30,7 @@ function errorPayment (data) {
 }
 Axios.defaults.withCredentials = true
 const onToken = (amount, description) => token =>
-  Axios.post(BASE_URL + '/payment',
+  Axios.post(BASE_URL + '/shop/payment',
     {
       token: token,
       product: {

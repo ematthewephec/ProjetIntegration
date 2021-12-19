@@ -37,7 +37,7 @@ export default function SignUp () {
 
   Axios.defaults.withCredentials = true
   const register = () => {
-    Axios.post(BASE_URL + '/Register', {
+    Axios.post(BASE_URL + '/user/Register', {
       username: usernames,
       password: passwords,
       email: emails,
