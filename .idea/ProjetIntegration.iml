@@ -3,7 +3,6 @@
   <component name="NewModuleRootManager">
     <<<<<<< app-dev
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/phyton/venv2" />
       <excludeFolder url="file://$MODULE_DIR$/python/venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (ProjetIntegration)" jdkType="Python SDK" />
