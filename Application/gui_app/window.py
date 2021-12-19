@@ -65,6 +65,7 @@ class Window():
         self.pc_name = None
         self.user_id = None
         self.pc_id = None
+        self.collected_data = None
 
         self.logged_in = False
 
@@ -205,7 +206,16 @@ class Window():
             scheduler=self.pool_scheduler
         )"""
 
-    def send_to_arduino(self, page_data):
+    def send_to_arduino(self):
+        self.collected_data = data.computer_data
+
+        ram_percent = str(self.collected_data['ram']['percent_virtual'])
+        cpu_percent = str(self.collected_data['cpu']['percent'])
+        battery_percent = str(self.collected_data['battery']['percent'])
+        storage_percent = str((int(self.collected_data['storage']['used_storage'][:-2])/int(self.collected_data['storage']['total_storage'][:-2]))*100)
+
+        arduino_data = f"{ram_percent}-{cpu_percent}-{battery_percent}-{storage_percent}"
+
         myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
         if "VID:PID=2341:0043" in myports[0][2]:
             self.ser = serial.Serial()
@@ -215,9 +225,9 @@ class Window():
 
             # send data to Arduino
             # test = "99-88-77-66"
-
+            # data = f"{}"
             # ram-cpu-batterie-stockage
-            self.tk.after(3500, lambda: self.ser.write(b'' + page_data.encode() + b'\n'))
+            self.tk.after(3500, lambda: self.ser.write(b'' + arduino_data.encode() + b'\n'))
 
     def run_tests(self):
         data.run_tests()
