@@ -7,9 +7,8 @@ const catchError = (err, res) => {
     return res.status(401).send({ message: 'Unauthorized! Access Token was expired!' })
   }
 
-  return res.sendStatus(401).send({ message: 'Unauthorized!' })
+  return res.json({ auth: false, message: 'Failed to authenticate token.' })
 }
-
 const verifyJWT = (req, res, next) => {
   const token = req.headers['x-access-token']
   if (!token) {
@@ -17,9 +16,8 @@ const verifyJWT = (req, res, next) => {
   } else {
     jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
       if (err) {
-        console.log(err)
         return catchError(err, res)
-        //res.json({ auth: false, message: 'Failed to authenticate token.' })
+        // res.json({ auth: false, message: 'Failed to authenticate token.' })
       } else {
         req.userId = decoded
         next()

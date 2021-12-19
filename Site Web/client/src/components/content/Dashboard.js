@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid'
 import { Radar } from 'react-chartjs-2'
 import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
+import Instruction from './instruction'
 
 function Dashboard () {
   const context = useContext(AppContext)
@@ -86,7 +87,10 @@ function Dashboard () {
     <Container>
       <Grid>
         <h1>Dashboard</h1>
-        <Radar data={datas} options={RadarOptions} />
+        {context.pcs &&
+          <Radar data={datas} options={RadarOptions} />}
+        {!context.pcs &&
+          <Instruction />}
       </Grid>
     </Container>
   )

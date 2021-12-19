@@ -112,6 +112,10 @@ const Navigations = () => {
   const [open, setOpen] = React.useState(true)
   const [select, setSelected] = React.useState('Dashboard')
   const BASE_URL = process.env.REACT_APP_API_URL
+  const [role2, setRole2] = React.useState('')
+  const log = (window.location.pathname === '/App' && (role2 === 'client' || role2 === 'Admin'))
+  // const pos = (log2 ? 'relative' : 'absolute')
+  // !log ? drawerWidth = 0 : drawerWidth = 240
   const pos = (window.location.pathname !== '/App' ? 'relative' : 'absolute')
   window.location.pathname !== '/App' ? drawerWidth = 0 : drawerWidth = 240
   const title = 'Checkpcs'
@@ -120,14 +124,6 @@ const Navigations = () => {
   }
   // FONCTION ROLE : ne pas Axios.defaults.withCredentials = true
   Axios.defaults.withCredentials = true
-  const [role2, setRole2] = React.useState('')
-  let list = ''
-  if (window.location.pathname === '/App') {
-    list = context.app.map((number) =>
-      <MenuItem value={number.idPc} key={number.idPc}>{number.user_name}</MenuItem>
-    )
-  }
-
   /*
   useEffect(() => {
     Axios.get(BASE_URL + '/Login').then((response) => {
@@ -182,6 +178,12 @@ const Navigations = () => {
     if (window.location.pathname === '/App') {
       context.SelectPCs(event.target.value)
     }
+  }
+  let list = ''
+  if (log) {
+    list = context.app.map((number) =>
+      <MenuItem value={number.idPc} key={number.idPc}>{number.user_name}</MenuItem>
+    )
   }
   return (
     <div>
@@ -257,6 +259,7 @@ const Navigations = () => {
                 <FormControl fullWidth>
                   <InputLabel id='demo-simple-select-label'>Sélectionner votre PC</InputLabel>
                   <Select
+                    defaultValue
                     labelId='demo-simple-select-label'
                     id='demo-simple-select'
                     value={age}

@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
 import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
+import Instruction from './instruction'
 
 function Stockage () {
   const context = useContext(AppContext)
@@ -133,7 +134,10 @@ function Stockage () {
     <Container>
       <Grid Container spacing={3}>
         <h1>Stockage</h1>
-        <Line data={datas} options={lineOptions} />
+        {context.pcs &&
+          <Line data={datas} option={lineOptions} />}
+        {!context.pcs &&
+          <Instruction />}
       </Grid>
     </Container>
   )

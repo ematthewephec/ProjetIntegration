@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
 import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
+import Instruction from './instruction'
 
 function Ram () {
   const context = useContext(AppContext)
@@ -133,7 +134,10 @@ function Ram () {
     <Container>
       <Grid>
         <h1>Ram</h1>
-        <Line data={datas} option={lineOptions} />
+        {context.pcs &&
+          <Line data={datas} option={lineOptions} />}
+        {!context.pcs &&
+          <Instruction />}
       </Grid>
     </Container>
   )
