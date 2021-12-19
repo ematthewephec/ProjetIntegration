@@ -1,3 +1,10 @@
 Application/python/dbconnection.py
+
+Application/python/.env
+.vscode/settings.json
+
 Application/data/.env
 .vscode/settings.json
+
+
+
