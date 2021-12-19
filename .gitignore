@@ -8,3 +8,9 @@ Application/data/.env
 
 
 
+
+Application/data/__pycache__/datacollection.cpython-39.pyc
+Application/data/__pycache__/dbconnection.cpython-39.pyc
+Application/gui_app/__pycache__/__init__.cpython-39.pyc
+Application/gui_app/__pycache__/window.cpython-39.pyc
+Application/data/__pycache__/__init__.cpython-39.pyc
