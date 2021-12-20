@@ -5,8 +5,9 @@ import Grid from '@mui/material/Grid'
 function Routers () {
   return (
     <Container>
-      <Grid Container spacing={3}>
+      <Grid>
         <h1>Router</h1>
+        <p>Coming soon</p>
       </Grid>
     </Container>
   )

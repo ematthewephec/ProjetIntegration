@@ -27,30 +27,27 @@ function Copyright (props) {
 
 const theme = createTheme()
 
-export default function SignUp () {
-  const [usernames, setUsername] = React.useState('')
+export default function Newpassword () {
   const [passwords, setPassword] = React.useState('')
-  const [emails, seteMail] = React.useState('')
-  const [noms, setNom] = React.useState('')
-  const [prenoms, setprenom] = React.useState('')
+  const [passwords1, setPassword1] = React.useState('')
   const BASE_URL = process.env.REACT_APP_API_URL
 
   Axios.defaults.withCredentials = true
-  const register = () => {
-    Axios.post(BASE_URL + '/user/Register', {
-      username: usernames,
-      password: passwords,
-      email: emails,
-      nom: noms,
-      prenom: prenoms
-    }).then((response) => {
-      console.log(response)
-      if (response.data.valid) {
+  const Newpass = () => {
+    if (passwords === passwords1) {
+      Axios.post(BASE_URL + '/user/NewPassword', {
+        password: passwords
+      }, {
+        headers: {
+          'x-access-token': window.localStorage.getItem('token')
+        }
+      }).then((response) => {
+        console.log(response)
         window.location.href = '/Login'
-      } else {
-        alert('Address email déja utilisé')
-      }
-    })
+      })
+    } else {
+      console.log('mots de passe pas identique')
+    }
   }
   return (
     <ThemeProvider theme={theme}>
@@ -68,53 +65,20 @@ export default function SignUp () {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component='h1' variant='h5'>
-            Sign up
+            Réinitialisé le password
           </Typography>
           <Box component='form' noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete='fname'
-                  name='firstName'
-                  required
-                  fullWidth
-                  id='firstName'
-                  label='First Name'
-                  autoFocus
-                  onChange={(e) => { setprenom(e.target.value) }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id='lastName'
-                  label='Last Name'
-                  name='lastName'
-                  autoComplete='lname'
-                  onChange={(e) => { setNom(e.target.value) }}
-                />
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  id='email'
-                  label='Email Address'
-                  name='email'
-                  autoComplete='email'
-                  onChange={(e) => { seteMail(e.target.value) }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id='username'
-                  label='Username'
-                  name='Username'
-                  autoComplete='Username'
-                  onChange={(e) => { setUsername(e.target.value) }}
+                  name='password'
+                  label='Password'
+                  type='New password'
+                  id='password'
+                  autoComplete='new-password'
+                  onChange={(e) => { setPassword(e.target.value) }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -122,11 +86,11 @@ export default function SignUp () {
                   required
                   fullWidth
                   name='password'
-                  label='Password'
+                  label='New Password'
                   type='password'
                   id='password'
                   autoComplete='new-password'
-                  onChange={(e) => { setPassword(e.target.value) }}
+                  onChange={(e) => { setPassword1(e.target.value) }}
                 />
               </Grid>
             </Grid>
@@ -134,17 +98,10 @@ export default function SignUp () {
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
-              onClick={register}
+              onClick={Newpass}
             >
-              Sign Up
+              New password
             </Button>
-            <Grid container justifyContent='flex-end'>
-              <Grid item>
-                <Link href='/Login' variant='body2'>
-                  Login
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 5 }} />

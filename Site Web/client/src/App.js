@@ -4,6 +4,8 @@ import './App.css'
 import Contact from './components/Contact'
 import Apropos from './components/Apropos'
 import Login from './components/Login'
+import Forgot from './components/Forgot'
+import Newpassword from './components/Newpassword'
 import Register from './components/Register'
 import Shop from './components/shop'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
@@ -35,6 +37,12 @@ const App = () => {
           </Route>
           <Route path='/Register' exact component={Register}>
             <Register />
+          </Route>
+          <Route path='/Forgot' exact component={Forgot}>
+            <Forgot />
+          </Route>
+          <Route path='/Newpassword' exact component={Newpassword}>
+            <Newpassword />
           </Route>
         </Switch>
       </div>

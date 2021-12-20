@@ -24,11 +24,55 @@ router.get('/Logout', verifyJWT, (req, res) => {
   res.redirect('/Login')
 })
 
+router.get('/Forgot/:mail', async function (req, res) {
+  try {
+    console.log(req.params.mail)
+    const sqlGetUser = 'SELECT id, password, role, email FROM users where email=?;'
+    const rows = await pool.query(sqlGetUser, req.params.mail)
+
+    if (rows.length > 0) {
+      const id = rows[0].id
+      let isAdmin = false
+      if (rows[0].role === 'Admin') {
+        isAdmin = true
+      }
+      const accessToken = jwt.sign({ id: id, isAdmin: isAdmin }, process.env.TOKEN_SECRET, {
+        expiresIn: '15m'
+      })
+      req.session.user = rows
+      res.json({ result: rows, accessToken: accessToken, valid: true })
+    } else {
+      res.json({ message: 'wrong username/password', valid: false })
+    }
+    // res.status(200).send(`User with id ${username} was not found`)
+  } catch (error) {
+    res.status(400).send(error.message)
+    res.json({ message: 'no user exits', valid: false })
+  }
+})
+
+router.post('/NewPassword', verifyJWT, async function (req, res) {
+  try {
+    const { password } = req.body
+    // const salt = await getRandomBytes(32)
+    // const encryptedPassword = await argon2i.hash(password, salt)
+    // const encryptedPassword = await hash(password)
+    const encryptedPassword = await bcrypt.hash(password, saltRounds)
+
+    const sqlQuery = 'UPDATE users SET password=? Where id=?;'
+    const result = await pool.query(sqlQuery, [encryptedPassword, req.userId.id])
+
+    res.status(200).json({ userId: result })
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+})
+
 router.get('/isUserAuth', verifyJWT, (req, res) => {
   res.send({ user: req.userId })
 })
 function generateAccessToken (user) {
-  return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '30m' })
+  return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1440m' })
 }
 let refreshTokens = []
 
@@ -102,12 +146,20 @@ router.post('/Register', async function (req, res) {
     // const salt = await getRandomBytes(32)
     // const encryptedPassword = await argon2i.hash(password, salt)
     // const encryptedPassword = await hash(password)
-    const encryptedPassword = await bcrypt.hash(password, saltRounds)
-
-    const sqlQuery = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
-    const result = await pool.query(sqlQuery, [username, encryptedPassword, email, nom, prenom, 'client'])
-
-    res.status(200).json({ userId: result.insertId })
+    const sqlQuery = 'SELECT * FROM users WHERE email=?;'
+    const result = await pool.query(sqlQuery, [email])
+    console.log(result.length)
+    if (result.length === 0) {
+      const encryptedPassword = await bcrypt.hash(password, saltRounds)
+      // const encryptedNom = await bcrypt.hash(nom, saltRounds)
+      // const encryptedPrenom = await bcrypt.hash(prenom, saltRounds)
+      // const encryptedMail = await bcrypt.hash(password, saltRounds)
+      const sqlQuery1 = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
+      const result1 = await pool.query(sqlQuery1, [username, encryptedPassword, email, nom, prenom, 'client'])
+      res.status(200).json({ userId: result1.insertId, valid: true })
+    } else {
+      res.status(200).json({ userId: result, valid: false })
+    }
   } catch (error) {
     res.status(400).send(error.message)
   }
