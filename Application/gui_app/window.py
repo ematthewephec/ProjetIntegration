@@ -13,8 +13,8 @@ import GPUtil
 import serial.tools.list_ports
 import speedtest
 import threading
-import data.datacollection as data
-import data.dbconnection as dbc
+from Application.data import datacollection as data
+from Application.data import dbconnection as dbc
 import rx
 from rx.scheduler import ThreadPoolScheduler
 
@@ -65,6 +65,8 @@ class Window():
         self.pc_name = None
         self.user_id = None
         self.pc_id = None
+
+        self.ser = None
 
         #self.pool_scheduler = ThreadPoolScheduler(1) # thread pool with 1 worker thread
 
@@ -176,7 +178,7 @@ class Window():
         btn3.pack(pady=10)
 
     def connexion(self):
-        url = 'http://localhost:5000/user/Login'
+        """url = 'http://checkpcs.com/user/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
         x = requests.post(url, data=myobj)
         data = json.loads(x.text)
@@ -187,13 +189,13 @@ class Window():
             # self.tk.after(1000, self.thread_handler())
             self.tk.after(1000, self.run_tests)
         else:
-            self.tk.destroy()
+            self.tk.destroy()"""
 
-        if(self.counter == 0):
+        if self.counter == 0:
             self.counter += 1
-            #self.open_app()
+            self.open_app()
             #self.tk.after(1000, self.thread_handler())
-            self.tk.after(1000, self.run_tests)
+            self.tk.after(5000, self.run_tests, self.pc_id)
 
     def thread_handler(self):
         rx.just(1).subscribe(
@@ -202,9 +204,35 @@ class Window():
             scheduler=self.pool_scheduler
         )
 
-    def run_tests(self):
-        data.run_tests()
-        self.tk.after(15000, self.send_data)
+    def send_to_arduino(self):
+        self.collected_data = data.computer_data
+
+        ram_percent = str(self.collected_data['ram']['percent_virtual'])
+        cpu_percent = str(self.collected_data['cpu']['percent'])
+        battery_percent = str(self.collected_data['battery']['percent'])
+        storage_percent = str((int(self.collected_data['storage']['used_storage'][:-2]) / int(
+            self.collected_data['storage']['total_storage'][:-2])) * 100)
+
+        arduino_data = f"{ram_percent}-{cpu_percent}-{battery_percent}-{storage_percent}"
+
+        myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+        if "VID:PID=2341:0043" in myports[0][2]:
+            self.ser = serial.Serial()
+            self.ser.baudrate = 19200
+            self.ser.port = myports[0][0]
+            self.ser.open()
+
+            # send data to Arduino
+            # test = "99-88-77-66"
+            # data = f"{}"
+            # ram-cpu-batterie-stockage
+            self.tk.after(3500, lambda: self.ser.write(b'' + arduino_data.encode() + b'\n'))
+
+    def run_tests(self, pc_id):
+        data.run_tests(pc_id)
+        # self.tk.after(15000, self.send_to_arduino)
+        # self.tk.after(15000, self.send_data)
+        # self.tk.after(10000, self.run_tests, self.pc_id)
 
     def send_data(self):
         if self.counter > 0:
@@ -214,14 +242,14 @@ class Window():
             data.send_data(self.pc_id)
             self.tk.after(10000, self.run_tests)
 
-
     def check_pc(self):
         self.pc_name = psutil.users()[0].name
         self.user_id = dbc.get_user_id(self.entry1.get())
-        #self.user_id = 7
+        # self.user_id = 7
         if dbc.check_pc(self.user_id, self.pc_name) == 0:
             data.info_test()
             dbc.pc_info_test_to_db(self.user_id, data.CURRENT_DATE, **data.computer_data['info'])
+        self.pc_id = dbc.get_pc_id(self.user_id, self.pc_name)
         print(f"PC {self.pc_name} exists!")
 
     def close_app(self):
@@ -249,7 +277,7 @@ class Window():
     def hide_master(self):
         self.counter -= 1
         self.master.withdraw()
-        self.tk.after_cancel(self.test_ecran)
+        #self.tk.after_cancel(self.test_ecran)
         self.create_service_data()
         self.icon_service.run()
 
@@ -263,6 +291,7 @@ class Window():
         self.tk.after(0, self.master.deiconify())
 
     def logout(self):
+        data.IS_RUNNING = False
         self.counter = 0
         self.master.destroy()
         self.icon_service.stop()
@@ -340,11 +369,11 @@ class Window():
                                    background="#31395e")
         ecran_widget_title.place(x=50, y=385)
 
-        if (not self.ecran):
+        if not self.ecran:
             ecran_status = Label(self.master, text="Déconnecté", foreground="#f70909", font=("Berlin Sans fb demi", 30),
                                  background="#31395e")
             ecran_status.place(x=150, y=425)
-        elif (self.ecran):
+        elif self.ecran:
             ecran_status = Label(self.master, text="Connecté", foreground="#3df709", font=("Berlin Sans fb demi", 30),
                                  background="#31395e")
             ecran_status.place(x=170, y=425)
