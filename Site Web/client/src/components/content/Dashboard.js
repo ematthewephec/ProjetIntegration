@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useContext } from 'react'
+import React, { useEffect, useReducer, useContext } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Radar } from 'react-chartjs-2'
@@ -9,7 +9,6 @@ import Instruction from './instruction'
 function Dashboard () {
   const context = useContext(AppContext)
   console.log(context.pcs)
-  let isRendered = useRef(false)
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -49,6 +48,25 @@ function Dashboard () {
     }
   }
   Axios.defaults.withCredentials = true
+  console.log(context.dashboard)
+  useEffect(() => {
+    setdatas({
+      // eslint-disable-next-line
+      ["datasets"]: [
+        {
+          label: 'Pourcentage',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(255, 99, 132)',
+          data: [context.dashboard.battery, context.dashboard.cpu, context.dashboard.ram, context.dashboard.storage]
+        }
+      ]
+    })
+  }, [])
+  /*
   useEffect(() => {
     isRendered = true
     Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/dashboard', {
@@ -83,6 +101,7 @@ function Dashboard () {
       isRendered = false
     }
   }, [isRendered])
+  */
   return (
     <Container>
       <Grid>

@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useContext } from 'react'
+import React, { useEffect, useReducer, useContext } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
@@ -8,7 +8,7 @@ import Instruction from './instruction'
 
 function Processeur () {
   const context = useContext(AppContext)
-  let isRendered = useRef(false)
+  // const isRendered = useRef(false)
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -79,20 +79,24 @@ function Processeur () {
     }
   }
   Axios.defaults.withCredentials = true
+  /*
   useEffect(() => {
     isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/cpu', {
+    Axios.get(process.env.REACT_APP_API_URL + '/api/cpu', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
     }).then((response) => {
       if (isRendered) {
         const data = response.data
+        console.log(data)
         const title = []
         const percent = []
         for (const i of data) {
-          title.push(i.test_date)
-          percent.push(Number((i.cpu_percent)))
+          if (i.idPc === context.pcs) {
+            title.push(i.test_date)
+            percent.push(Number((i.cpu_percent)))
+          }
         }
 
         setdatas({
@@ -128,6 +132,37 @@ function Processeur () {
     return () => {
       isRendered = false
     }
+  }, [])
+  */
+  useEffect(() => {
+    setdatas({
+    // eslint-disable-next-line
+    ["datasets"]: [
+        {
+          label: 'Processeur',
+          fill: true,
+          lineTension: 0.1,
+          backgroundColor: 'rgba(192,75,192,0.4)',
+          borderColor: 'rgba(192,75,192,1)',
+          borderCapStyle: 'butt',
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: 'miter',
+          pointBorderColor: 'rgba(192,75,192,1)',
+          pointBackgroundColor: '#fff',
+          pointBorderWidth: 5,
+          pointHoverRadius: 10,
+          pointHoverBackgroundColor: 'rgba(192,75,192,1)',
+          pointHoverBorderColor: 'rgba(192,75,192,1)',
+          pointHoverBorderWidth: 2,
+          pointRadius: 2,
+          pointHitRadius: 15,
+          data: context.cpu.percent
+        }
+      ],
+      // eslint-disable-next-line
+    ["labels"]: context.cpu.title
+    })
   }, [])
   return (
     <Container>

@@ -41,6 +41,7 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Axios from 'axios'
+import Instruction from './content/instruction'
 
 // import Chart from './Charts'
 // import Deposits from './Deposits'
@@ -110,7 +111,7 @@ const Navigations = () => {
   const [age, setAge] = React.useState('')
   const context = useContext(AppContext)
   const [open, setOpen] = React.useState(true)
-  const [select, setSelected] = React.useState('Dashboard')
+  const [select, setSelected] = React.useState('')
   const BASE_URL = process.env.REACT_APP_API_URL
   const [role2, setRole2] = React.useState('')
   const log = (window.location.pathname === '/App' && (role2 === 'client' || role2 === 'Admin'))
@@ -177,6 +178,7 @@ const Navigations = () => {
     setAge(event.target.value)
     if (window.location.pathname === '/App') {
       context.SelectPCs(event.target.value)
+      setSelected('Dashboard')
     }
   }
   let list = ''
@@ -256,19 +258,20 @@ const Navigations = () => {
               </Toolbar>
               <Divider />
               <Box sx={{ maxWidth: 180 }}>
-                <FormControl fullWidth>
-                  <InputLabel id='demo-simple-select-label'>Sélectionner votre PC</InputLabel>
-                  <Select
-                    defaultValue
-                    labelId='demo-simple-select-label'
-                    id='demo-simple-select'
-                    value={age}
-                    label='Age'
-                    onChange={handleChange}
-                  >
-                    {list}
-                  </Select>
-                </FormControl>
+                {context.pcs &&
+                  <FormControl fullWidth>
+                    <InputLabel id='demo-simple-select-label'>Sélectionner votre PC</InputLabel>
+                    <Select
+                      defaultValue
+                      labelId='demo-simple-select-label'
+                      id='demo-simple-select'
+                      value={age}
+                      label='Age'
+                      onChange={handleChange}
+                    >
+                      {list}
+                    </Select>
+                  </FormControl>}
               </Box>
               <List>
                 <ListSubheader inset>Pc Ressource</ListSubheader>
@@ -340,6 +343,8 @@ const Navigations = () => {
               }}
             >
               <Toolbar />
+              {select === '' &&
+                <Instruction />}
               {select === 'Dashboard' &&
                 <Dashboard />}
               {select === 'Ram' &&
