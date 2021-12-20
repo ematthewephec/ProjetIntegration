@@ -7,7 +7,7 @@ const verifyJWT = require('./verifyToken')
 router.get('/pcs', verifyJWT, async function (req, res) {
   try {
     const sqlQuery = 'SELECT idPc, user_name FROM pcs Where idUser=?'
-    const rows = await pool.query(sqlQuery, [7])
+    const rows = await pool.query(sqlQuery, [req.userId])
     res.status(200).json(rows)
   } catch (error) {
     res.status(400).send(error.message)
@@ -63,8 +63,29 @@ router.get('/:idpc/cpu', verifyJWT, async function (req, res) {
     res.status(400).send(error.message)
   }
 })
+router.get('/cpu', verifyJWT, async function (req, res) {
+  try {
+    const sqlQuery = 'SELECT pcs.idPc, cpu.test_date, cpu.cpu_percent FROM pcs INNER JOIN cpu ON pcs.idPc=cpu.idPc WHERE pcs.idUser =? ORDER BY STR_TO_DATE(cpu.test_date, "%d/%m/%Y") ASC;'
+    const rows = await pool.query(sqlQuery, req.userId)
+    res.status(200).json(rows)
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+})
 
 router.get('/:idpc/storage', verifyJWT, async function (req, res) {
+  const id = req.params.idpc
+
+  try {
+    const sqlQuery = 'SELECT test_date, total_storage, used_storage FROM storage Where idPc=? ORDER BY STR_TO_DATE(test_date, "%d/%m/%Y") ASC'
+    const rows = await pool.query(sqlQuery, id)
+    res.status(200).json(rows)
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+})
+
+router.get('/storage', verifyJWT, async function (req, res) {
   const id = req.params.idpc
 
   try {
