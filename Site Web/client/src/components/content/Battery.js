@@ -1,10 +1,30 @@
-import React, { useEffect, useReducer, useContext } from 'react'
+import React, { useEffect, useReducer, useContext, useRef } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
 import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
 import Instruction from './instruction'
+
+function useInterval (callback, delay) {
+  const savedCallback = useRef()
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick () {
+      savedCallback.current()
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay)
+      return () => clearInterval(id)
+    }
+  }, [delay])
+}
 
 function Baterry () {
   const context = useContext(AppContext)
@@ -78,6 +98,10 @@ function Baterry () {
     }
   }
   Axios.defaults.withCredentials = true
+  useInterval(() => {
+    // Your custom logic here
+    context.readBattery()
+  }, 10000)
   useEffect(() => {
     setdatas({
       // eslint-disable-next-line

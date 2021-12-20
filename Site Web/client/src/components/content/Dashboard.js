@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext } from 'react'
+import React, { useEffect, useReducer, useContext, useRef } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Radar } from 'react-chartjs-2'
@@ -6,7 +6,28 @@ import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
 import Instruction from './instruction'
 
+function useInterval (callback, delay) {
+  const savedCallback = useRef()
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick () {
+      savedCallback.current()
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay)
+      return () => clearInterval(id)
+    }
+  }, [delay])
+}
+
 function Dashboard () {
+  const [count, setCount] = React.useState(0)
   const context = useContext(AppContext)
   console.log(context.pcs)
   const [datas, setdatas] = useReducer(
@@ -49,6 +70,11 @@ function Dashboard () {
   }
   Axios.defaults.withCredentials = true
   console.log(context.dashboard)
+  useInterval(() => {
+    // Your custom logic here
+    context.readDashboard()
+    setCount(count + 1)
+  }, 10000)
   useEffect(() => {
     setdatas({
       // eslint-disable-next-line
@@ -106,6 +132,7 @@ function Dashboard () {
     <Container>
       <Grid>
         <h1>Dashboard</h1>
+        <h1>{count}</h1>
         {context.pcs &&
           <Radar data={datas} options={RadarOptions} />}
         {!context.pcs &&
