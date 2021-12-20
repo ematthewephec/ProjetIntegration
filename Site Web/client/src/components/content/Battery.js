@@ -101,8 +101,6 @@ function Baterry () {
   useInterval(() => {
     // Your custom logic here
     context.readBattery()
-  }, 10000)
-  useEffect(() => {
     setdatas({
       // eslint-disable-next-line
       ["datasets"]: [
@@ -131,60 +129,7 @@ function Baterry () {
       // eslint-disable-next-line
       ["labels"]: context.battery.title
     })
-  }, [])
-  /*
-  useEffect(() => {
-    isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/battery', {
-      headers: {
-        'x-access-token': window.localStorage.getItem('token')
-      }
-    }).then((response) => {
-      if (isRendered) {
-        const data = response.data
-        const title = []
-        const percent = []
-
-        for (const i of data) {
-          title.push(i.test_date)
-          percent.push(Number((i.battery_percent)))
-        }
-
-        setdatas({
-        // eslint-disable-next-line
-        ["datasets"]: [
-            {
-              label: 'Batterie',
-              fill: true,
-              lineTension: 0.1,
-              backgroundColor: 'rgba(192,192,75,0.4)',
-              borderColor: 'rgba(192,192,75,1)',
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: 'rgba(192,192,75,1)',
-              pointBackgroundColor: '#fff',
-              pointBorderWidth: 5,
-              pointHoverRadius: 10,
-              pointHoverBackgroundColor: 'rgba(192,192,75,1)',
-              pointHoverBorderColor: 'rgba(192,192,75,1)',
-              pointHoverBorderWidth: 2,
-              pointRadius: 2,
-              pointHitRadius: 15,
-              data: percent
-            }
-          ],
-          // eslint-disable-next-line
-        ["labels"]: title
-        })
-      }
-    }).catch(err => console.log(err))
-    return () => {
-      isRendered = false
-    }
-  }, [])
-  */
+  }, 5000)
   return (
     <Container>
       <Grid>

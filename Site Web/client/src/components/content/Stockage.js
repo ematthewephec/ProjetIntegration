@@ -102,8 +102,6 @@ function Stockage () {
   useInterval(() => {
     // Your custom logic here
     context.readStorage()
-  }, 10000)
-  useEffect(() => {
     setdatas({
       // eslint-disable-next-line
       ["datasets"]: [
@@ -132,60 +130,7 @@ function Stockage () {
       // eslint-disable-next-line
       ["labels"]: context.storage.title
     })
-  }, [])
-  /*
-  useEffect(() => {
-    isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/storage', {
-      headers: {
-        'x-access-token': window.localStorage.getItem('token')
-      }
-    }).then((response) => {
-      if (isRendered) {
-        const data = response.data
-        const title = []
-        const percent = []
-
-        for (const i of data) {
-          title.push(i.test_date)
-          percent.push((Number((i.used_storage).slice(0, -2)) / (Number((i.total_storage).slice(0, -2)) / 100)).toFixed(2))
-        }
-
-        setdatas({
-        // eslint-disable-next-line
-        ["datasets"]: [
-            {
-              label: 'Batterie',
-              fill: true,
-              lineTension: 0.1,
-              backgroundColor: 'rgba(75,215,75,0.4)',
-              borderColor: 'rgba(75,215,75,1)',
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: 'rgba(75,215,75,1)',
-              pointBackgroundColor: '#fff',
-              pointBorderWidth: 5,
-              pointHoverRadius: 10,
-              pointHoverBackgroundColor: 'rgba(75,215,75,1)',
-              pointHoverBorderColor: 'rgba(75,215,75,1)',
-              pointHoverBorderWidth: 2,
-              pointRadius: 2,
-              pointHitRadius: 15,
-              data: percent
-            }
-          ],
-          // eslint-disable-next-line
-        ["labels"]: title
-        })
-      }
-    }).catch(err => console.log(err))
-    return () => {
-      isRendered = false
-    }
-  }, [])
-  */
+  }, 5000)
   return (
     <Container>
       <Grid Container spacing={3}>

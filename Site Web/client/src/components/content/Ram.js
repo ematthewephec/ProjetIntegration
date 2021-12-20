@@ -101,8 +101,6 @@ function Ram () {
   useInterval(() => {
     // Your custom logic here
     context.readRam()
-  }, 10000)
-  useEffect(() => {
     setdatas({
       // eslint-disable-next-line
       ["datasets"]: [
@@ -131,60 +129,7 @@ function Ram () {
       // eslint-disable-next-line
       ["labels"]: context.ram.title
     })
-  }, [])
-  /*
-  useEffect(() => {
-    isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/ram', {
-      headers: {
-        'x-access-token': window.localStorage.getItem('token')
-      }
-    }).then((response) => {
-      if (isRendered) {
-        const data = response.data
-        const title = []
-        const percent = []
-
-        for (const i of data) {
-          title.push(i.test_date)
-          percent.push(((Number((i.total_virtual).slice(0, -2)) / 100) * Number(i.percent_virtual)).toFixed(2))
-        }
-
-        setdatas({
-        // eslint-disable-next-line
-        ["datasets"]: [
-            {
-              label: 'Mémoire Ram',
-              fill: true,
-              lineTension: 0.1,
-              backgroundColor: 'rgba(75,192,192,0.4)',
-              borderColor: 'rgba(75,192,192,1)',
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: 'rgba(75,192,192,1)',
-              pointBackgroundColor: '#fff',
-              pointBorderWidth: 5,
-              pointHoverRadius: 10,
-              pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-              pointHoverBorderColor: 'rgba(220,220,220,1)',
-              pointHoverBorderWidth: 2,
-              pointRadius: 2,
-              pointHitRadius: 15,
-              data: percent
-            }
-          ],
-          // eslint-disable-next-line
-        ["labels"]: title
-        })
-      }
-    }).catch(err => console.log(err))
-    return () => {
-      isRendered = false
-    }
-  }, [])
-  */
+  }, 5000)
   return (
     <Container>
       <Grid>

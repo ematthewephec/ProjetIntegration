@@ -73,9 +73,6 @@ function Dashboard () {
   useInterval(() => {
     // Your custom logic here
     context.readDashboard()
-    setCount(count + 1)
-  }, 10000)
-  useEffect(() => {
     setdatas({
       // eslint-disable-next-line
       ["datasets"]: [
@@ -91,43 +88,8 @@ function Dashboard () {
         }
       ]
     })
-  }, [])
-  /*
-  useEffect(() => {
-    isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/dashboard', {
-      headers: {
-        'x-access-token': window.localStorage.getItem('token')
-      }
-    }).then((response) => {
-      if (isRendered) {
-        const data = response.data
-        const ram = Number(data[0][0].percent_virtual)
-        const cpu = Number(data[1][0].cpu_percent)
-        const batterie = Number(data[2][0].battery_percent)
-        const storage = (Number(data[3][0].used_storage.slice(0, -2)) / (Number(data[3][0].total_storage.slice(0, -2)) / 100))
-        setdatas({
-          // eslint-disable-next-line
-          ["datasets"]: [
-            {
-              label: 'Pourcentage',
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgb(255, 99, 132)',
-              pointBackgroundColor: 'rgb(255, 99, 132)',
-              pointBorderColor: '#fff',
-              pointHoverBackgroundColor: '#fff',
-              pointHoverBorderColor: 'rgb(255, 99, 132)',
-              data: [batterie, cpu, ram, storage]
-            }
-          ]
-        })
-      }
-    }).catch(err => console.log(err))
-    return () => {
-      isRendered = false
-    }
-  }, [isRendered])
-  */
+    setCount(count + 1)
+  }, 5000)
   return (
     <Container>
       <Grid>
