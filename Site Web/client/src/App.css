@@ -50,3 +50,16 @@
 #logo {
   border-bottom: black solid 3px;
 }
+
+#username-label, #password-label, #firstName-label, #lastName-label, #email-label, #fullName-label, #message-label {
+  color: #072840;
+}
+
+#username,  #password, #firstName, #lastName, #email, #fullName, #message {
+  border-bottom: 0;
+  padding-left: 3%;
+}
+
+ #username:focus,  #password:focus, #firstName:focus, #lastName:focus, #email:focus, #fullName:focus, #message:focus {
+   box-shadow: none;
+ }

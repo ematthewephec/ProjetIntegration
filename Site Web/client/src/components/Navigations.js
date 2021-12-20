@@ -190,7 +190,7 @@ const Navigations = () => {
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position={pos} open={open}>
+          <AppBar position={pos} open={open} sx={{ backgroundColor: "#072840"}}>
             <Toolbar
               sx={{
                 pr: '24px' // keep right padding when drawer closed
@@ -356,7 +356,7 @@ const Navigations = () => {
                 <Port />}
               {select === 'NetworkCheckIcon' &&
                 <Network />}
-              <Copyright sx={{ pt: 4 }} />
+              <Copyright sx={{ pt: 4, color:"#072840"}} />
             </Box>}
         </Box>
       </ThemeProvider>

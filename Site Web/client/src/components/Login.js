@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import Axios from 'axios'
+import '../App.css'
 
 function Copyright (props) {
   return (
@@ -25,7 +26,14 @@ function Copyright (props) {
   )
 }
 
-const theme = createTheme()
+const theme = createTheme({
+  palette: {
+    primary: {
+      // Purple and green play nicely together.
+      main: '#072840',
+    },
+  },
+})
 
 export default function SignIn () {
   const [usernames, setUsername] = React.useState('')
@@ -81,7 +89,7 @@ export default function SignIn () {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Box noValidate sx={{ mt: 1 }}>
+          <Box noValidate sx={{ mt: 1, borderColor: "#072840" }}>
             <TextField
               margin='normal'
               required
@@ -108,25 +116,25 @@ export default function SignIn () {
               onClick={login}
               fullWidth
               variant='contained'
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#072840", ":hover": { backgroundColor: "#072840"} }}
             >
               Sign In
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link variant='body2'>
+                <Link variant='body2' sx={{ color: "#072840" }}>
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href='/Register' variant='body2'>
+                <Link href='/Register' variant='body2' sx={{ color: "#072840" }}>
                   Don't have an account? Sign Up
                 </Link>
               </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Copyright sx={{ mt: 8, mb: 4, color: "#072840" }} />
       </Container>
     </ThemeProvider>
   )

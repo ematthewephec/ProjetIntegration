@@ -7,7 +7,7 @@ const verifyJWT = require('./verifyToken')
 router.get('/pcs', verifyJWT, async function (req, res) {
   try {
     const sqlQuery = 'SELECT idPc, user_name FROM pcs Where idUser=?'
-    const rows = await pool.query(sqlQuery, [req.userId])
+    const rows = await pool.query(sqlQuery, [req.userId.id])
     res.status(200).json(rows)
   } catch (error) {
     res.status(400).send(error.message)
