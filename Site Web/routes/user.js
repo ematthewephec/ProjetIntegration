@@ -146,11 +146,17 @@ router.post('/Register', async function (req, res) {
     // const salt = await getRandomBytes(32)
     // const encryptedPassword = await argon2i.hash(password, salt)
     // const encryptedPassword = await hash(password)
-    const encryptedPassword = await bcrypt.hash(password, saltRounds)
-    const sqlQuery = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
-    const result = await pool.query(sqlQuery, [username, encryptedPassword, email, nom, prenom, 'client'])
-
-    res.status(200).json({ userId: result.insertId })
+    const sqlQuery = 'SELECT * FROM users WHERE email=?;'
+    const result = await pool.query(sqlQuery, [email])
+    console.log(result.length)
+    if (result.length === 0) {
+      const encryptedPassword = await bcrypt.hash(password, saltRounds)
+      const sqlQuery1 = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
+      const result1 = await pool.query(sqlQuery1, [username, encryptedPassword, email, nom, prenom, 'client'])
+      res.status(200).json({ userId: result1.insertId, valid: true })
+    } else {
+      res.status(200).json({ userId: result, valid: false })
+    }
   } catch (error) {
     res.status(400).send(error.message)
   }

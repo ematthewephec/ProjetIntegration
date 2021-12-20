@@ -45,7 +45,11 @@ export default function SignUp () {
       prenom: prenoms
     }).then((response) => {
       console.log(response)
-      window.location.href = '/Login'
+      if (response.data.valid) {
+        window.location.href = '/Login'
+      } else {
+        alert('Address email déja utilisé')
+      }
     })
   }
   return (
