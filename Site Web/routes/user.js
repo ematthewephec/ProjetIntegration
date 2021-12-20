@@ -28,7 +28,7 @@ router.get('/isUserAuth', verifyJWT, (req, res) => {
   res.send({ user: req.userId })
 })
 function generateAccessToken (user) {
-  return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '30m' })
+  return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1440m' })
 }
 let refreshTokens = []
 
