@@ -147,7 +147,6 @@ router.post('/Register', async function (req, res) {
     // const encryptedPassword = await argon2i.hash(password, salt)
     // const encryptedPassword = await hash(password)
     const encryptedPassword = await bcrypt.hash(password, saltRounds)
-
     const sqlQuery = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
     const result = await pool.query(sqlQuery, [username, encryptedPassword, email, nom, prenom, 'client'])
 
