@@ -15,8 +15,6 @@ import speedtest
 import threading
 from Application.data import datacollection as data
 from Application.data import dbconnection as dbc
-import rx
-from rx.scheduler import ThreadPoolScheduler
 
 class Window():
     def __init__(self, user, lock, exit, web, icon):
@@ -67,8 +65,6 @@ class Window():
         self.pc_id = None
 
         self.ser = None
-
-        #self.pool_scheduler = ThreadPoolScheduler(1) # thread pool with 1 worker thread
 
         self.master = None
         self.ecran = False
@@ -178,7 +174,7 @@ class Window():
         btn3.pack(pady=10)
 
     def connexion(self):
-        """url = 'http://checkpcs.com/user/Login'
+        url = 'http://checkpcs.com/user/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
         x = requests.post(url, data=myobj)
         data = json.loads(x.text)
@@ -186,23 +182,16 @@ class Window():
         if(data["auth"]):
             self.counter += 1
             self.open_app()
-            # self.tk.after(1000, self.thread_handler())
-            self.tk.after(1000, self.run_tests)
+            self.tk.after(1000, self.run_tests, self.pc_id)
         else:
-            self.tk.destroy()"""
-
+            self.tk.destroy()
+        """
         if self.counter == 0:
             self.counter += 1
             self.open_app()
             #self.tk.after(1000, self.thread_handler())
             self.tk.after(5000, self.run_tests, self.pc_id)
-
-    def thread_handler(self):
-        rx.just(1).subscribe(
-            on_next=self.run_tests,
-            on_completed=lambda: self.tk.after(15000, self.send_data),
-            scheduler=self.pool_scheduler
-        )
+            """
 
     def send_to_arduino(self):
         self.collected_data = data.computer_data
@@ -231,16 +220,6 @@ class Window():
     def run_tests(self, pc_id):
         data.run_tests(pc_id)
         # self.tk.after(15000, self.send_to_arduino)
-        # self.tk.after(15000, self.send_data)
-        # self.tk.after(10000, self.run_tests, self.pc_id)
-
-    def send_data(self):
-        if self.counter > 0:
-            self.user_id = dbc.get_user_id(self.entry1.get())
-            self.pc_id = dbc.get_pc_id(self.user_id, self.pc_name)
-            # print(self.pc_id)
-            data.send_data(self.pc_id)
-            self.tk.after(10000, self.run_tests)
 
     def check_pc(self):
         self.pc_name = psutil.users()[0].name
