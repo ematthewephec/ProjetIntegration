@@ -7,6 +7,7 @@ function Port () {
     <Container>
       <Grid Container spacing={3}>
         <h1>Ports</h1>
+        <p>Coming soon</p>
       </Grid>
     </Container>
   )

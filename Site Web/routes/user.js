@@ -24,6 +24,50 @@ router.get('/Logout', verifyJWT, (req, res) => {
   res.redirect('/Login')
 })
 
+router.get('/Forgot/:mail', async function (req, res) {
+  try {
+    console.log(req.params.mail)
+    const sqlGetUser = 'SELECT id, password, role, email FROM users where email=?;'
+    const rows = await pool.query(sqlGetUser, req.params.mail)
+
+    if (rows.length > 0) {
+      const id = rows[0].id
+      let isAdmin = false
+      if (rows[0].role === 'Admin') {
+        isAdmin = true
+      }
+      const accessToken = jwt.sign({ id: id, isAdmin: isAdmin }, process.env.TOKEN_SECRET, {
+        expiresIn: '15m'
+      })
+      req.session.user = rows
+      res.json({ result: rows, accessToken: accessToken, valid: true })
+    } else {
+      res.json({ message: 'wrong username/password', valid: false })
+    }
+    // res.status(200).send(`User with id ${username} was not found`)
+  } catch (error) {
+    res.status(400).send(error.message)
+    res.json({ message: 'no user exits', valid: false })
+  }
+})
+
+router.post('/NewPassword', verifyJWT, async function (req, res) {
+  try {
+    const { password } = req.body
+    // const salt = await getRandomBytes(32)
+    // const encryptedPassword = await argon2i.hash(password, salt)
+    // const encryptedPassword = await hash(password)
+    const encryptedPassword = await bcrypt.hash(password, saltRounds)
+
+    const sqlQuery = 'UPDATE users SET password=? Where id=?;'
+    const result = await pool.query(sqlQuery, [encryptedPassword, req.userId.id])
+
+    res.status(200).json({ userId: result })
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+})
+
 router.get('/isUserAuth', verifyJWT, (req, res) => {
   res.send({ user: req.userId })
 })

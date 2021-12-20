@@ -133,7 +133,7 @@ function Stockage () {
   }, 5000)
   return (
     <Container>
-      <Grid Container spacing={3}>
+      <Grid>
         <h1>Stockage</h1>
         {context.pcs &&
           <Line data={datas} option={lineOptions} />}
