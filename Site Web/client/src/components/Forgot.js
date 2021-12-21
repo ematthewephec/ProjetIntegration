@@ -31,10 +31,12 @@ export default function Forgot () {
   const [mails, seteMail] = React.useState('')
   Axios.defaults.withCredentials = true
   const BASE_URL = process.env.REACT_APP_API_URL
-  const forgot = () => {
+  const [valid, setvalid] = React.useState(false)
+  const forgot = (event) => {
+    event.preventDefault()
     Axios.get(BASE_URL + '/user/Forgot/' + mails).then((response) => {
       if (!response.data.valid) {
-        console.log('nananaannana')
+        setvalid(true)
       } else {
         window.localStorage.setItem('token', response.data.accessToken)
         console.log(response)
@@ -60,7 +62,7 @@ export default function Forgot () {
           <Typography component='h1' variant='h5'>
             Forgot password
           </Typography>
-          <Box noValidate sx={{ mt: 1 }}>
+          <Box component='form' onSubmit={forgot} sx={{ mt: 1 }}>
             <Grid item xs={12}>
               <TextField
                 required
@@ -73,7 +75,7 @@ export default function Forgot () {
               />
             </Grid>
             <Button
-              onClick={forgot}
+              type='submit'
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
@@ -82,6 +84,7 @@ export default function Forgot () {
             </Button>
           </Box>
         </Box>
+        {valid && <p>Pas d'adresse mail correspondante</p>}
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>

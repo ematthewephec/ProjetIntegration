@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { TokenExpiredError } = jwt
 require('dotenv').config()
-
+/*
 const catchError = (err, res) => {
   if (err instanceof TokenExpiredError) {
     return res.status(401).send({ message: 'Unauthorized! Access Token was expired!' })
@@ -9,6 +9,7 @@ const catchError = (err, res) => {
 
   return res.json({ auth: false, message: 'Failed to authenticate token.' })
 }
+*/
 const verifyJWT = (req, res, next) => {
   const token = req.headers['x-access-token']
   if (!token) {
@@ -16,7 +17,7 @@ const verifyJWT = (req, res, next) => {
   } else {
     jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
       if (err) {
-        //return catchError(err, res)
+        // return catchError(err, res)
         res.json({ auth: false, message: 'Failed to authenticate token.' })
       } else {
         req.userId = decoded
