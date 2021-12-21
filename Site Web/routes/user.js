@@ -27,7 +27,7 @@ router.get('/Logout', verifyJWT, (req, res) => {
 router.get('/Forgot/:mail', async function (req, res) {
   try {
     console.log(req.params.mail)
-    const sqlGetUser = 'SELECT id, password, role, email FROM users where email=?;'
+    const sqlGetUser = 'SELECT id, password, role, email FROM Users where email=?;'
     const rows = await pool.query(sqlGetUser, req.params.mail)
 
     if (rows.length > 0) {
@@ -60,7 +60,7 @@ router.post('/NewPassword', verifyJWT, async function (req, res) {
     if (password.length > 7) {
       const encryptedPassword = await bcrypt.hash(password, saltRounds)
 
-      const sqlQuery = 'UPDATE users SET password=? Where id=?;'
+      const sqlQuery = 'UPDATE Users SET password=? Where id=?;'
       const result = await pool.query(sqlQuery, [encryptedPassword, req.userId.id])
 
       res.status(200).json({ userId: result, valid: true })
@@ -89,7 +89,7 @@ router.post('/Login', async function (req, res) {
   try {
     const { username, password } = req.body
 
-    const sqlGetUser = 'SELECT id, username, password, role FROM users WHERE username = ?;'
+    const sqlGetUser = 'SELECT id, username, password, role FROM Users WHERE username = ?;'
     const rows = await pool.query(sqlGetUser, username)
     if (rows.length > 0) {
       const isValid = await bcrypt.compare(password, rows[0].password)
@@ -183,7 +183,7 @@ router.post('/Register/Admin', verifyJWT, async function (req, res) {
     if (passwordAdmin === process.env.PASSWORD_ADMIN) {
       const encryptedPassword = await bcrypt.hash(password, saltRounds)
 
-      const sqlQuery = 'INSERT INTO users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
+      const sqlQuery = 'INSERT INTO Users (username, password, email, nom, prenom, role) VALUES (?,?,?,?,?,?)'
       const result = await pool.query(sqlQuery, [username, encryptedPassword, email, nom, prenom, 'Admin'])
       res.status(200).json({ userId: result.insertId })
     } else {
