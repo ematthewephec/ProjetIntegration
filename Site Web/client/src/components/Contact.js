@@ -35,7 +35,7 @@ function Contact () {
 
     if (data.question === '' && data.nickname === '') {
       const xhr = new XMLHttpRequest()
-      xhr.open('POST', '/mail')
+      xhr.open('POST', 'https://www.checkpcs.com/api/mail/')
       xhr.setRequestHeader('content-type', 'application/json')
       xhr.onload = function () {
         if (xhr.responseText === 'success') {
