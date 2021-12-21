@@ -48,7 +48,14 @@ import Instruction from './content/instruction'
 // import Orders from './Orders'
 
 let drawerWidth = 240 // ce qu'il faut changer pour la page contact
-const mdTheme = createTheme()
+const theme = createTheme({
+  palette: {
+    primary: {
+      // Purple and green play nicely together.
+      main: '#072840',
+    },
+  },
+})
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open'
@@ -189,10 +196,10 @@ const Navigations = () => {
   }
   return (
     <div>
-      <ThemeProvider theme={mdTheme}>
+      <ThemeProvider theme={theme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position={pos} open={open}>
+          <AppBar position={pos} open={open} sx={{ backgroundColor: "#072840"}}>
             <Toolbar
               sx={{
                 pr: '24px' // keep right padding when drawer closed
@@ -260,13 +267,14 @@ const Navigations = () => {
               <Box sx={{ maxWidth: 180 }}>
                 {context.pcs &&
                   <FormControl fullWidth>
-                    <InputLabel id='demo-simple-select-label'>Sélectionner votre PC</InputLabel>
+                    <InputLabel id='demo-simple-select-label' sx={{ mt: "10%", ml: "3%", fontSize: "0.9em" }}>Sélectionner votre PC</InputLabel>
                     <Select
                       defaultValue
                       labelId='demo-simple-select-label'
                       id='demo-simple-select'
                       value={age}
                       label='Age'
+                      sx={{mt: "10%", ml: "5%"}}
                       onChange={handleChange}
                     >
                       {list}
@@ -277,31 +285,31 @@ const Navigations = () => {
                 <ListSubheader inset>Pc Ressource</ListSubheader>
                 <ListItem button onClick={() => { setSelected('Dashboard') }}>
                   <ListItemIcon>
-                    <DashboardIcon />
+                    <DashboardIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='Dashboard' />
                 </ListItem>
                 <ListItem button onClick={() => { setSelected('Ram') }}>
                   <ListItemIcon>
-                    <MemoryIcon />
+                    <MemoryIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='Ram' />
                 </ListItem>
                 <ListItem button onClick={() => { setSelected('Processeur') }}>
                   <ListItemIcon>
-                    <BarChartIcon />
+                    <BarChartIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='Processeur' />
                 </ListItem>
                 <ListItem button onClick={() => { setSelected('Battery') }}>
                   <ListItemIcon>
-                    <BatteryChargingFullIcon />
+                    <BatteryChargingFullIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='Batterie' />
                 </ListItem>
                 <ListItem button onClick={() => { setSelected('Stockage') }}>
                   <ListItemIcon>
-                    <StorageIcon />
+                    <StorageIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='Stockage' />
                 </ListItem>
@@ -311,19 +319,19 @@ const Navigations = () => {
                 <ListSubheader inset>Network</ListSubheader>
                 <ListItem button onClick={() => { setSelected('NetworkCheckIcon') }}>
                   <ListItemIcon>
-                    <NetworkCheckIcon />
+                    <NetworkCheckIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='NetworkCheckIcon' />
                 </ListItem>
                 <ListItem button onClick={() => { setSelected('Router') }}>
                   <ListItemIcon>
-                    <RouterIcon />
+                    <RouterIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='Router' />
                 </ListItem>
                 <ListItem button onClick={() => { setSelected('Port') }}>
                   <ListItemIcon>
-                    <AccountTreeIcon />
+                    <AccountTreeIcon color='primary' />
                   </ListItemIcon>
                   <ListItemText primary='Port' />
                 </ListItem>
@@ -361,7 +369,7 @@ const Navigations = () => {
                 <Port />}
               {select === 'NetworkCheckIcon' &&
                 <Network />}
-              <Copyright sx={{ pt: 4 }} />
+              <Copyright sx={{ pt: 4, color:"#072840"}} />
             </Box>}
         </Box>
       </ThemeProvider>

@@ -56,7 +56,7 @@ const Checkout = ({ name, description, amount }) =>
     currency={CURRENCY}
     stripeKey={process.env.REACT_APP_KEY}
   >
-    <Button fullWidth variant='contained'>Sélectionner</Button>
+    <Button fullWidth variant='contained' sx={{ backgroundColor: "#072840"}} >Sélectionner</Button>
   </StripeCheckout>
 
 export default Checkout

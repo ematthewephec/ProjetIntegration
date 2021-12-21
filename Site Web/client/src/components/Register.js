@@ -25,7 +25,14 @@ function Copyright (props) {
   )
 }
 
-const theme = createTheme()
+const theme = createTheme({
+  palette: {
+    primary: {
+      // Purple and green play nicely together.
+      main: '#072840',
+    },
+  },
+})
 
 export default function SignUp () {
   const [usernames, setUsername] = React.useState('')
@@ -162,7 +169,7 @@ export default function SignUp () {
             <Button
               fullWidth
               variant='contained'
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#072840", ":hover": { backgroundColor: "#072840" } }}
               // onClick={register}
               type='submit'
             >
@@ -170,7 +177,7 @@ export default function SignUp () {
             </Button>
             <Grid container justifyContent='flex-end'>
               <Grid item>
-                <Link href='/Login' variant='body2'>
+                <Link href='/Login' variant='body2' sx={{ color: "#072840"}}>
                   Login
                 </Link>
               </Grid>
@@ -178,7 +185,7 @@ export default function SignUp () {
           </Box>
         </Box>
         {valid && <p>Adresse mail déja existante ou erreur d'encodage</p>}
-        <Copyright sx={{ mt: 5 }} />
+        <Copyright sx={{ mt: 5, color: "#072840" }} />
       </Container>
     </ThemeProvider>
   )
