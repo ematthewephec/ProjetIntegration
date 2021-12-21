@@ -55,9 +55,6 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
-    "@cypress/react": "^5.11.0",
-    "@cypress/webpack-dev-server": "^1.8.0",
-    "cypress": "^9.1.1",
     "jest": "^27.4.3",
     "nodemon": "^2.0.13",
     "sql-fixtures": "^1.0.4"
