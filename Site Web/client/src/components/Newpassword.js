@@ -31,9 +31,11 @@ export default function Newpassword () {
   const [passwords, setPassword] = React.useState('')
   const [passwords1, setPassword1] = React.useState('')
   const BASE_URL = process.env.REACT_APP_API_URL
-
+  const [valid, setvalid] = React.useState(false)
+  const [valid1, setvalid1] = React.useState(false)
   Axios.defaults.withCredentials = true
-  const Newpass = () => {
+  const Newpass = (event) => {
+    event.preventDefault()
     if (passwords === passwords1) {
       Axios.post(BASE_URL + '/user/NewPassword', {
         password: passwords
@@ -44,9 +46,14 @@ export default function Newpassword () {
       }).then((response) => {
         console.log(response)
         window.location.href = '/Login'
+        if (response.data.valid) {
+          window.location.href = '/Login'
+        } else {
+          setvalid1(true)
+        }
       })
     } else {
-      console.log('mots de passe pas identique')
+      setvalid(true)
     }
   }
   return (
@@ -67,10 +74,12 @@ export default function Newpassword () {
           <Typography component='h1' variant='h5'>
             Réinitialisé le password
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 3 }}>
+          <Box component='form' onSubmit={Newpass} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
+                  error={passwords.length < 9 && passwords.length > 0}
+                  helperText='rem : 9 caractère min'
                   required
                   fullWidth
                   name='password'
@@ -83,6 +92,8 @@ export default function Newpassword () {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={passwords.length < 9 && passwords.length > 0}
+                  helperText='rem : 9 caractère min'
                   required
                   fullWidth
                   name='password'
@@ -98,12 +109,14 @@ export default function Newpassword () {
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
-              onClick={Newpass}
+              type='submit'
             >
               New password
             </Button>
           </Box>
         </Box>
+        {valid && <p>Password pas identique</p>}
+        {valid1 && <p>Password invalide</p>}
         <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>

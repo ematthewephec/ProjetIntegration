@@ -34,13 +34,33 @@ export default function SignUp () {
   const [noms, setNom] = React.useState('')
   const [prenoms, setprenom] = React.useState('')
   const BASE_URL = process.env.REACT_APP_API_URL
+  const [valid, setvalid] = React.useState(false)
 
   Axios.defaults.withCredentials = true
-  const register = () => {
+  const validateEmail = (e) => {
+    return seteMail(String(e)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      )
+    )
+  }
+  const validEmail = () => {
+    if (emails !== '') {
+      const re = /\S+@\S+\.\S+/
+      console.log(re.test(emails))
+      return re.test(emails)
+    } else {
+      return true
+    }
+  }
+  const register = (event) => {
+    event.preventDefault()
+    console.log(emails[0])
     Axios.post(BASE_URL + '/user/Register', {
       username: usernames,
       password: passwords,
-      email: emails,
+      email: emails[0],
       nom: noms,
       prenom: prenoms
     }).then((response) => {
@@ -48,7 +68,7 @@ export default function SignUp () {
       if (response.data.valid) {
         window.location.href = '/Login'
       } else {
-        alert('Address email déja utilisé')
+        setvalid(true)
       }
     })
   }
@@ -70,7 +90,7 @@ export default function SignUp () {
           <Typography component='h1' variant='h5'>
             Sign up
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 3 }}>
+          <Box component='form' onSubmit={register} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -99,26 +119,30 @@ export default function SignUp () {
                 <TextField
                   required
                   fullWidth
+                  error={!validEmail()}
                   id='email'
                   label='Email Address'
                   name='email'
                   autoComplete='email'
-                  onChange={(e) => { seteMail(e.target.value) }}
+                  onChange={(e) => { validateEmail(e.target.value) }}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={usernames.length < 5 && usernames.length > 0}
+                  helperText='rem : 6 caractère min'
                   required
                   fullWidth
                   id='username'
                   label='Username'
                   name='Username'
-                  autoComplete='Username'
                   onChange={(e) => { setUsername(e.target.value) }}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={passwords.length < 7 && passwords.length > 0}
+                  helperText='rem : 8 caractère min'
                   required
                   fullWidth
                   name='password'
@@ -134,7 +158,8 @@ export default function SignUp () {
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2 }}
-              onClick={register}
+              // onClick={register}
+              type='submit'
             >
               Sign Up
             </Button>
@@ -147,6 +172,7 @@ export default function SignUp () {
             </Grid>
           </Box>
         </Box>
+        {valid && <p>Adresse mail déja existante ou erreur d'encodage</p>}
         <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
