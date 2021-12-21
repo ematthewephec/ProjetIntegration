@@ -155,7 +155,7 @@ const Navigations = () => {
   })
   */
   useEffect(() => {
-    Axios.get(BASE_URL + '/user/isUserAuth', {
+    Axios.get(BASE_URL + 'user/isUserAuth', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -171,7 +171,7 @@ const Navigations = () => {
     })
   })
   const logout = () => {
-    Axios.get(BASE_URL + '/user/Logout', {
+    Axios.get(BASE_URL + 'user/Logout', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }

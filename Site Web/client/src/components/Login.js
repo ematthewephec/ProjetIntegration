@@ -43,7 +43,7 @@ export default function SignIn () {
   const BASE_URL = process.env.REACT_APP_API_URL
   const login = (event) => {
     event.preventDefault()
-    Axios.post(BASE_URL + '/user/Login', {
+    Axios.post(BASE_URL + 'user/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
