@@ -5,6 +5,7 @@ import { Radar } from 'react-chartjs-2'
 import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
 import Instruction from './instruction'
+import { plugins } from 'chart.js'
 
 function Dashboard () {
   const context = useContext(AppContext)
@@ -39,11 +40,11 @@ function Dashboard () {
         backdropColor: 'rgba(203, 197, 11, 1)'
       },
       angleLines: {
-        color: 'rgba(0, 0, 0, 0.1)',
+        color: 'rgba(0, 0, 0, 0.2)',
         lineWidth: 1
       },
       gridLines: {
-        color: 'rgba(0, 0, 0, 0.1)',
+        color: 'rgba(0, 0, 0, 0.2)',
         circular: false
       }
     }
