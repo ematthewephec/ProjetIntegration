@@ -156,7 +156,7 @@ router.post('/Register', async function (req, res) {
       return re.test(email)
     }
     const result = await pool.query(sqlQuery, [email])
-    console.log(result.length)
+    console.log(validEmail)
     if (result.length === 0) {
       if (username.length > 5 && password.length > 7 && validEmail) {
         const encryptedPassword = await bcrypt.hash(password, saltRounds)

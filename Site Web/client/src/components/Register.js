@@ -48,7 +48,6 @@ export default function SignUp () {
   const validEmail = () => {
     if (emails !== '') {
       const re = /\S+@\S+\.\S+/
-      console.log(re.test(emails))
       return re.test(emails)
     } else {
       return true
@@ -56,11 +55,17 @@ export default function SignUp () {
   }
   const register = (event) => {
     event.preventDefault()
-    console.log(emails[0])
+    let mail = ''
+    console.log(mail)
+    if (emails === null) {
+      mail = 'null'
+    } else {
+      mail = emails[0]
+    }
     Axios.post(BASE_URL + '/user/Register', {
       username: usernames,
       password: passwords,
-      email: emails[0],
+      email: mail,
       nom: noms,
       prenom: prenoms
     }).then((response) => {
