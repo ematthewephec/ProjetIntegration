@@ -1,15 +1,12 @@
-import speedtest as speed
 import psutil
 import platform
 import cpuinfo
 import GPUtil
+import time
 from datetime import datetime
 from threading import *
-import time
 from .dbconnection import *
-import math
 import os
-from dotenv import load_dotenv as env
 
 IS_RUNNING = True
 computer_data = {}
@@ -17,11 +14,7 @@ BUTTON_TOGGLE = False
 
 # GET DATE AND TIME
 now = datetime.now() # current date and time
-year = now.strftime("%Y")
-month = now.strftime("%m")
-day = now.strftime("%d")
-
-CURRENT_DATE = now.strftime("%d/%m/%Y")
+CURRENT_DATE = now.strftime("%d/%m/%Y, %H:%M:%S")
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
 def get_size(bytes, suffix='B'):
@@ -49,11 +42,18 @@ def battery_test(IDPC):
         computer_data['battery'] = {}
         battery = psutil.sensors_battery()
         computer_data['battery']['percent'] = battery.percent
-        battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
-        print('Battery data sent!')
+        #battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
+        #print('Battery data sent!')
         time.sleep(60)
         if not IS_RUNNING:
             break
+
+def battery_test2():
+    computer_data['battery'] = {}
+    battery = psutil.sensors_battery()
+    computer_data['battery']['percent'] = battery.percent
+    #battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
+    #print('Battery data sent!')
 
 def cpu_test(IDPC):
     while IS_RUNNING:
@@ -71,6 +71,17 @@ def cpu_test(IDPC):
         time.sleep(10)
         if not IS_RUNNING:
             break
+
+def cpu_test2():
+    computer_data['cpu'] = {}
+    i = 0
+    while True:
+        i = i + 1
+        cpu = psutil.cpu_percent(interval=1)
+        if cpu > 60 or i == 10:
+            # print("FINI")
+            break
+    computer_data['cpu']['percent'] = cpu
 
 def ram_test(IDPC):
     while IS_RUNNING:
@@ -92,6 +103,19 @@ def ram_test(IDPC):
         time.sleep(10)
         if not IS_RUNNING:
             break
+
+def ram_test2():
+    computer_data['ram'] = {}
+    svmem = psutil.virtual_memory()
+    computer_data['ram']['total_virtual'] = get_size(svmem.total)
+    # computer_data['ram']['used_virtual'] = get_size(svmem.used)
+    # computer_data['ram']['available_virtual'] = get_size(svmem.available)
+    computer_data['ram']['percent_virtual'] = svmem.percent
+
+    swap = psutil.swap_memory()
+    computer_data['ram']['total_swap'] = get_size(swap.total)
+    # computer_data['ram']['used_swap'] = get_size(swap.used)
+    # computer_data['ram']['available_swap'] = get_size(swap.available)
 
 def storage_test(IDPC):
     while IS_RUNNING:
@@ -116,11 +140,33 @@ def storage_test(IDPC):
         computer_data['storage']['total_storage'] = get_size(total_storage_size)
         computer_data['storage']['used_storage'] = get_size(total_storage_used)
 
-        storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
-        print('Storage data sent!')
+        #storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
+        #print('Storage data sent!')
         time.sleep(90)
         if not IS_RUNNING:
             break
+
+def storage_test2():
+    computer_data['storage'] = {}
+    partitions = psutil.disk_partitions()
+    # disk_nums, total storage, total used
+    # print(len(partitions))
+    # computer_data['storage_disk']['partitions'] = len(partitions)
+    total_storage_size = 0
+    total_storage_used = 0
+
+    for partition in partitions:
+        try:
+            partition_usage = psutil.disk_usage(partition.mountpoint)
+        except PermissionError:
+            # this can be caught due to the disk that
+            # isn't ready
+            continue
+        total_storage_size += partition_usage.total
+        total_storage_used += partition_usage.used
+
+    computer_data['storage']['total_storage'] = get_size(total_storage_size)
+    computer_data['storage']['used_storage'] = get_size(total_storage_used)
 
 
 ### concept
@@ -147,11 +193,29 @@ def display_data():
     print("\n")"""
 
 def send_data(IDPC):
-    battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
-    cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
-    ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
-    storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
-    print('Data successfully sent!')
+    while IS_RUNNING:
+        battery_test2()
+        battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
+        print('Battery data sent!')
+        time.sleep(1)
+
+        for i in range(10):
+            cpu_test2()
+            cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
+            print('CPU data sent!')
+            time.sleep(1)
+
+            ram_test2()
+            ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
+            print('RAM data sent!')
+            time.sleep(1)
+
+        storage_test2()
+        storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
+        print('Storage data sent!')
+        time.sleep(1)
+        if not IS_RUNNING:
+            break
 
 def get_pc_info():
     info_test()
@@ -173,15 +237,15 @@ def run_tests(pc_id):
     ram_thread = Thread(target=ram_test, args=[pc_id], daemon=True)
     storage_thread = Thread(target=storage_test, args=[pc_id], daemon=True)
     #display_thread = Thread(target=display_data, daemon=True)
-    #send_data_thread = Thread(target=send_data, daemon=True)
+    send_data_thread = Thread(target=send_data, args=[pc_id], daemon=True)
 
     ### initialize daemons
-    battery_thread.start()
-    cpu_thread.start()
-    ram_thread.start()
-    storage_thread.start()
+    #battery_thread.start()
+    #cpu_thread.start()
+    #ram_thread.start()
+    #storage_thread.start()
     #display_thread.start()
-    #send_data_thread.start()
+    send_data_thread.start()
 
     #battery_thread.join()
     #cpu_thread.join()

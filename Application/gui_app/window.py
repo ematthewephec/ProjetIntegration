@@ -13,8 +13,11 @@ import GPUtil
 import serial.tools.list_ports
 import speedtest
 import threading
+import aiohttp
+import asyncio
 from Application.data import datacollection as data
 from Application.data import dbconnection as dbc
+
 
 class Window():
     def __init__(self, user, lock, exit, web, icon):
@@ -38,7 +41,7 @@ class Window():
         self.widget_medium = ImageTk.PhotoImage(file="photos/widget2.png")
         self.widget_long = ImageTk.PhotoImage(file="photos/widget3.png")
         self.widget_height = ImageTk.PhotoImage(file="photos/widget4.png")
-        self.img_latence = ImageTk.PhotoImage(file="photos/latency.png")
+        self.img_latency = ImageTk.PhotoImage(file="photos/latency.png")
         self.img_download = ImageTk.PhotoImage(file="photos/down-arrow.png")
         self.img_upload = ImageTk.PhotoImage(file="photos/upload.png")
 
@@ -70,14 +73,14 @@ class Window():
         self.ecran = False
         self.btn_speed_test = None
         self.speed_test_run = None
-        self.latence_val = None
+        self.latency_val = None
         self.down_val = None
         self.up_val = None
         self.icon_service = None
         self.test_ecran = None
         self.upload = IntVar()
         self.download = IntVar()
-        self.latence = IntVar()
+        self.latency = IntVar()
 
         self.create_title()
         self.create_input()
@@ -165,7 +168,7 @@ class Window():
             height=40)
 
         btn3 = Button(self.tk,
-                      command=self.connexion,
+                      command=self.connexion_1,
                       image=self.confirm,
                       borderwidth=0,
                       highlightthickness=0,
@@ -173,11 +176,17 @@ class Window():
                       activebackground="#8eb8de")
         btn3.pack(pady=10)
 
-    def connexion(self):
-        url = 'http://checkpcs.com/user/Login'
+    def connexion_1(self):
+        asyncio.run(self.connexion())
+
+    async def connexion(self):
+        url = 'https://checkpcs.com/api/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
-        x = requests.post(url, data=myobj)
-        data = json.loads(x.text)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=myobj) as res:
+                data = await res.json()
+                print(data)
 
         if(data["auth"]):
             self.counter += 1
@@ -185,13 +194,12 @@ class Window():
             self.tk.after(1000, self.run_tests, self.pc_id)
         else:
             self.tk.destroy()
-        """
-        if self.counter == 0:
+
+        """if self.counter == 0:
             self.counter += 1
             self.open_app()
             #self.tk.after(1000, self.thread_handler())
-            self.tk.after(5000, self.run_tests, self.pc_id)
-            """
+            self.tk.after(5000, self.run_tests, self.pc_id)"""
 
     def send_to_arduino(self):
         self.collected_data = data.computer_data
@@ -358,9 +366,9 @@ class Window():
             ecran_status.place(x=170, y=425)
 
     def connectedScreen(self):
-        myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
-        if len(myports) > 0:
-            if "VID:PID=2341:0043" in myports[0][2]:
+        my_ports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+        if len(my_ports) > 0:
+            if "VID:PID=2341:0043" in my_ports[0][2]:
                 self.ecran = True
             else:
                 self.ecran = False
@@ -376,7 +384,7 @@ class Window():
         pings = self.speed.results.ping
         self.download.set(int(dl / 1024 / 1024))
         self.upload.set(int(up / 1024 / 1024))
-        self.latence.set(int(pings))
+        self.latency.set(int(pings))
 
     def test(self):
 
@@ -385,11 +393,11 @@ class Window():
 
         threading.Thread(target=self.connexion_test, daemon=True).start()
 
-        self.tk.wait_variable(self.latence)
+        self.tk.wait_variable(self.latency)
         self.btn_speed_test["state"] = 'normal'
         self.speed_test_run["foreground"] = "#f70909"
 
-        self.latence_val["text"] = str(self.latence.get()) + " ms"
+        self.latency_val["text"] = str(self.latency.get()) + " ms"
         self.down_val["text"] = str(self.download.get()) + " Mb/s"
         self.up_val["text"] = str(self.upload.get()) + " Mb/s"
 
@@ -408,11 +416,11 @@ class Window():
         self.speed_test_run = speed_run
         self.btn_speed_test = speed_widget_title
 
-        latence_icon = Label(self.master, image=self.img_latence, borderwidth=0, highlightthickness=0, background="#31395e")
-        latence_icon.place(x=360, y=630)
-        latence_value = Label(self.master, text="", borderwidth=0, highlightthickness=0, background="#31395e",
+        latency_icon = Label(self.master, image=self.img_latency, borderwidth=0, highlightthickness=0, background="#31395e")
+        latency_icon.place(x=360, y=630)
+        latency_value = Label(self.master, text="", borderwidth=0, highlightthickness=0, background="#31395e",
                               foreground="#F5F5F5")
-        latence_value.place(x=400, y=635)
+        latency_value.place(x=400, y=635)
 
         download_icon = Label(self.master, image=self.img_download, borderwidth=0, highlightthickness=0,
                               background="#31395e")
@@ -427,7 +435,7 @@ class Window():
                              foreground="#F5F5F5")
         upload_value.place(x=110, y=635)
 
-        self.latence_val = latence_value
+        self.latency_val = latency_value
         self.down_val = download_value
         self.up_val = upload_value
 
