@@ -109,7 +109,6 @@ def ram_test_to_db(idPc, current_date, total_virtual, percent_virtual, total_swa
     my_db.commit()
 
 def storage_test_to_db(idPc, current_date, total_storage, used_storage):
-    time.sleep(5)
     sql = "INSERT INTO storage(idPc, test_date, total_storage, used_storage) VALUES (%s, %s, %s, %s);"
     values = (idPc, current_date, total_storage, used_storage)
     # turn into list

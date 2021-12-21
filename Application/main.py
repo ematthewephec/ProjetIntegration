@@ -1,9 +1,7 @@
-from gui_app.window import Window
+from Application.gui_app.window import Window
 import pystray
 from pystray import MenuItem as item
 from PIL import Image, ImageTk
-import data.datacollection
-import data.dbconnection
 
 if __name__ == '__main__':
     user = Image.open("photos/account.png").resize((45, 45), Image.ANTIALIAS)

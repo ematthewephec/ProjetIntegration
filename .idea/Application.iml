@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/python/venv" />
       <excludeFolder url="file://$MODULE_DIR$/python/venv2" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (ProjetIntegration)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

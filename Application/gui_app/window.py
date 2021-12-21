@@ -13,10 +13,11 @@ import GPUtil
 import serial.tools.list_ports
 import speedtest
 import threading
-import data.datacollection as data
-import data.dbconnection as dbc
-import rx
-from rx.scheduler import ThreadPoolScheduler
+import aiohttp
+import asyncio
+from Application.data import datacollection as data
+from Application.data import dbconnection as dbc
+
 
 class Window():
     def __init__(self, user, lock, exit, web, icon):
@@ -40,7 +41,7 @@ class Window():
         self.widget_medium = ImageTk.PhotoImage(file="photos/widget2.png")
         self.widget_long = ImageTk.PhotoImage(file="photos/widget3.png")
         self.widget_height = ImageTk.PhotoImage(file="photos/widget4.png")
-        self.img_latence = ImageTk.PhotoImage(file="photos/latency.png")
+        self.img_latency = ImageTk.PhotoImage(file="photos/latency.png")
         self.img_download = ImageTk.PhotoImage(file="photos/down-arrow.png")
         self.img_upload = ImageTk.PhotoImage(file="photos/upload.png")
 
@@ -66,20 +67,20 @@ class Window():
         self.user_id = None
         self.pc_id = None
 
-        #self.pool_scheduler = ThreadPoolScheduler(1) # thread pool with 1 worker thread
+        self.ser = None
 
         self.master = None
         self.ecran = False
         self.btn_speed_test = None
         self.speed_test_run = None
-        self.latence_val = None
+        self.latency_val = None
         self.down_val = None
         self.up_val = None
         self.icon_service = None
         self.test_ecran = None
         self.upload = IntVar()
         self.download = IntVar()
-        self.latence = IntVar()
+        self.latency = IntVar()
 
         self.create_title()
         self.create_input()
@@ -167,7 +168,7 @@ class Window():
             height=40)
 
         btn3 = Button(self.tk,
-                      command=self.connexion,
+                      command=self.connexion_1,
                       image=self.confirm,
                       borderwidth=0,
                       highlightthickness=0,
@@ -175,53 +176,67 @@ class Window():
                       activebackground="#8eb8de")
         btn3.pack(pady=10)
 
-    def connexion(self):
-        url = 'http://localhost:5000/user/Login'
+    def connexion_1(self):
+        asyncio.run(self.connexion())
+
+    async def connexion(self):
+        url = 'https://checkpcs.com/api/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
-        x = requests.post(url, data=myobj)
-        data = json.loads(x.text)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=myobj) as res:
+                data = await res.json()
+                print(data)
 
         if(data["auth"]):
             self.counter += 1
             self.open_app()
-            # self.tk.after(1000, self.thread_handler())
-            self.tk.after(1000, self.run_tests)
+            self.tk.after(1000, self.run_tests, self.pc_id)
         else:
             self.tk.destroy()
 
-        if(self.counter == 0):
+        """if self.counter == 0:
             self.counter += 1
-            #self.open_app()
+            self.open_app()
             #self.tk.after(1000, self.thread_handler())
-            self.tk.after(1000, self.run_tests)
+            self.tk.after(5000, self.run_tests, self.pc_id)"""
 
-    def thread_handler(self):
-        rx.just(1).subscribe(
-            on_next=self.run_tests,
-            on_completed=lambda: self.tk.after(15000, self.send_data),
-            scheduler=self.pool_scheduler
-        )
+    def send_to_arduino(self):
+        self.collected_data = data.computer_data
 
-    def run_tests(self):
-        data.run_tests()
-        self.tk.after(15000, self.send_data)
+        ram_percent = str(self.collected_data['ram']['percent_virtual'])
+        cpu_percent = str(self.collected_data['cpu']['percent'])
+        battery_percent = str(self.collected_data['battery']['percent'])
+        storage_percent = str((int(self.collected_data['storage']['used_storage'][:-2]) / int(
+            self.collected_data['storage']['total_storage'][:-2])) * 100)
 
-    def send_data(self):
-        if self.counter > 0:
-            self.user_id = dbc.get_user_id(self.entry1.get())
-            self.pc_id = dbc.get_pc_id(self.user_id, self.pc_name)
-            # print(self.pc_id)
-            data.send_data(self.pc_id)
-            self.tk.after(10000, self.run_tests)
+        arduino_data = f"{ram_percent}-{cpu_percent}-{battery_percent}-{storage_percent}"
 
+        myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+        if "VID:PID=2341:0043" in myports[0][2]:
+            self.ser = serial.Serial()
+            self.ser.baudrate = 19200
+            self.ser.port = myports[0][0]
+            self.ser.open()
+
+            # send data to Arduino
+            # test = "99-88-77-66"
+            # data = f"{}"
+            # ram-cpu-batterie-stockage
+            self.tk.after(3500, lambda: self.ser.write(b'' + arduino_data.encode() + b'\n'))
+
+    def run_tests(self, pc_id):
+        data.run_tests(pc_id)
+        # self.tk.after(15000, self.send_to_arduino)
 
     def check_pc(self):
         self.pc_name = psutil.users()[0].name
         self.user_id = dbc.get_user_id(self.entry1.get())
-        #self.user_id = 7
+        # self.user_id = 7
         if dbc.check_pc(self.user_id, self.pc_name) == 0:
             data.info_test()
             dbc.pc_info_test_to_db(self.user_id, data.CURRENT_DATE, **data.computer_data['info'])
+        self.pc_id = dbc.get_pc_id(self.user_id, self.pc_name)
         print(f"PC {self.pc_name} exists!")
 
     def close_app(self):
@@ -249,7 +264,7 @@ class Window():
     def hide_master(self):
         self.counter -= 1
         self.master.withdraw()
-        self.tk.after_cancel(self.test_ecran)
+        #self.tk.after_cancel(self.test_ecran)
         self.create_service_data()
         self.icon_service.run()
 
@@ -263,6 +278,7 @@ class Window():
         self.tk.after(0, self.master.deiconify())
 
     def logout(self):
+        data.IS_RUNNING = False
         self.counter = 0
         self.master.destroy()
         self.icon_service.stop()
@@ -340,19 +356,19 @@ class Window():
                                    background="#31395e")
         ecran_widget_title.place(x=50, y=385)
 
-        if (not self.ecran):
+        if not self.ecran:
             ecran_status = Label(self.master, text="Déconnecté", foreground="#f70909", font=("Berlin Sans fb demi", 30),
                                  background="#31395e")
             ecran_status.place(x=150, y=425)
-        elif (self.ecran):
+        elif self.ecran:
             ecran_status = Label(self.master, text="Connecté", foreground="#3df709", font=("Berlin Sans fb demi", 30),
                                  background="#31395e")
             ecran_status.place(x=170, y=425)
 
     def connectedScreen(self):
-        myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
-        if len(myports) > 0:
-            if "VID:PID=2341:0043" in myports[0][2]:
+        my_ports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+        if len(my_ports) > 0:
+            if "VID:PID=2341:0043" in my_ports[0][2]:
                 self.ecran = True
             else:
                 self.ecran = False
@@ -368,7 +384,7 @@ class Window():
         pings = self.speed.results.ping
         self.download.set(int(dl / 1024 / 1024))
         self.upload.set(int(up / 1024 / 1024))
-        self.latence.set(int(pings))
+        self.latency.set(int(pings))
 
     def test(self):
 
@@ -377,11 +393,11 @@ class Window():
 
         threading.Thread(target=self.connexion_test, daemon=True).start()
 
-        self.tk.wait_variable(self.latence)
+        self.tk.wait_variable(self.latency)
         self.btn_speed_test["state"] = 'normal'
         self.speed_test_run["foreground"] = "#f70909"
 
-        self.latence_val["text"] = str(self.latence.get()) + " ms"
+        self.latency_val["text"] = str(self.latency.get()) + " ms"
         self.down_val["text"] = str(self.download.get()) + " Mb/s"
         self.up_val["text"] = str(self.upload.get()) + " Mb/s"
 
@@ -400,11 +416,11 @@ class Window():
         self.speed_test_run = speed_run
         self.btn_speed_test = speed_widget_title
 
-        latence_icon = Label(self.master, image=self.img_latence, borderwidth=0, highlightthickness=0, background="#31395e")
-        latence_icon.place(x=360, y=630)
-        latence_value = Label(self.master, text="", borderwidth=0, highlightthickness=0, background="#31395e",
+        latency_icon = Label(self.master, image=self.img_latency, borderwidth=0, highlightthickness=0, background="#31395e")
+        latency_icon.place(x=360, y=630)
+        latency_value = Label(self.master, text="", borderwidth=0, highlightthickness=0, background="#31395e",
                               foreground="#F5F5F5")
-        latence_value.place(x=400, y=635)
+        latency_value.place(x=400, y=635)
 
         download_icon = Label(self.master, image=self.img_download, borderwidth=0, highlightthickness=0,
                               background="#31395e")
@@ -419,7 +435,7 @@ class Window():
                              foreground="#F5F5F5")
         upload_value.place(x=110, y=635)
 
-        self.latence_val = latence_value
+        self.latency_val = latency_value
         self.down_val = download_value
         self.up_val = upload_value
 
