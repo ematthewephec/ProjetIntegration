@@ -2,7 +2,7 @@ const mariadb = require('mariadb')
 require('dotenv').config()
 const pool = mariadb.createPool({
   host: process.env.HOST,
-  user: 'root',
+  user: process.env.USERNAME,
   password: process.env.PASSWORDDB,
   database: process.env.DATABASE,
   port: process.env.PORTDB,
