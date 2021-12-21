@@ -69,7 +69,7 @@ export default function SignUp () {
     } else {
       mail = emails[0]
     }
-    Axios.post(BASE_URL + '/user/Register', {
+    Axios.post(BASE_URL + 'user/Register', {
       username: usernames,
       password: passwords,
       email: mail,
