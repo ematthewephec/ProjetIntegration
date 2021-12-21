@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useContext } from 'react'
+import React, { useEffect, useReducer, useContext, useRef } from 'react'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { Line } from 'react-chartjs-2'
@@ -6,9 +6,28 @@ import Axios from 'axios'
 import { AppContext } from '../../Contexts/AppContext'
 import Instruction from './instruction'
 
+function useInterval (callback, delay) {
+  const savedCallback = useRef()
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick () {
+      savedCallback.current()
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay)
+      return () => clearInterval(id)
+    }
+  }, [delay])
+}
+
 function Baterry () {
   const context = useContext(AppContext)
-  let isRendered = useRef(false)
   const [datas, setdatas] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -79,57 +98,38 @@ function Baterry () {
     }
   }
   Axios.defaults.withCredentials = true
-  useEffect(() => {
-    isRendered = true
-    Axios.get(process.env.REACT_APP_API_URL + '/api/' + context.pcs + '/battery', {
-      headers: {
-        'x-access-token': window.localStorage.getItem('token')
-      }
-    }).then((response) => {
-      if (isRendered) {
-        const data = response.data
-        const title = []
-        const percent = []
-
-        for (const i of data) {
-          title.push(i.test_date)
-          percent.push(Number((i.battery_percent)))
+  useInterval(() => {
+    // Your custom logic here
+    context.readBattery()
+    setdatas({
+      // eslint-disable-next-line
+      ["datasets"]: [
+        {
+          label: 'Batterie',
+          fill: true,
+          lineTension: 0.1,
+          backgroundColor: 'rgba(192,192,75,0.4)',
+          borderColor: 'rgba(192,192,75,1)',
+          borderCapStyle: 'butt',
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: 'miter',
+          pointBorderColor: 'rgba(192,192,75,1)',
+          pointBackgroundColor: '#fff',
+          pointBorderWidth: 5,
+          pointHoverRadius: 10,
+          pointHoverBackgroundColor: 'rgba(192,192,75,1)',
+          pointHoverBorderColor: 'rgba(192,192,75,1)',
+          pointHoverBorderWidth: 2,
+          pointRadius: 2,
+          pointHitRadius: 15,
+          data: context.battery.percent
         }
-
-        setdatas({
-        // eslint-disable-next-line
-        ["datasets"]: [
-            {
-              label: 'Batterie',
-              fill: true,
-              lineTension: 0.1,
-              backgroundColor: 'rgba(192,192,75,0.4)',
-              borderColor: 'rgba(192,192,75,1)',
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: 'rgba(192,192,75,1)',
-              pointBackgroundColor: '#fff',
-              pointBorderWidth: 5,
-              pointHoverRadius: 10,
-              pointHoverBackgroundColor: 'rgba(192,192,75,1)',
-              pointHoverBorderColor: 'rgba(192,192,75,1)',
-              pointHoverBorderWidth: 2,
-              pointRadius: 2,
-              pointHitRadius: 15,
-              data: percent
-            }
-          ],
-          // eslint-disable-next-line
-        ["labels"]: title
-        })
-      }
-    }).catch(err => console.log(err))
-    return () => {
-      isRendered = false
-    }
-  }, [])
+      ],
+      // eslint-disable-next-line
+      ["labels"]: context.battery.title
+    })
+  }, 5000)
   return (
     <Container>
       <Grid>

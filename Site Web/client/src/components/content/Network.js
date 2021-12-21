@@ -7,6 +7,7 @@ function Network () {
     <Container>
       <Grid Container spacing={3}>
         <h1>Network</h1>
+        <p>Coming soon</p>
       </Grid>
     </Container>
   )

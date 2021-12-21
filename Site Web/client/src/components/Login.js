@@ -38,39 +38,27 @@ const theme = createTheme({
 export default function SignIn () {
   const [usernames, setUsername] = React.useState('')
   const [passwords, setPassword] = React.useState('')
-  const [loginStatus, setLoginStatus] = React.useState(false)
+  const [valid, setvalid] = React.useState(false)
   Axios.defaults.withCredentials = true
   const BASE_URL = process.env.REACT_APP_API_URL
-
-  const login = () => {
+  const login = (event) => {
+    event.preventDefault()
     Axios.post(BASE_URL + '/user/Login', {
       username: usernames,
       password: passwords
     }).then((response) => {
       console.log(response)
       if (!response.data.auth) {
-        setLoginStatus(false)
+        console.log(response.data.auth)
+        setvalid(true)
       } else {
         console.log(response.data.token)
         window.localStorage.setItem('token', response.data.accessToken)
         window.localStorage.setItem('refreshToken', response.data.refreshToken)
-        setLoginStatus(true)
         window.location.href = '/'
       }
     })
   }
-  /*
-  const userAuthenticated = () => {
-    Axios.get('http://localhost:5000/isUserAuth', {
-      headers: {
-        'x-access-token': window.localStorage.getItem('token')
-      }
-    }).then((response) => {
-      console.log(response.data)
-      console.log(response)
-    })
-  }
-  */
   return (
     <ThemeProvider theme={theme}>
       <Container component='main' maxWidth='xs'>
@@ -89,7 +77,7 @@ export default function SignIn () {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Box noValidate sx={{ mt: 1, borderColor: "#072840" }}>
+          <Box component='form' onSubmit={login} sx={{ mt: 1 , borderColor: "#072840" }}>
             <TextField
               margin='normal'
               required
@@ -113,7 +101,8 @@ export default function SignIn () {
               onChange={(e) => { setPassword(e.target.value) }}
             />
             <Button
-              onClick={login}
+              type='submit'
+              // onClick={login}
               fullWidth
               variant='contained'
               sx={{ mt: 3, mb: 2, backgroundColor: "#072840", ":hover": { backgroundColor: "#072840"} }}
@@ -122,7 +111,7 @@ export default function SignIn () {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link variant='body2' sx={{ color: "#072840" }}>
+                <Link href='/Forgot' variant='body2' sx={{ color: "#072840" }}>
                   Forgot password?
                 </Link>
               </Grid>
@@ -134,6 +123,7 @@ export default function SignIn () {
             </Grid>
           </Box>
         </Box>
+        {valid && <p>Mauvais mots de passe ou email</p>}
         <Copyright sx={{ mt: 8, mb: 4, color: "#072840" }} />
       </Container>
     </ThemeProvider>

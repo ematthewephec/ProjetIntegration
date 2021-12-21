@@ -49,10 +49,10 @@ async function verify(password, hash) {
 
 // Routes
 
-app.use('/api', api)
-app.use('/user', userRouter)
-app.use('/shop', shopRouter)
-app.use('/mail', mailRouter)
+app.use('/api/resource', api)
+app.use('/api/user', userRouter)
+app.use('/api/shop', shopRouter)
+app.use('/api/mail', mailRouter)
 
 if (process.env.NODE_ENV === 'dev') {
   app.get('/*', (_, res) => {
