@@ -37,7 +37,7 @@ export default function Newpassword () {
   const Newpass = (event) => {
     event.preventDefault()
     if (passwords === passwords1) {
-      Axios.post(BASE_URL + '/user/NewPassword', {
+      Axios.post(BASE_URL + 'user/NewPassword', {
         password: passwords
       }, {
         headers: {

@@ -25,7 +25,7 @@ class AppContextProvider extends React.Component {
 
   // read
   readPcs () {
-    Axios.get(process.env.REACT_APP_API_URL + '/resource/pcs', {
+    Axios.get(process.env.REACT_APP_API_URL + 'resource/pcs', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -42,7 +42,7 @@ class AppContextProvider extends React.Component {
   }
 
   readRam () {
-    Axios.get(process.env.REACT_APP_API_URL + '/resource/ram', {
+    Axios.get(process.env.REACT_APP_API_URL + 'resource/ram', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -67,7 +67,7 @@ class AppContextProvider extends React.Component {
   }
 
   readCpu () {
-    Axios.get(process.env.REACT_APP_API_URL + '/resource/cpu', {
+    Axios.get(process.env.REACT_APP_API_URL + 'resource/cpu', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -92,7 +92,7 @@ class AppContextProvider extends React.Component {
   }
 
   readStorage () {
-    Axios.get(process.env.REACT_APP_API_URL + '/resource/storage', {
+    Axios.get(process.env.REACT_APP_API_URL + 'resource/storage', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -116,7 +116,7 @@ class AppContextProvider extends React.Component {
   }
 
   readDashboard () {
-    Axios.get(process.env.REACT_APP_API_URL + '/resource/dashboard', {
+    Axios.get(process.env.REACT_APP_API_URL + 'resource/dashboard', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }
@@ -158,7 +158,7 @@ class AppContextProvider extends React.Component {
   }
 
   readBattery () {
-    Axios.get(process.env.REACT_APP_API_URL + '/resource/battery', {
+    Axios.get(process.env.REACT_APP_API_URL + 'resource/battery', {
       headers: {
         'x-access-token': window.localStorage.getItem('token')
       }

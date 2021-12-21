@@ -34,7 +34,7 @@ export default function Forgot () {
   const [valid, setvalid] = React.useState(false)
   const forgot = (event) => {
     event.preventDefault()
-    Axios.get(BASE_URL + '/user/Forgot/' + mails).then((response) => {
+    Axios.get(BASE_URL + 'user/Forgot/' + mails).then((response) => {
       if (!response.data.valid) {
         setvalid(true)
       } else {
