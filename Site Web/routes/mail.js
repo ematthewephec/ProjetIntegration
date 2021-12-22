@@ -18,7 +18,7 @@ async function validateHuman (token) {
       }
   )
   const data = await response.json()
-  console.log('data :' + data)
+  console.log('data :' + data.success)
   return data.success
 }
 
@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
       subject: 'Email de : ' + req.body.data.name,
       text: req.body.data.message
     }
-    console.log.log('mailOptions: ' + mailOptions)
+    console.log('mailOptions: ' + mailOptions)
     transporter.sendMail(mailOptions)
     console.log.log(transporter.sendMail(mailOptions))
     res.send('success')
