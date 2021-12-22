@@ -19,7 +19,7 @@ const theme = createTheme({
 function Contact () {
   const BASE_URL = process.env.REACT_APP_API_URL
   const recaptchaRef = React.createRef()
-  Axios.defaults.withCredentials = true
+  // Axios.defaults.withCredentials = true
   const [formInput, setFormInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
