@@ -18,13 +18,14 @@ async function validateHuman (token) {
       }
   )
   const data = await response.json()
+  console.log('data :' + data)
   return data.success
 }
 
 router.post('/', async (req, res) => {
   console.log(req.body.data.name)
   const human = await validateHuman(req.body.data.isVerif)
-
+  console.log('human: ' + human)
   if (exports.validateEmail(req.body.data.email) && req.body.data.name !== '' && req.body.data.message !== '' && human) {
     const transporter = nodemailer.createTransport({
       host: 'ssl0.ovh.net',
@@ -42,10 +43,11 @@ router.post('/', async (req, res) => {
       subject: 'Email de : ' + req.body.data.name,
       text: req.body.data.message
     }
-
+    console.log.log('mailOptions: ' + mailOptions)
     transporter.sendMail(mailOptions)
     res.send('success')
   } else {
+    console.log.log('error: ')
     res.send('error')
   }
 })
