@@ -45,10 +45,10 @@ router.post('/', async (req, res) => {
     }
     console.log('mailOptions: ' + mailOptions)
     transporter.sendMail(mailOptions)
-    console.log.log(transporter.sendMail(mailOptions))
+    console.log(transporter.sendMail(mailOptions))
     res.send('success')
   } else {
-    console.log.log('error: ')
+    console.log('error: ')
     res.send('error')
   }
 })
