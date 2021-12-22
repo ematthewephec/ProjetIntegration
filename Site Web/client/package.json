@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cypress/react": "^5.12.0",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@material-ui/styles": "^4.11.4",
@@ -13,6 +14,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "chart.js": "^2.9.1",
+    "cypress-plugin-stripe-elements": "^1.0.2",
     "dotenv": "^10.0.0",
     "react": "^17.0.2",
     "react-chartjs-2": "^2.8.0",
@@ -26,7 +28,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "cypress open",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:5000",
