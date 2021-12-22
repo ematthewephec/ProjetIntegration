@@ -69,6 +69,16 @@ function Contact () {
       )
         .then((response) => {
           console.log(response)
+          const form = document.forms.formulaire
+          form.name.value = ''
+          form.email.value = ''
+          form.message.value = ''
+          recaptchaRef.current.reset()
+          if (response.data === 'success') {
+            alert('Mail envoyé avec success')
+          } else {
+            alert("Erreure lors de l'envois du mail")
+          }
         })
         .catch((err) => { console.log(err) })
     } else {
