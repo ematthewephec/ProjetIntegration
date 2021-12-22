@@ -33,17 +33,14 @@ router.post('/', async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.MAIL,
+        user: 'contact@checkpcs.com',
         pass: process.env.MAIL_PASS
-      },
-      tls: {
-        ciphers: 'SSLv3'
       }
     })
 
     const mailOptions = {
       from: req.body.data.email,
-      to: process.env.MAIL,
+      to: 'contact@checkpcs.com',
       subject: 'Email de : ' + req.body.data.name,
       text: req.body.data.message
     }
