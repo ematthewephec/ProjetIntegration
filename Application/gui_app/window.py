@@ -195,15 +195,9 @@ class Window():
         else:
             self.tk.destroy()
 
-        """if self.counter == 0:
-            self.counter += 1
-            self.open_app()
-            #self.tk.after(1000, self.thread_handler())
-            self.tk.after(5000, self.run_tests, self.pc_id)"""
-
     def send_to_arduino(self):
         self.collected_data = data.computer_data
-
+        print(self.collected_data)
         ram_percent = str(self.collected_data['ram']['percent_virtual'])
         cpu_percent = str(self.collected_data['cpu']['percent'])
         battery_percent = str(self.collected_data['battery']['percent'])
@@ -212,6 +206,7 @@ class Window():
 
         arduino_data = f"{ram_percent}-{cpu_percent}-{battery_percent}-{storage_percent}"
 
+        print(arduino_data)
         myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
         if "VID:PID=2341:0043" in myports[0][2]:
             self.ser = serial.Serial()
@@ -219,15 +214,11 @@ class Window():
             self.ser.port = myports[0][0]
             self.ser.open()
 
-            # send data to Arduino
-            # test = "99-88-77-66"
-            # data = f"{}"
-            # ram-cpu-batterie-stockage
             self.tk.after(3500, lambda: self.ser.write(b'' + arduino_data.encode() + b'\n'))
 
     def run_tests(self, pc_id):
         data.run_tests(pc_id)
-        # self.tk.after(15000, self.send_to_arduino)
+        #self.tk.after(20000, self.send_to_arduino)
 
     def check_pc(self):
         self.pc_name = psutil.users()[0].name

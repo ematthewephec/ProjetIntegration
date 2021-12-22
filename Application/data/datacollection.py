@@ -7,6 +7,7 @@ from datetime import datetime
 from threading import *
 from .dbconnection import *
 import os
+import serial.tools.list_ports
 
 IS_RUNNING = True
 computer_data = {}
@@ -192,6 +193,27 @@ def display_data():
     print(f"RAM - Swap Memory Percentage: {computer_data['ram']['swap_percent']}%")
     print("\n")"""
 
+def send_to_arduino():
+    print(computer_data)
+    ram_percent = str(computer_data['ram']['percent_virtual'])
+    cpu_percent = str(computer_data['cpu']['percent'])
+    battery_percent = computer_data['battery']['percent']
+    if battery_percent == 100:
+        battery_percent = str(99)
+    storage_percent = str(77)
+
+    arduino_data = f"{ram_percent}-{cpu_percent}-{battery_percent}-{storage_percent}"
+
+    myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+    if "VID:PID=2341:0043" in myports[0][2]:
+        ser = serial.Serial()
+        ser.baudrate = 19200
+        ser.port = myports[0][0]
+        ser.open()
+
+        time.sleep(3)
+        ser.write(b'' + arduino_data.encode() + b'\n')
+
 def send_data(IDPC):
     while IS_RUNNING:
         battery_test2()
@@ -206,7 +228,7 @@ def send_data(IDPC):
         print('Storage data sent!')
         time.sleep(1)
 
-        for i in range(5):
+        for i in range(1):
             cpu_test2()
             CURRENT_DATE = now.strftime("%d/%m/%Y, %H:%M:%S")
             cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
@@ -219,6 +241,7 @@ def send_data(IDPC):
             print('RAM data sent!')
             time.sleep(1)
 
+        send_to_arduino()
         if not IS_RUNNING:
             break
 
