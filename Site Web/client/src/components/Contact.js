@@ -4,6 +4,8 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import Axios from 'axios'
+
 
 const theme = createTheme({
   palette: {
@@ -15,8 +17,9 @@ const theme = createTheme({
 })
 
 function Contact () {
+  const BASE_URL = process.env.REACT_APP_API_URL
   const recaptchaRef = React.createRef()
-
+  Axios.defaults.withCredentials = true
   const [formInput, setFormInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -34,6 +37,7 @@ function Contact () {
     data.isVerif = recaptchaRef.current.getValue()
 
     if (data.question === '' && data.nickname === '') {
+      /*
       const xhr = new XMLHttpRequest()
       xhr.open('POST', 'https://www.checkpcs.com/api/mail/')
       xhr.setRequestHeader('content-type', 'application/json')
@@ -54,8 +58,16 @@ function Contact () {
           recaptchaRef.current.reset()
         }
       }
+      console.log(JSON.stringify(data))
       xhr.send(JSON.stringify(data))
       evt.preventDefault()
+      */
+      Axios.post(BASE_URL + 'mail/', {
+        data: JSON.stringify(data)
+      })
+        .then((response) => {
+          console.log(response)
+        })
     } else {
       alert("Suspicion d'utilisation de BOT")
       window.location.reload()
