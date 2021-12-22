@@ -28,9 +28,10 @@ router.post('/', async (req, res) => {
   console.log('human: ' + human)
   if (exports.validateEmail(req.body.data.email) && req.body.data.name !== '' && req.body.data.message !== '' && human) {
     const transporter = nodemailer.createTransport({
+      name: 'checkpcs.com',
       host: 'ssl0.ovh.net',
-      port: 587,
-      secure: false,
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.MAIL,
         pass: process.env.MAIL_PASS
