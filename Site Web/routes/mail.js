@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
   const human = await validateHuman(req.body.data.isVerif)
   console.log('human: ' + human)
   if (exports.validateEmail(req.body.data.email) && req.body.data.name !== '' && req.body.data.message !== '' && human) {
-    console.log(process.env.MAIL, process.env.MAIL_PASS)
+    console.log('mail : ' + process.env.MAIL, process.env.MAIL_PASS)
     const transporter = nodemailer.createTransport({
       host: 'ssl0.ovh.net',
       port: 587,
