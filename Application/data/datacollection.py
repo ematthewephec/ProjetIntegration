@@ -15,7 +15,7 @@ BUTTON_TOGGLE = False
 
 # GET DATE AND TIME
 now = datetime.now() # current date and time
-
+CURRENT_DATE = now.strftime("%d/%m/%Y, %H:%M:%S")
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
 def get_size(bytes, suffix='B'):
@@ -217,12 +217,14 @@ def send_to_arduino():
 def send_data(IDPC):
     while IS_RUNNING:
         battery_test2()
+        now = datetime.now()
         CURRENT_DATE = now.strftime("%d/%m/%Y, %H:%M:%S")
         battery_test_to_db(IDPC, CURRENT_DATE, **computer_data['battery'])
         print('Battery data sent!')
         time.sleep(1)
 
         storage_test2()
+        now = datetime.now()
         CURRENT_DATE = now.strftime("%d/%m/%Y, %H:%M:%S")
         storage_test_to_db(IDPC, CURRENT_DATE, **computer_data['storage'])
         print('Storage data sent!')
@@ -230,12 +232,14 @@ def send_data(IDPC):
 
         for i in range(5):
             cpu_test2()
+            now = datetime.now()
             CURRENT_DATE = now.strftime("%d/%m/%Y, %H:%M:%S")
             cpu_test_to_db(IDPC, CURRENT_DATE, **computer_data['cpu'])
             print('CPU data sent!')
             time.sleep(1)
 
             ram_test2()
+            now = datetime.now()
             CURRENT_DATE = now.strftime("%d/%m/%Y, %H:%M:%S")
             ram_test_to_db(IDPC, CURRENT_DATE, **computer_data['ram'])
             print('RAM data sent!')
