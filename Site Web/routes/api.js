@@ -29,7 +29,7 @@ router.get('/dashboard', verifyJWT, async function (req, res) {
 
 router.get('/ram', verifyJWT, async function (req, res) {
   try {
-    const sqlQuery = 'SELECT pcs.idPc, ram.test_date, ram.total_virtual, ram.percent_virtual, ram.total_swap FROM pcs INNER JOIN ram ON pcs.idPc=ram.idPc WHERE pcs.idUser =? ORDER BY STR_TO_DATE(ram.test_date, "%d/%m/%Y") ASC'
+    const sqlQuery = 'SELECT pcs.idPc, ram.test_date, ram.total_virtual, ram.percent_virtual, ram.total_swap FROM pcs INNER JOIN ram ON pcs.idPc=ram.idPc WHERE pcs.idUser =? ORDER BY ram.id ASC'
     const rows = await pool.query(sqlQuery, req.userId.id)
     res.status(200).json(rows)
   } catch (error) {
@@ -39,7 +39,7 @@ router.get('/ram', verifyJWT, async function (req, res) {
 
 router.get('/battery', verifyJWT, async function (req, res) {
   try {
-    const sqlQuery = 'SELECT pcs.idPc, battery.test_date, battery.battery_percent FROM pcs INNER JOIN battery ON pcs.idPc=battery.idPc WHERE pcs.idUser =? ORDER BY STR_TO_DATE(battery.test_date, "%d/%m/%Y") ASC'
+    const sqlQuery = 'SELECT pcs.idPc, battery.test_date, battery.battery_percent FROM pcs INNER JOIN battery ON pcs.idPc=battery.idPc WHERE pcs.idUser =? ORDER BY battery.id ASC'
     const rows = await pool.query(sqlQuery, req.userId.id)
     res.status(200).json(rows)
   } catch (error) {
@@ -48,7 +48,7 @@ router.get('/battery', verifyJWT, async function (req, res) {
 })
 router.get('/cpu', verifyJWT, async function (req, res) {
   try {
-    const sqlQuery = 'SELECT pcs.idPc, cpu.test_date, cpu.cpu_percent FROM pcs INNER JOIN cpu ON pcs.idPc=cpu.idPc WHERE pcs.idUser =? ORDER BY STR_TO_DATE(cpu.test_date, "%d/%m/%Y") ASC;'
+    const sqlQuery = 'SELECT pcs.idPc, cpu.test_date, cpu.cpu_percent FROM pcs INNER JOIN cpu ON pcs.idPc=cpu.idPc WHERE pcs.idUser =? ORDER cpu.id ASC;'
     const rows = await pool.query(sqlQuery, req.userId.id)
     res.status(200).json(rows)
   } catch (error) {
@@ -58,7 +58,7 @@ router.get('/cpu', verifyJWT, async function (req, res) {
 
 router.get('/storage', verifyJWT, async function (req, res) {
   try {
-    const sqlQuery = 'SELECT pcs.idPc, storage.test_date, storage.total_storage, storage.used_storage FROM pcs INNER JOIN storage ON pcs.idPc=storage.idPc WHERE pcs.idUser =? ORDER BY STR_TO_DATE(storage.test_date, "%d/%m/%Y") ASC'
+    const sqlQuery = 'SELECT pcs.idPc, storage.test_date, storage.total_storage, storage.used_storage FROM pcs INNER JOIN storage ON pcs.idPc=storage.idPc WHERE pcs.idUser =? ORDER BY storage.id ASC'
     const rows = await pool.query(sqlQuery, req.userId.id)
     res.status(200).json(rows)
   } catch (error) {
