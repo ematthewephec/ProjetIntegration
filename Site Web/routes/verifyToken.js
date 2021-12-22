@@ -1,3 +1,4 @@
+const { createProxy } = require('http-proxy')
 const jwt = require('jsonwebtoken')
 const { TokenExpiredError } = jwt
 require('dotenv').config()
@@ -12,6 +13,7 @@ const catchError = (err, res) => {
 */
 const verifyJWT = (req, res, next) => {
   const token = req.headers['x-access-token']
+  console.log(token)
   if (!token) {
     res.send({ auth: false, message: 'No token provided.' })
   } else {
