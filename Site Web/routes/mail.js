@@ -78,7 +78,7 @@ router.post('/client', verifyJWT, async (req, res) => {
       console.log(info)
     }
     )
-    res.send('success')
+    res.status(200).json({ valid: 'success', mail: mailOptions })
   } else {
     console.log('error: ')
     res.send('error')
