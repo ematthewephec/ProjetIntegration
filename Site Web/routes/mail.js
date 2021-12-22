@@ -44,8 +44,11 @@ router.post('/', async (req, res) => {
       text: req.body.data.message
     }
     console.log('mailOptions: ' + mailOptions)
-    transporter.sendMail(mailOptions)
-    console.log(transporter.sendMail(mailOptions))
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) console.log(err)
+      console.log(info)
+    }
+    )
     res.send('success')
   } else {
     console.log('error: ')
