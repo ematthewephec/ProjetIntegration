@@ -71,7 +71,7 @@ function Contact () {
         })
     } else {
       alert("Suspicion d'utilisation de BOT")
-      window.location.reload()
+      // window.location.reload()
     }
   }
 
