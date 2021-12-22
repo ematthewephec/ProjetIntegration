@@ -70,6 +70,7 @@ function Contact () {
         .then((response) => {
           console.log(response)
         })
+        .catch((err) => { console.log(err) })
     } else {
       alert("Suspicion d'utilisation de BOT")
       // window.location.reload()
