@@ -1,4 +1,3 @@
-const { createProxy } = require('http-proxy')
 const jwt = require('jsonwebtoken')
 const { TokenExpiredError } = jwt
 require('dotenv').config()
