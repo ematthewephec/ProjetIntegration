@@ -83,7 +83,7 @@ function Contact () {
         .catch((err) => { console.log(err) })
     } else {
       alert("Suspicion d'utilisation de BOT")
-      // window.location.reload()
+      window.location.reload()
     }
   }
 
