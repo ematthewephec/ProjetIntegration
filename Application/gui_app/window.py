@@ -180,7 +180,7 @@ class Window():
         asyncio.run(self.connexion())
 
     async def connexion(self):
-        url = 'https://checkpcs.com/api/Login'
+        url = 'https://checkpcs.com/api/user/Login'
         myobj = {'username': self.entry1.get(), 'password': self.entry2.get()}
 
         async with aiohttp.ClientSession() as session:
