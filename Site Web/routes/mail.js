@@ -22,7 +22,7 @@ async function validateHuman (token) {
 }
 
 router.post('/', async (req, res) => {
-  console.log(req.body.name)
+  console.log(req.body)
   console.log(req.body.name)
   const human = await validateHuman(req.body.isVerif)
 
