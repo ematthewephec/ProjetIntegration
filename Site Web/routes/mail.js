@@ -22,6 +22,7 @@ async function validateHuman (token) {
 }
 
 router.post('/', async (req, res) => {
+  console.log(req.body)
   const human = await validateHuman(req.body.isVerif)
 
   if (exports.validateEmail(req.body.email) && req.body.name !== '' && req.body.message !== '' && human) {
