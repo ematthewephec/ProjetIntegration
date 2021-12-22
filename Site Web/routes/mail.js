@@ -23,10 +23,9 @@ async function validateHuman (token) {
 
 router.post('/', async (req, res) => {
   console.log(req.body.data.name)
-  console.log(req.body.name)
-  const human = await validateHuman(req.body.isVerif)
+  const human = await validateHuman(req.body.data.isVerif)
 
-  if (exports.validateEmail(req.body.email) && req.body.name !== '' && req.body.message !== '' && human) {
+  if (exports.validateEmail(req.body.data.email) && req.body.data.name !== '' && req.body.data.message !== '' && human) {
     const transporter = nodemailer.createTransport({
       host: 'ssl0.ovh.net',
       port: 587,
@@ -38,10 +37,10 @@ router.post('/', async (req, res) => {
     })
 
     const mailOptions = {
-      from: req.body.email,
+      from: req.body.data.email,
       to: process.env.MAIL,
-      subject: 'Email de : ' + req.body.name,
-      text: req.body.message
+      subject: 'Email de : ' + req.body.data.name,
+      text: req.body.data.message
     }
 
     transporter.sendMail(mailOptions)
