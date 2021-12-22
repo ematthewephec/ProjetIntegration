@@ -48,7 +48,7 @@ router.get('/battery', verifyJWT, async function (req, res) {
 })
 router.get('/cpu', verifyJWT, async function (req, res) {
   try {
-    const sqlQuery = 'SELECT pcs.idPc, cpu.test_date, cpu.cpu_percent FROM pcs INNER JOIN cpu ON pcs.idPc=cpu.idPc WHERE pcs.idUser =? ORDER cpu.id ASC;'
+    const sqlQuery = 'SELECT pcs.idPc, cpu.test_date, cpu.cpu_percent FROM pcs INNER JOIN cpu ON pcs.idPc=cpu.idPc WHERE pcs.idUser =? ORDER cpu.id ASC'
     const rows = await pool.query(sqlQuery, req.userId.id)
     res.status(200).json(rows)
   } catch (error) {
