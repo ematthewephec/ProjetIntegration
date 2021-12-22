@@ -62,6 +62,8 @@ function Contact () {
       xhr.send(JSON.stringify(data))
       evt.preventDefault()
       */
+      console.log(data)
+      console.log(data.name)
       Axios.post(BASE_URL + 'mail/', JSON.stringify(data)
       )
         .then((response) => {
