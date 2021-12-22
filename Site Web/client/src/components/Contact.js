@@ -64,7 +64,7 @@ function Contact () {
       */
       console.log(data)
       console.log(data.name)
-      Axios.post(BASE_URL + 'mail/', JSON.stringify(data)
+      Axios.post(BASE_URL + 'mail/', { data: data }
       )
         .then((response) => {
           console.log(response)
